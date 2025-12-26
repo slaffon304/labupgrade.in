@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]><html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Авторизация и Регистрация - Lab Upgrade</title>
+    <meta name="description" content="Авторизация и регистрация в платформе Lab Upgrade">
+
+    <!-- font -->
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <!-- css -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/odometer.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="assets/images/logo/labupgradelogo.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/images/logo/labupgradelogo.png">
+    
+    <!-- Smooth Scroll -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="counter-scroll">
+    <canvas class="cursor-trail d-none d-xl-block" id="trail"></canvas>
+
+    <!-- Scroll Top -->
+    <button id="goTop">
+        <span class="border-progress"></span>
+        <span class="ic-wrap">
+            <span class="icon icon-arrow-caret-right"></span>
+        </span>
+    </button>
+    <!-- /Scroll Top -->
+
+    <main id="wrapper">
+        <!-- Header -->
+        <header class="tf-header m-0">
+            <div class="header-inner">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-7 d-none d-md-block">
+                            <div class="box-navigation">
+                                <ul class="nav-menu-main">
+                                    <li class="menu-item"><a href="index-ru.html#serviceScroll" class="item-link link text-caption"><span>01
+                                                /</span>УСЛУГИ</a></li>
+                                    <li class="menu-item"><a href="index-ru.html#processScroll" class="item-link link text-caption"><span>02
+                                                /</span>ПРОЦЕСС</a>
+                                    </li>
+                                    <li class="menu-item"><a href="index-ru.html#aboutScroll" class="item-link link text-caption"><span>03
+                                                /</span>О НАС</a></li>
+                                    <li class="menu-item"><a href="index-ru.html#contactScroll" class="item-link link text-caption"><span>04
+                                                /</span>КОНТАКТЫ</a>
+                                    </li>
+                                    <li class="menu-item"><a href="documents-ru.html" class="item-link link text-caption"><span>05
+                                                /</span>ДОКУМЕНТЫ</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-3 col-md-2 d-none d-sm-block">
+                            <div class="header-contact">
+                                <a href="mailto:davies@gmail.com" class="link text-caption">SUPPORT@LABUPGRADE.IN </a>
+                                <p class="text-caption">
+                                    ВРЕМЯ <span class="clock"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-3 col-md-2 d-flex justify-content-end align-items-center gap-3">
+                            <!-- Language Switcher -->
+                            <div class="language-switcher" style="position: relative;">
+                                <button type="button" class="language-btn text-caption text-white link" style="display: flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); border-radius: 4px; cursor: pointer; transition: all 0.3s; width: 44px; height: 44px;">
+                                    <span class="flag-icon" style="font-size: 20px;">🇷🇺</span>
+                                </button>
+                                <div class="language-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-width: 150px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                                    <a href="auth.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="font-size: 20px;">🇷🇴</span>
+                                        <span class="text-caption">Română</span>
+                                    </a>
+                                    <a href="auth-ru.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="font-size: 20px;">🇷🇺</span>
+                                        <span class="text-caption">Русский</span>
+                                    </a>
+                                    <a href="auth-en.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s;">
+                                        <span style="font-size: 20px;">🇺🇸</span>
+                                        <span class="text-caption">English</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <a href="index-ru.html" class="tf-btn">
+                                <span class="text-caption">
+                                    НАЗАД
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- /Header -->
+
+        <!-- Auth Section -->
+        <section class="section-auth flat-spacing" style="min-height: 100vh; display: flex; align-items: center;">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="auth-wrapper" style="display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;">
+                            
+                            <!-- Login Panel -->
+                            <div id="login" class="auth-panel effectFade fadeUp" style="flex: 1; min-width: 400px; max-width: 500px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 40px; background: rgba(255,255,255,0.02);">
+                                <h3 class="text-display-2 fw-semibold letter-space--2 text-center" style="margin-bottom: 10px;">
+                                    Авторизация
+                                </h3>
+                                <p class="text-body-2 text-white-64 text-center" style="margin-bottom: 40px;">
+                                    Войдите в свой аккаунт Lab Upgrade
+                                </p>
+                                
+                                <form class="form-cta style-2">
+                                    <div class="form-content">
+                                        <fieldset class="tf-field">
+                                            <input class="tf-input" type="email" placeholder="" required>
+                                            <label class="tf-lable">Email <span class="text-primary">*</span></label>
+                                        </fieldset>
+                                        
+                                        <fieldset class="tf-field">
+                                            <input class="tf-input" type="password" placeholder="" required>
+                                            <label class="tf-lable">Пароль <span class="text-primary">*</span></label>
+                                        </fieldset>
+                                        
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                                <input type="checkbox" style="width: 16px; height: 16px;">
+                                                <span class="text-caption text-white-64">Запомнить меня</span>
+                                            </label>
+                                            <a href="#" class="text-caption text-primary">Забыли пароль?</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-action">
+                                        <button type="submit" class="tf-btn w-100">
+                                            <span class="text-caption">ВОЙТИ В АККАУНТ</span>
+                                        </button>
+                                        
+                                        <p class="text-body-2 text-center text-white-64" style="margin-top: 20px;">
+                                            Нет аккаунта? <a href="#register" class="text-primary" onclick="scrollToRegister(event)">Зарегистрируйтесь</a>
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Application Panel -->
+                            <div id="register" class="auth-panel effectFade fadeUp" style="flex: 1; min-width: 400px; max-width: 500px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 40px; background: rgba(255,255,255,0.02);">
+                                <h3 class="text-display-2 fw-semibold letter-space--2 text-center" style="margin-bottom: 10px;">
+                                    Запросить Доступ
+                                </h3>
+                                <p class="text-body-2 text-white-64 text-center" style="margin-bottom: 30px;">
+                                    Заполните заявку → Получите бесплатный аудит → Получите доступ к платформе
+                                </p>
+                                
+                                <!-- Process Steps -->
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 30px; padding: 20px; background: rgba(0,255,0,0.05); border-radius: 8px; border-left: 3px solid var(--primary);">
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="width: 32px; height: 32px; margin: 0 auto 8px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</div>
+                                        <p class="text-caption" style="font-size: 10px;">Заявка</p>
+                                    </div>
+                                    <div style="width: 20px; height: 2px; background: var(--primary); margin-top: 16px; opacity: 0.5;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="width: 32px; height: 32px; margin: 0 auto 8px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</div>
+                                        <p class="text-caption" style="font-size: 10px;">Аудит</p>
+                                    </div>
+                                    <div style="width: 20px; height: 2px; background: var(--primary); margin-top: 16px; opacity: 0.5;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="width: 32px; height: 32px; margin: 0 auto 8px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">3</div>
+                                        <p class="text-caption" style="font-size: 10px;">Доступ</p>
+                                    </div>
+                                </div>
+                                
+                                <form class="form-cta style-2">
+                                    <div class="form-content">
+                                        <fieldset class="tf-field">
+                                            <input class="tf-input" type="text" name="name" placeholder="" required>
+                                            <label class="tf-lable">Полное имя <span class="text-primary">*</span></label>
+                                        </fieldset>
+                                        
+                                        <fieldset class="tf-field">
+                                            <input class="tf-input" type="email" name="email" placeholder="" required>
+                                            <label class="tf-lable">Email <span class="text-primary">*</span></label>
+                                        </fieldset>
+                                        
+                                        <fieldset class="tf-field">
+                                            <input class="tf-input" type="tel" name="phone" placeholder="" required>
+                                            <label class="tf-lable">Телефон <span class="text-primary">*</span></label>
+                                        </fieldset>
+                                        
+                                        <fieldset class="tf-field">
+                                            <input class="tf-input" type="text" name="telegram" placeholder="">
+                                            <label class="tf-lable">Telegram <span class="text-white-64">(необязательно)</span></label>
+                                        </fieldset>
+                                        
+                                        <fieldset class="tf-field">
+                                            <select class="tf-input" name="business_type" required style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px; border-radius: 4px;">
+                                                <option value="" disabled selected>Выберите тип бизнеса *</option>
+                                                <option value="E-commerce / Интернет-магазины">E-commerce / Интернет-магазины</option>
+                                                <option value="Профессиональные услуги (Клиники, Адвокаты, Консалтинг)">Профессиональные услуги (Клиники, Адвокаты, Консалтинг)</option>
+                                                <option value="HoReCa (Рестораны, Отели, Бары)">HoReCa (Рестораны, Отели, Бары)</option>
+                                                <option value="Розничная торговля / Коммерция">Розничная торговля / Коммерция</option>
+                                                <option value="Производство / Дистрибуция">Производство / Дистрибуция</option>
+                                                <option value="IT / SaaS / Технологии">IT / SaaS / Технологии</option>
+                                                <option value="Недвижимость / Строительство">Недвижимость / Строительство</option>
+                                                <option value="Маркетинг / Агентства">Маркетинг / Агентства</option>
+                                                <option value="Образование / Обучение">Образование / Обучение</option>
+                                                <option value="Другое">Другое</option>
+                                            </select>
+                                        </fieldset>
+                                        
+                                        <div style="margin-bottom: 30px;">
+                                            <label style="display: flex; align-items: start; gap: 8px; cursor: pointer;">
+                                                <input type="checkbox" required style="width: 16px; height: 16px; margin-top: 4px;">
+                                                <span class="text-caption text-white-64">
+                                                    Я согласен с <a href="documents-ru.html" class="text-primary">Условиями</a> и <a href="documents-ru.html" class="text-primary">Политикой конфиденциальности</a>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-action">
+                                        <button type="submit" class="tf-btn w-100">
+                                            <span class="text-caption">ОТПРАВИТЬ ЗАЯВКУ</span>
+                                        </button>
+                                        
+                                        <p class="text-body-2 text-center text-white-64" style="margin-top: 20px;">
+                                            Уже есть аккаунт? <a href="#login" class="text-primary" onclick="scrollToLogin(event)">Авторизоваться</a>
+                                        </p>
+                                        
+                                        <div style="margin-top: 30px; padding: 16px; background: rgba(0,255,0,0.05); border-radius: 8px; border: 1px solid rgba(0,255,0,0.2);">
+                                            <p class="text-caption text-center" style="margin: 0;">
+                                                <span class="text-primary">✓</span> Ответ в течение 2-4 часов<br>
+                                                <span class="text-primary">✓</span> Бесплатный аудит включен<br>
+                                                <span class="text-primary">✓</span> Быстрый доступ к платформе
+                                            </p>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /Auth Section -->
+
+        <!-- Footer -->
+        <footer class="tf-footer">
+            <div class="container">
+                <div class="br-line"></div>
+            </div>
+            <div class="footer-inner">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="title text-has-dot text-caption fw-medium mb-md-0">
+                                <span class="br-dot"></span>
+                                ОНЛАЙН 24/7
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-1">
+                            <p class="footer-heading text-caption fw-medium text-white-64">
+                                КАРТА САЙТА
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <ul class="footer-menu-list mb-sm-0">
+                                <li><a href="index-ru.html#serviceScroll" class="link letter-space--2 h5">Услуги</a></li>
+                                <li><a href="index-ru.html#processScroll" class="link letter-space--2 h5">Процесс</a></li>
+                                <li><a href="index-ru.html#aboutScroll" class="link letter-space--2 h5">О нас</a></li>
+                                <li><a href="index-ru.html#contactScroll" class="link letter-space--2 h5">Контакты</a></li>
+                                <li><a href="documents-ru.html" class="link letter-space--2 h5">Документы</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-1">
+                            <p class="footer-heading text-caption fw-medium text-white-64">
+                                СОЦСЕТИ
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <ul class="footer-menu-list mb-0">
+                                <li><a href="https://www.instagram.com/labupgrade/" target="_blank" class="link letter-space--2 h5">Instagram</a></li>
+                                <li><a href="https://www.facebook.com/labupgrade" target="_blank" class="link letter-space--2 h5">Facebook</a></li>
+                                <li><a href="https://t.me/labupgrade_bot" target="_blank" class="link letter-space--2 h5">Telegram Bot</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="bottom">
+                        <p class="text-nocopy text-caption fw-medium letter-space--1">
+                            © 2025 Lab Upgrade. Все права защищены.
+                        </p>
+
+                        <a href="#" class="action-go-top tf-link-icon link text-caption fw-medium letter-space--1">
+                            НАВЕРХ
+                            <i class="icon icon-arrow-long-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- /Footer -->
+    </main>
+
+    <script>
+        function scrollToRegister(e) {
+            e.preventDefault();
+            document.getElementById('register').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function scrollToLogin(e) {
+            e.preventDefault();
+            document.getElementById('login').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Scroll to register if hash is #register
+        if (window.location.hash === '#register') {
+            setTimeout(() => {
+                document.getElementById('register').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    </script>
+
+    <!-- Javascript -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/swiper-bundle.min.js"></script>
+    <script src="assets/js/carousel.js"></script>
+    <script src="assets/js/infinityslide.js"></script>
+    <script src="assets/js/ScrollSmooth.js"></script>
+    <script src="assets/js/gsap.min.js"></script>
+    <script src="assets/js/gsapAnimation.js"></script>
+    <script src="assets/js/SplitText.min.js"></script>
+    <script src="assets/js/ScrollTrigger.min.js"></script>
+    <script src="assets/js/odometer.min.js"></script>
+    <script src="assets/js/jquery.nice-select.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <!-- Lead to Supabase -->
+    <script type="module" src="assets/js/lead-to-supabase.js"></script>
+    
+    <!-- Language Switcher Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.querySelector('.language-btn');
+            const languageDropdown = document.querySelector('.language-dropdown');
+            
+            if (languageBtn && languageDropdown) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = languageDropdown.style.opacity === '1';
+                    
+                    if (isOpen) {
+                        languageDropdown.style.opacity = '0';
+                        languageDropdown.style.visibility = 'hidden';
+                        languageDropdown.style.transform = 'translateY(-10px)';
+                    } else {
+                        languageDropdown.style.opacity = '1';
+                        languageDropdown.style.visibility = 'visible';
+                        languageDropdown.style.transform = 'translateY(0)';
+                    }
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+                        languageDropdown.style.opacity = '0';
+                        languageDropdown.style.visibility = 'hidden';
+                        languageDropdown.style.transform = 'translateY(-10px)';
+                    }
+                });
+                
+                const languageOptions = languageDropdown.querySelectorAll('.language-option');
+                languageOptions.forEach(option => {
+                    option.addEventListener('mouseenter', function() {
+                        this.style.background = 'rgba(255,255,255,0.1)';
+                    });
+                    option.addEventListener('mouseleave', function() {
+                        this.style.background = 'transparent';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
+

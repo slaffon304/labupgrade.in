@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]><html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>Documents & Regulations - Lab Upgrade</title>
+    <meta name="author" content="themesflat.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description"
+        content="Lab Upgrade documents and regulations - all official documents and regulations for our clients.">
+
+    <!-- font -->
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <!-- css -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/odometer.min.js">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/slick.theme.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="assets/images/logo/labupgradelogo.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/images/logo/labupgradelogo.png">
+    
+    <!-- Smooth Scroll -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    <style>
+        .documents-section {
+            position: relative;
+            background: #000;
+            padding-top: 120px;
+            padding-bottom: 120px;
+            overflow: hidden;
+        }
+        
+        .documents-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .doc-section {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .doc-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            overflow: hidden;
+        }
+        
+        .doc-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .doc-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .doc-item:hover::before {
+            left: 100%;
+        }
+        
+        .doc-item:hover .doc-icon {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .doc-item:hover .doc-action i,
+        .doc-item:hover h5 {
+            color: var(--primary) !important;
+        }
+        
+        .doc-icon {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .doc-item h5 {
+            transition: color 0.3s;
+        }
+        
+        .doc-item .doc-action i {
+            transition: all 0.3s;
+        }
+        
+        .doc-item:hover .doc-action i {
+            transform: translateX(8px);
+        }
+        
+        .doc-item-main {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        
+        .doc-item-main:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+        }
+        
+        .doc-item-main .doc-icon {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .doc-content p {
+            line-height: 1.8;
+            max-width: 800px;
+        }
+        
+        .documents-grid .doc-item {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .documents-grid .doc-item:nth-child(1) { animation-delay: 0.1s; }
+        .documents-grid .doc-item:nth-child(2) { animation-delay: 0.2s; }
+        .documents-grid .doc-item:nth-child(3) { animation-delay: 0.3s; }
+        .documents-grid .doc-item:nth-child(4) { animation-delay: 0.4s; }
+        .documents-grid .doc-item:nth-child(5) { animation-delay: 0.5s; }
+        .documents-grid .doc-item:nth-child(6) { animation-delay: 0.6s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .s-header h2 {
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .doc-section h3 {
+            position: relative;
+            padding-left: 32px;
+            margin-bottom: 32px !important;
+        }
+        
+        .doc-section h3::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--primary) 0%, rgba(255, 255, 255, 0.3) 100%);
+            border-radius: 2px;
+        }
+        
+        .doc-content {
+            margin-bottom: 48px;
+        }
+        
+        .doc-list {
+            margin-top: 32px;
+        }
+        
+        @media (max-width: 768px) {
+            .doc-item {
+                padding: 24px !important;
+            }
+            
+            .doc-icon {
+                width: 48px !important;
+                height: 48px !important;
+            }
+            
+            .doc-icon i {
+                font-size: 24px !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="counter-scroll">
+    <canvas class="cursor-trail d-none d-xl-block" id="trail"></canvas>
+
+    <!-- Scroll Top -->
+    <button id="goTop">
+        <span class="border-progress"></span>
+        <span class="ic-wrap">
+            <span class="icon icon-arrow-caret-right"></span>
+        </span>
+    </button>
+    <!-- /Scroll Top -->
+
+    <!-- Preload -->
+    <div class="preloader overflow-hidden">
+        <div class="site-name"><span>LAB UPGRADE</span></div>
+        <div class="preloader-gutters">
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+        </div>
+    </div>
+    <!-- /Preload -->
+
+    <main id="wrapper">
+        <!-- Header -->
+        <header class="tf-header">
+            <div class="header-inner">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-7 d-none d-md-block">
+                            <div class="box-navigation">
+                                <ul class="nav-menu-main">
+                                    <li class="menu-item"><a href="index-en.html#serviceScroll" class="item-link link text-caption"><span>01
+                                                /</span>SERVICES</a></li>
+                                    <li class="menu-item"><a href="index-en.html#processScroll" class="item-link link text-caption"><span>02
+                                                /</span>PROCESS</a>
+                                    </li>
+                                    <li class="menu-item"><a href="index-en.html#aboutScroll" class="item-link link text-caption"><span>03
+                                                /</span>ABOUT US</a></li>
+                                    <li class="menu-item"><a href="index-en.html#contactScroll" class="item-link link text-caption"><span>04
+                                                /</span>CONTACT</a>
+                                    </li>
+                                    <li class="menu-item"><a href="documents-en.html" class="item-link link text-caption"><span>05
+                                                /</span>DOCUMENTS</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-3 col-md-2 d-none d-sm-block">
+                            <div class="header-contact">
+                                <a href="mailto:davies@gmail.com" class="link text-caption">SUPPORT@LABUPGRADE.IN </a>
+                                <p class="text-caption">
+                                    TIME <span class="clock"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-auto ms-md-auto d-flex justify-content-end align-items-center gap-3">
+                            <!-- Language Switcher -->
+                            <div class="language-switcher" style="position: relative;">
+                                <button type="button" class="language-btn text-caption text-white link" style="display: flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); border-radius: 4px; cursor: pointer; transition: all 0.3s; width: 44px; height: 44px;">
+                                    <span class="flag-icon" style="font-size: 20px;">🇺🇸</span>
+                                </button>
+                                <div class="language-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-width: 150px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                                    <a href="documents.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="font-size: 20px;">🇷🇴</span>
+                                        <span class="text-caption">Română</span>
+                                    </a>
+                                    <a href="documents-ru.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="font-size: 20px;">🇷🇺</span>
+                                        <span class="text-caption">Русский</span>
+                                    </a>
+                                    <a href="documents-en.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s;">
+                                        <span style="font-size: 20px;">🇺🇸</span>
+                                        <span class="text-caption">English</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
+                                <i class="icon icon-menu"></i>
+                                MENU
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- /Header -->
+
+        <!-- Documents Section -->
+        <section class="documents-section flat-spacing">
+            <div class="container position-relative z-5">
+                <div class="row">
+                    <div class="col-lg-12">
+                        
+                    </div>
+                </div>
+
+                <!-- Regulations Section -->
+                <div class="row mb-5">
+                    <div class="col-lg-12">
+                        <div class="doc-section mb-5">
+                            <h3 class="text-display-3 fw-semibold letter-space--2" style="color: #fff;">
+                                Regulations
+                            </h3>
+                            <div class="br-line mb-5 mt-4"></div>
+                            <div class="doc-content">
+                                <p class="text-body-1 text-white-64 mb-4" style="font-size: 1.125rem;">
+                                    Here you will find the complete regulations for Lab Upgrade services, including terms of use, privacy policy and other important legal documents.
+                                </p>
+                                
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents List -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="text-display-3 fw-semibold letter-space--2" style="color: #fff;">
+                            All Documents
+                        </h3>
+                        <div class="br-line mb-5 mt-4"></div>
+                        <div class="documents-grid">
+                            <div class="row">
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <a href="https://docs.google.com/document/d/1Dd94J5JGaW8Pdrz7gdDSOuZrY3tChqqtJKMrJRyUASQ/export?format=pdf" target="_blank" class="doc-item d-flex flex-column h-100 p-4" download="Termeni-si-Conditii.pdf">
+                                        <div class="doc-icon mb-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                            <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+                                        </div>
+                                        <h5 class="text-display-4 fw-semibold mb-3" style="color: #fff;">Terms and Conditions</h5>
+                                        <p class="text-body-2 text-white-64 mb-auto" style="line-height: 1.7;">PDF document with terms and conditions for using our services.</p>
+                                        <div class="doc-meta mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <p class="text-caption text-white-64 mb-0">PDF • Updated: 2025</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <a href="https://docs.google.com/document/d/1u9kqCGSPwnWb1Gga4S80nhZl6vcG7DbHsPgTkGA8JwQ/export?format=pdf" target="_blank" class="doc-item d-flex flex-column h-100 p-4" download="Politica-Confidentialitate.pdf">
+                                        <div class="doc-icon mb-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                            <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+                                        </div>
+                                        <h5 class="text-display-4 fw-semibold mb-3" style="color: #fff;">Privacy Policy</h5>
+                                        <p class="text-body-2 text-white-64 mb-auto" style="line-height: 1.7;">Information about how we collect, use and protect your personal data.</p>
+                                        <div class="doc-meta mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <p class="text-caption text-white-64 mb-0">PDF • Updated: 2025</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <a href="https://docs.google.com/document/d/1lSNv5wlJJ9EJeiX0ppBppJWekiNWS5j-qCNomk8xM1g/export?format=pdf" target="_blank" class="doc-item d-flex flex-column h-100 p-4" download="Politica-Cookie-uri.pdf">
+                                        <div class="doc-icon mb-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                            <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+                                        </div>
+                                        <h5 class="text-display-4 fw-semibold mb-3" style="color: #fff;">Cookie Policy</h5>
+                                        <p class="text-body-2 text-white-64 mb-auto" style="line-height: 1.7;">Details about the use of cookies on our website.</p>
+                                        <div class="doc-meta mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <p class="text-caption text-white-64 mb-0">PDF • Updated: 2025</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <a href="https://docs.google.com/document/d/1PrxsfCHiTGFZew-mCurHVUKG4t3-KfHz1CTqZNNr0Eg/export?format=pdf" target="_blank" class="doc-item d-flex flex-column h-100 p-4" download="Prelucrarea-Datelor-Caracter-Personal.pdf">
+                                        <div class="doc-icon mb-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                            <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+                                        </div>
+                                        <h5 class="text-display-4 fw-semibold mb-3" style="color: #fff;">User Consent</h5>
+                                        <p class="text-body-2 text-white-64 mb-auto" style="line-height: 1.7;">To receive our services, you must accept the user consent.</p>
+                                        <div class="doc-meta mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <p class="text-caption text-white-64 mb-0">PDF • Updated: 2025</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <a href="https://docs.google.com/document/d/1OJehnRekVPKP-neUxWAusgEy96Ur4SE7_pAV8rlgG6s/export?format=pdf" target="_blank" class="doc-item d-flex flex-column h-100 p-4" download="Ghid-Utilizare.pdf">
+                                        <div class="doc-icon mb-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                            <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+                                        </div>
+                                        <h5 class="text-display-4 fw-semibold mb-3" style="color: #fff;">User Guide</h5>
+                                        <p class="text-body-2 text-white-64 mb-auto" style="line-height: 1.7;">Complete guide to using our platforms and services.</p>
+                                        <div class="doc-meta mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <p class="text-caption text-white-64 mb-0">PDF • Updated: 2025</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <a href="https://docs.google.com/document/d/17thWR_mdmnoYOScu-wpt0o1CC5EjDIJh2vo6v_cWXQE/export?format=pdf" target="_blank" class="doc-item d-flex flex-column h-100 p-4" download="Consimtamant-Comunicari-Comerciale.pdf">
+                                        <div class="doc-icon mb-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                            <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+                                        </div>
+                                        <h5 class="text-display-4 fw-semibold mb-3" style="color: #fff;">Consent to Receive Commercial Communications</h5>
+                                        <p class="text-body-2 text-white-64 mb-auto" style="line-height: 1.7;">To receive commercial communications from us, you must accept consent to receive commercial communications.</p>
+                                        <div class="doc-meta mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <p class="text-caption text-white-64 mb-0">PDF • Updated: 2025</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /Documents Section -->
+
+        <!-- Footer -->
+        <footer class="tf-footer">
+            <div class="container">
+                <div class="br-line"></div>
+            </div>
+            <div class="footer-inner">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="title text-has-dot text-caption fw-medium mb-md-0">
+                                <span class="br-dot"></span>
+                                ONLINE 24/7
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-1">
+                            <p class="footer-heading text-caption fw-medium text-white-64">
+                                SITEMAP
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <ul class="footer-menu-list mb-sm-0">
+                                <li><a href="index-en.html#serviceScroll" class="link letter-space--2 h5">Services</a></li>
+                                <li><a href="index-en.html#processScroll" class="link letter-space--2 h5">Process</a></li>
+                                <li><a href="index-en.html#aboutScroll" class="link letter-space--2 h5">About Us</a></li>
+                                <li><a href="index-en.html#contactScroll" class="link letter-space--2 h5">Contact</a></li>
+                                <li><a href="documents-en.html" class="link letter-space--2 h5">Documents</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-1">
+                            <p class="footer-heading text-caption fw-medium text-white-64">
+                                SOCIALS
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <ul class="footer-menu-list mb-0">
+                                <li><a href="https://www.instagram.com/labupgrade/" target="_blank" class="link letter-space--2 h5">Instagram</a></li>
+                                <li><a href="https://www.facebook.com/labupgrade" target="_blank" class="link letter-space--2 h5">Facebook</a></li>
+                                <li><a href="https://t.me/labupgrade_bot" target="_blank" class="link letter-space--2 h5">Telegram Bot</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="bottom">
+                        <p class="text-nocopy text-caption fw-medium letter-space--1">
+                            © 2025 Lab Upgrade. All rights reserved.
+                        </p>
+                        <a href="#" class="action-go-top tf-link-icon link text-caption fw-medium letter-space--1">
+                            BACK TO TOP
+                            <i class="icon icon-arrow-long-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- /Footer -->
+    </main>
+
+    <!-- Mobile Menu -->
+    <div class="offcanvas-menu">
+        <div class="offcanvas-content">
+            <div class="container h-100">
+                <div class="offcanvas-content_wrapin">
+                    <div class="canvas_head">
+                        <a href="index-en.html" class="logo-site">
+                            <img src="assets/images/logo/labupgradelogo.png" alt="Logo" style="width: 60px; height: auto; object-fit: contain;">
+                        </a>
+                        <div class="btn-mobile-menu close-mb-menu text-caption link">
+                            <i class="icon icon-close"></i>
+                            CLOSE
+                        </div>
+                    </div>
+                    <div class="canvas_center">
+                        <ul class="nav-ul-mb">
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="auth-en.html" class="mb-menu-link text-display-1">
+                                        <span class="text">Login</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Personal Cabinet
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> CRM Platform
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> AI Assistant
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="auth-en.html#register" class="mb-menu-link text-display-1">
+                                        <span class="text">Registration</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Create Account
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> New Access
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Start Now
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="index-en.html#contactScroll" class="mb-menu-link text-display-1">
+                                        <span class="text">Free Audit</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Quick Audit
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Free Analysis
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Free Consultation
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="index-en.html#contactScroll" class="mb-menu-link text-display-1">
+                                        <span class="text">Contact</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Telegram Bot
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Facebook
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Instagram
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="canvas_foot">
+                        <div class="left">
+                            <a href="mailto:support@labupgrade.in" class="link text-caption">SUPPORT@LABUPGRADE.IN</a>
+                            <p class="text-caption">
+                                TIME <span class="clock"></span>
+                            </p>
+                        </div>
+                        <div class="right">
+                            <a href="https://www.instagram.com/labupgrade/" target="_blank" class="tf-link-icon text-caption link">
+                                <i class="icon icon-arrow-top-right"></i>
+                                INSTAGRAM
+                            </a>
+                            <a href="https://www.facebook.com/labupgrade" target="_blank" class="tf-link-icon text-caption link">
+                                <i class="icon icon-arrow-top-right"></i>
+                                FACEBOOK
+                            </a>
+                            <a href="https://t.me/labupgrade_bot" target="_blank" class="tf-link-icon text-caption link">
+                                <i class="icon icon-arrow-top-right"></i>
+                                TELEGRAM BOT
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Mobile Menu -->
+
+    <!-- Javascript -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.nice-select.min.js"></script>
+    <script src="assets/js/swiper-bundle.min.js"></script>
+    <script src="assets/js/slick.min.js"></script>
+    <script src="assets/js/odometer.min.js"></script>
+    <script src="assets/js/carousel.js"></script>
+    <script src="assets/js/infinityslide.js"></script>
+    <script src="assets/js/ScrollSmooth.js"></script>
+    <script src="assets/js/gsap.min.js"></script>
+    <script src="assets/js/SplitText.min.js"></script>
+    <script src="assets/js/ScrollTrigger.min.js"></script>
+    <script src="assets/js/ScrollToPlugin.min.js"></script>
+    <script src="assets/js/gsapAnimation.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <!-- Language Switcher Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.querySelector('.language-btn');
+            const languageDropdown = document.querySelector('.language-dropdown');
+            
+            if (languageBtn && languageDropdown) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = languageDropdown.style.opacity === '1';
+                    
+                    if (isOpen) {
+                        languageDropdown.style.opacity = '0';
+                        languageDropdown.style.visibility = 'hidden';
+                        languageDropdown.style.transform = 'translateY(-10px)';
+                    } else {
+                        languageDropdown.style.opacity = '1';
+                        languageDropdown.style.visibility = 'visible';
+                        languageDropdown.style.transform = 'translateY(0)';
+                    }
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+                        languageDropdown.style.opacity = '0';
+                        languageDropdown.style.visibility = 'hidden';
+                        languageDropdown.style.transform = 'translateY(-10px)';
+                    }
+                });
+                
+                const languageOptions = languageDropdown.querySelectorAll('.language-option');
+                languageOptions.forEach(option => {
+                    option.addEventListener('mouseenter', function() {
+                        this.style.background = 'rgba(255,255,255,0.1)';
+                    });
+                    option.addEventListener('mouseleave', function() {
+                        this.style.background = 'transparent';
+                    });
+                });
+            }
+        });
+    </script>
+    
+    <!-- Lead to Supabase -->
+    <script type="module" src="assets/js/lead-to-supabase.js"></script>
+</body>
+
+</html>
+

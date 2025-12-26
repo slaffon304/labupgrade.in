@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]><html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <title>Lab Upgrade - Автоматизация Бизнеса</title>
+    <meta name="author" content="themesflat.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description"
+        content="Lab Upgrade - современные решения для автоматизации бизнеса. Полностью автоматизированные процессы, CRM платформы и AI-ассистенты для вашего бизнеса.">
+
+    <!-- font -->
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <!-- css -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/odometer.min.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/slick.theme.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="assets/images/logo/labupgradelogo.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/images/logo/labupgradelogo.png">
+    
+    <!-- Smooth Scroll -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="counter-scroll">
+    <canvas class="cursor-trail d-none d-xl-block" id="trail"></canvas>
+
+    <!-- Scroll Top -->
+    <button id="goTop">
+        <span class="border-progress"></span>
+        <span class="ic-wrap">
+            <span class="icon icon-arrow-caret-right"></span>
+        </span>
+    </button>
+    <!-- /Scroll Top -->
+
+    <!-- Preload -->
+    <div class="preloader overflow-hidden">
+        <div class="site-name"><span>LAB UPGRADE</span></div>
+        <div class="preloader-gutters">
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+            <div class="bar">
+                <div class="inner-bar"></div>
+            </div>
+        </div>
+    </div>
+    <!-- /Preload -->
+
+    <main id="wrapper">
+        <!-- Header -->
+        <header class="tf-header">
+            <div class="header-inner">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-7 d-none d-md-block">
+                            <div class="box-navigation">
+                                <ul class="nav-menu-main">
+                                    <li class="menu-item"><a href="#serviceScroll" class="item-link link text-caption"><span>01
+                                                /</span>УСЛУГИ</a></li>
+                                    <li class="menu-item"><a href="#processScroll" class="item-link link text-caption"><span>02
+                                                /</span>ПРОЦЕСС</a>
+                                    </li>
+                                    <li class="menu-item"><a href="#aboutScroll" class="item-link link text-caption"><span>03
+                                                /</span>О НАС</a></li>
+                                    <li class="menu-item"><a href="#contactScroll" class="item-link link text-caption"><span>04
+                                                /</span>КОНТАКТЫ</a>
+                                    </li>
+                                    <li class="menu-item"><a href="documents-ru.html" class="item-link link text-caption"><span>05
+                                                /</span>ДОКУМЕНТЫ</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-3 col-md-2 d-none d-sm-block">
+                            <div class="header-contact">
+                                <a href="mailto:davies@gmail.com" class="link text-caption">SUPPORT@LABUPGRADE.IN </a>
+                                <p class="text-caption">
+                                    ВРЕМЯ <span class="clock"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-auto ms-md-auto d-flex justify-content-end align-items-center gap-3">
+                            <!-- Language Switcher -->
+                            <div class="language-switcher" style="position: relative;">
+                                <button type="button" class="language-btn text-caption text-white link" style="display: flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); border-radius: 4px; cursor: pointer; transition: all 0.3s; width: 44px; height: 44px;">
+                                    <span class="flag-icon" style="font-size: 20px;">🇷🇺</span>
+                                </button>
+                                <div class="language-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-width: 150px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                                    <a href="index.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="font-size: 20px;">🇷🇴</span>
+                                        <span class="text-caption">Română</span>
+                                    </a>
+                                    <a href="index-ru.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="font-size: 20px;">🇷🇺</span>
+                                        <span class="text-caption">Русский</span>
+                                    </a>
+                                    <a href="index-en.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s;">
+                                        <span style="font-size: 20px;">🇺🇸</span>
+                                        <span class="text-caption">English</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
+                                <i class="icon icon-menu"></i>
+                                МЕНЮ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- /Header -->
+        <!-- Hero Banner -->
+        <div class="section-hero-v1">
+            <div class="overlay"></div>
+            <div class="bg-video">
+                <video class="" muted="" autoplay="" loop="" playsinline="">
+                    <source src="assets/images/video/corridor.webm" type="video/mp4">
+                </video>
+                <div class="video-overlay"></div>
+                <div class="video-overlay-2"></div>
+                <div class="video-overlay-2"></div>
+            </div>
+            <div class="content-wrap">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="col-left">
+                                <ul class="tf-list vertical text-caption fw-medium ">
+                                    <li><a href="#" class="link effectFade fadeUp">АВТОМАТИЗАЦИЯ БИЗНЕСА</a></li>
+                                    <li><a href="#" class="link effectFade fadeUp">СИСТЕМЫ AI & CRM</a></li>
+                                    <li><a href="#" class="link effectFade fadeUp">СИСТЕМНЫЙ РОСТ</a></li>
+                                    <li><a href="#" class="link effectFade fadeUp">ЦИФРОВАЯ ТРАНСФОРМАЦИЯ</a></li>
+                                </ul>
+                                <div class="davies-large">
+                                    <div class="effectFade fadeRotateX">
+                                        <span class="text-primary">LAB</span> UPGRADE<span class="text-primary">_</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="col-right">
+                                <div class="top text-caption fw-medium d-flex justify-content-between align-items-center effectFade">
+                                    <p class="title text-has-dot ">
+                                        <span class="br-dot"></span>
+                                        ОНЛАЙН 24/7
+                                    </p>
+                                    <span>
+                                        
+                                    </span>
+                                </div>
+                                <div class="bot">
+                                    <p class="desc text-white-64 effectFade fadeRight view-visible">
+                                        Lab Upgrade - это лаборатория автоматизации и развития бизнеса.
+Устраняем операционный хаос, внедряем CRM, AI и цифровые системы, которые превращают потенциал в стабильную прибыль.
+                                    </p>
+                                    <div class="effectFade fadeRight view-visible">
+                                        <a href="#contactScroll" class="tf-btn ">
+                                            ЗАПИСАТЬСЯ НА АУДИТ
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Hero Banner -->
+        <!-- Select Work -->
+       
+            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Select Work -->
+        <!-- Feature -->
+        <section class="section-feature flat-spacing tf-btn-swiper-main">
+            <div class="container">
+                <div class="s-header">
+                    <h2 class="text-display-2 fw-semibold letter-space--3 effectFade fadeUp">
+                        РЕАЛИЗОВАННЫЕ РЕШЕНИЯ
+                    </h2>
+                    <a href="#" class="tf-btn">
+                        УЗНАТЬ ПРОЦЕСС
+                    </a>
+                </div>
+                <div class="position-relative">
+                    <div dir="ltr" class="swiper tf-swiper swiper-feature" data-preview="2" data-tablet="2" data-mobile-sm="1" data-mobile="1"
+                        data-space-lg="40" data-space-md="30" data-space="15" data-pagination="1" data-pagination-sm="1" data-pagination-md="2"
+                        data-pagination-lg="2">
+                        <div class="swiper-wrapper">
+                            <!-- item 1 -->
+                            <div class="swiper-slide">
+                                <div class="wg-feature-v01 hover-img main-mouse-hover">
+                                    <a href="#" class="feature-image img-style">
+                                        <img loading="lazy" width="628" height="471" src="assets/images/section/feature-1.gif" alt="Image">
+                                    </a>
+                                    <div class="feature-content">
+                                        <div class="info">
+                                            <p class="tag text-white-64 letter-space--1">Автоматизированная система продаж для интернет-магазина электронных сигарет</p>
+                                            <h5 class="name letter-space--2">
+                                                <a href="#" class="link">Телеграм Магазин
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <h5 class="price letter-space--2 text-primary">
+                                    
+                                        </h5>
+                                    </div>
+                                    <div class="tf-mouse">
+                                        <a href="#" class="action tf-btn-2">
+                                            <i class="icon icon-arrow-long-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- item 2 -->
+                            <div class="swiper-slide">
+                                <div class="wg-feature-v01 hover-img main-mouse-hover">
+                                    <a href="#" class="feature-image img-style">
+                                        <img loading="lazy" width="628" height="471" src="assets/images/section/feature-2.gif" alt="Image">
+                                    </a>
+                                    <div class="feature-content">
+                                        <div class="info">
+                                            <p class="tag text-white-64 letter-space--1">AI-ассистент, который общается с клиентами в Telegram, автоматически отвечает на вопросы, квалифицирует заявки и поддерживает процесс продаж 24/7.</p>
+                                            <h5 class="name letter-space--2">
+                                                <a href="#" class="link">ИИ Продавец в Телеграме</a>
+                                            </h5>
+                                        </div>
+                                        <h5 class="price letter-space--2 text-primary">
+                                            
+                                        </h5>
+                                    </div>
+                                    <div class="tf-mouse">
+                                        <a href="#" class="action tf-btn-2">
+                                            <i class="icon icon-arrow-long-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- item 3 -->
+                            <div class="swiper-slide main-mouse-hover">
+                                <div class="wg-feature-v01 hover-img">
+                                    <a href="#" class="feature-image img-style">
+                                        <img loading="lazy" width="628" height="471" src="assets/images/section/feature-3.gif" alt="Image">
+                                    </a>
+                                    <div class="feature-content">
+                                        <div class="info">
+                                            <p class="tag text-white-64 letter-space--1">CRM функционирует как ядро системы, а AI-ассистент автоматизирует коммуникации и продажи.</p>
+                                            <h5 class="name letter-space--2">
+                                                <a href="#" class="link">CRM / Статус заказа </a>
+                                            </h5>
+                                        </div>
+                                        <h5 class="price letter-space--2 text-primary">
+                                        
+                                        </h5>
+                                    </div>
+                                    <div class="tf-mouse">
+                                        <a href="#" class="action tf-btn-2">
+                                            <i class="icon icon-arrow-long-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group-btn-slider">
+                            <div class="btn-nav-swiper text-caption fw-medium link nav-prev-swiper">
+                                <i class="icon icon-arrow-long-left"></i>
+                                НАЗАД
+                            </div>
+                            <div class="btn-nav-swiper text-caption fw-medium link nav-next-swiper">
+                                ВПЕРЕД
+                                <i class="icon icon-arrow-long-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="hover-wrap left main-mouse-hover">
+                        <div class="action tf-btn-2 nav-prev-swiper-2 tf-mouse mode-2">
+                            <i class="icon icon-arrow-long-left"></i>
+                        </div>
+                    </div>
+                    <div class="hover-wrap right main-mouse-hover">
+                        <div class="action tf-btn-2 nav-next-swiper-2 tf-mouse mode-2">
+                            <i class="icon icon-arrow-long-right"></i>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </section>
+        <!-- /Feature -->
+        <!-- Service -->
+        <section class="section-service-2 overflow-hidden flat-spacing" id="serviceScroll">
+            <div class="bg-image-list">
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-1.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-2.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-3.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-4.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-5.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-6.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+                <div class="bg-image">
+                    <img loading="lazy" width="1440" height="938" src="assets/images/section/bg-service-7.png" alt="Image">
+                    <div class="img-item">
+                        <img loading="lazy" width="1440" height="938" src="assets/images/item/overlay.png" alt="Image">
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="s-header s-header-scroll">
+                    <h2 class="text-display-2 fw-semibold effectFade fadeUp">
+                        Услуги
+                    </h2>
+                </div>
+            </div>
+            <div class="container">
+                <div class="wrap-control position-relative">
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-1.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-right"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                Автоматизация Бизнеса
+                            </h5>
+                            <p class="desc">
+                                Анализируем, структурируем и автоматизируем внутренние процессы для устранения операционного хаоса и создания четкой, контролируемой и масштабируемой системы.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Операционный аудит и диагностика
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Структурирование бизнес-процессов
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Автоматизация рабочих процессов
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция CRM и цифровых систем
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Подготовка к масштабированию
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-1.png" alt="Image">
+                        </div>
+                    </div>
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-2.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-right"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                Системы CRM & MIS
+                            </h5>
+                            <p class="desc">
+                                Выбираем и внедряем CRM, ERP и MIS, адаптированные под ваш бизнес и местное законодательство, с полным обучением команды.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> CRM для продаж и клиентов
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> MIS для клиник и услуг
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция Telegram, AI и рекламы
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Структура и контроль данных
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Обучение команды
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-2.png" alt="Image">
+                        </div>
+                    </div>
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-3.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-left"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                AI Ассистенты & Автоматизация
+                            </h5>
+                            <p class="desc">
+                                Интегрируем AI-ассистентов, которые общаются с клиентами, поддерживают продажи и автоматизируют поддержку 24/7.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> AI-ассистент для продаж
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> AI-чат для поддержки клиентов
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция с CRM
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Квалификация лидов
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Автоматизация коммуникаций
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-1.png" alt="Image">
+                        </div>
+                    </div>
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-4.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-right"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                Реклама Ads & SEO
+                            </h5>
+                            <p class="desc">
+                                Запускаем эффективные рекламные кампании в Google Ads и Facebook Ads, оптимизируем SEO и разрабатываем маркетинговые стратегии для видимого и устойчивого роста.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Стратегии рекламы, ориентированные на реальные результаты
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span>  SEO, интегрированный в воронку продаж
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Измеримый трафик и контролируемые конверсии
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция рекламы с CRM и AI
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Масштабирование на основе данных
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-4.png" alt="Image">
+                        </div>
+                    </div>
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-5.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-left"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                Мобильные Приложения & Цифровые Системы
+                            </h5>
+                            <p class="desc">
+                                Создаем мобильные приложения, интегрированные в бизнес-систему — для продаж, клиентов и операций, подключенные к CRM, AI и автоматизации.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Приложения iOS & Android для клиентов и команды
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Современный дизайн UX/UI
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция с CRM и AI
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Системы заказов и уведомлений
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Публикация в App Store & Google Play
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-5.png" alt="Image">
+                        </div>
+                    </div>
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-6.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-right"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                Веб-сайты & Цифровые Платформы
+                            </h5>
+                            <p class="desc">
+                                Создаем веб-сайты и цифровые платформы, ориентированные на конверсии, интегрированные с CRM, AI и системами продаж.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Веб-сайты для презентации и продаж
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Лендинги для рекламы
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция CRM с автоматизацией лидов
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Оптимизация для конверсий
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Веб-сайт как вход в систему
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-6.png" alt="Image">
+                        </div>
+                    </div>
+                    <div class="wg-service-2">
+                        <div class="main-image">
+                            <div class="image">
+                                <img loading="lazy" width="424" height="530" src="assets/images/section/service-7.png" alt="Image">
+                            </div>
+                            <div class="action tf-btn-2 cs-pointer">
+                                <i class="icon icon-arrow-long-left"></i>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <h5 class="title">
+                                AI & Цифровой Маркетинг
+                            </h5>
+                            <p class="desc">
+                                Используем AI и цифровой маркетинг для создания видеоконтента и кампаний, которые генерируют внимание, заявки и продажи — не просто просмотры.
+                            </p>
+                            <div class="br-line d-flex"></div>
+                            <ul class="tf-list vertical">
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Стратегия контента на основе бизнес-целей
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Видеомаркетинг: Reels, TikTok, Shorts
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Motion-дизайн и анимированные элементы
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Сценарии и концепции, созданные с помощью AI
+                                </li>
+                                <li class="letter-space--1">
+                                    <span class="text-primary">//</span> Интеграция с рекламой и CRM
+                                </li>
+                            </ul>
+                            <a href="#contactScroll" class="tf-btn">
+                                ЗАПРОСИТЬ КОНСУЛЬТАЦИЮ
+                            </a>
+                        </div>
+                        <div class="image-simu">
+                        </div>
+                        <div class="image-2">
+                            <img loading="lazy" width="212" height="265" src="assets/images/section/service-mini-7.png" alt="Image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /Service -->
+        <!-- Процессs -->
+        <section class="section-process flat-spacing" id="processScroll">
+            <div class="container">
+                <div class="s-header">
+                    <h2 class="title text-display-2 letter-space--3 fw-semibold effectFade fadeUp">
+                        Наш Процесс
+                    </h2>
+                </div>
+                <div class="process-list">
+                    <div dir="ltr" class="swiper swiper-process">
+                        <div class="swiper-wrapper">
+                            <!-- item 1 -->
+                            <div class="swiper-slide effectFade fadeUp no-div">
+                                <div class="wg-process">
+                                    <div class="bg-img">
+                                        <img loading="lazy" width="509" height="509" src="assets/images/item/bg-1.jpg" alt="Image">
+                                    </div>
+                                    <div class="content position-relative z-5">
+                                        <div class="img-icon">
+                                            <img loading="lazy" width="120" height="120" src="assets/images/item/process-1.png" alt="Image">
+                                        </div>
+
+                                        <div>
+                                            <h5 class="title letter-space--2">
+                                                <a href="#" class="link">
+                                                    Аудит & Стратегия
+                                                    <br class="d-none d-sm-block">
+
+                                                </a>
+                                            </h5>
+                                            <div class="br-line"></div>
+                                            <div class="bot">
+                                                <div class="img-item">
+                                                    <img loading="lazy" width="81" height="68" src="assets/images/item/S1.svg" alt="Image">
+                                                </div>
+                                                <p class="desc text-body-3 letter-space--1 text-white-64">
+                                                    Анализируем ваш бизнес в глубину: процессы, продажи, маркетинг и операционная структура. Выявляем блокировки и строим четкую стратегию трансформации.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- item 2 -->
+                            <div class="swiper-slide effectFade fadeUp no-div">
+                                <div class="wg-process">
+                                    <div class="bg-img">
+                                        <img loading="lazy" width="509" height="509" src="assets/images/item/bg-1.jpg" alt="Image">
+                                    </div>
+                                    <div class="content position-relative z-5">
+                                        <div class="img-icon">
+                                            <img loading="lazy" width="120" height="120" src="assets/images/item/process-2.png" alt="Image">
+                                        </div>
+
+                                        <div>
+                                            <h5 class="title letter-space--2">
+                                                <a href="#" class="link">
+                                                    Внедрение & Системы<br class="d-none d-sm-block">
+                                                    
+                                                </a>
+                                            </h5>
+                                            <div class="br-line"></div>
+                                            <div class="bot">
+                                                <div class="img-item">
+                                                    <img loading="lazy" width="99" height="68" src="assets/images/item/S2.svg" alt="Image">
+                                                </div>
+                                                <p class="desc text-body-3 letter-space--1 text-white-64">
+                                                    Внедряем решения "под ключ": CRM, AI, веб-сайты, приложения, реклама и автоматизация — все подключено в единую функциональную систему.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- item 3 -->
+                            <div class="swiper-slide effectFade fadeUp no-div">
+                                <div class="wg-process">
+                                    <div class="bg-img">
+                                        <img loading="lazy" width="509" height="509" src="assets/images/item/bg-1.jpg" alt="Image">
+                                    </div>
+                                    <div class="content position-relative z-5">
+                                        <div class="img-icon">
+                                            <img loading="lazy" width="120" height="120" src="assets/images/item/process-3.png" alt="Image">
+                                        </div>
+
+                                        <div>
+                                            <h5 class="title letter-space--2">
+                                                <a href="#" class="link">
+                                                    Контроль & Обучение & Масштабирование <br class="d-none d-sm-block">
+                                                    
+                                                </a>
+                                            </h5>
+                                            <div class="br-line"></div>
+                                            <div class="bot">
+                                                <div class="img-item">
+                                                    <img loading="lazy" width="99" height="68" src="assets/images/item/S3.svg" alt="Image">
+                                                </div>
+                                                <p class="desc text-body-3 letter-space--1 text-white-64">
+                                                    Мониторим производительность системы, обучаем команду эффективному использованию новых решений и готовим бизнес к устойчивому росту и контролируемому масштабированию.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sw-dot-default tf-pag-nav justify-content-center d-xl-none"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /Процессs -->
+        <!-- About Me -->
+        <section class="section-about-me flat-spacing" id="aboutScroll">
+            <div class="s-img-bg">
+                <img loading="lazy" width="1440" height="906" src="assets/images/section/bg-about.jpg" alt="Background">
+            </div>
+            <div class="container position-relative z-5">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="col-left mb-lg-0">
+                            <div class="davies-video">
+                                <video class="video" muted="" autoplay="" loop="" playsinline="">
+                                    <source src="assets/images/video/davies-video.mp4" type="video/mp4">
+                                </video>
+                                <div class="overlay v1"></div>
+                                <div class="overlay mark-1"></div>
+                                <div class="overlay mark-2"></div>
+                            </div>
+                            <div class="badget">
+                                <img loading="lazy" width="156" height="156" src="assets/images/item/badge-design.png" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="offset-lg-1 col-lg-6 offset-xl-2 col-xl-5">
+                        <div class="col-right">
+                            <h6 class="mini-title text-caption text-white-64">
+                                КТО МЫ
+                            </h6>
+                            <div class="text-color-change">
+                                <h5 class="desc letter-space--2 fw-normal ">
+                                    Lab Upgrade - это лаборатория автоматизации и развития бизнеса, специализирующаяся на цифровых системах, CRM, AI и маркетинге, ориентированном на реальные результаты.
+                                </h5>
+                            </div>
+                            <div class="br-line"></div>
+                            <ul class="experience-list overflow-hidden">
+                                <li>Что мы внедряем </li>
+                                <li class="effectFade fadeRight">
+                                    <p class="exp_name">Системы CRM & MIS  </p>
+                                    <p class="exp_year"></p>
+                                </li>
+                                <li class="effectFade fadeRight">
+                                    <p class="exp_name">Автоматизация бизнес-процессов</p>
+                                    <p class="exp_year"></p>
+                                </li>
+                                <li class="effectFade fadeRight">
+                                    <p class="exp_name">AI-ассистенты для продаж и поддержки</p>
+                                    <p class="exp_year"></p>
+                                </li>
+                                <li class="effectFade fadeRight">
+                                    <p class="exp_name">Telegram Commerce & мобильные приложения </p>
+                                    <p class="exp_year"></p>
+                                </li>
+                                <li class="effectFade fadeRight">
+                                    <p class="exp_name">Веб-сайты и цифровые платформы </p>
+                                    <p class="exp_year"></p>
+                                </li>
+                                <li class="effectFade fadeRight">
+                                    <p class="exp_name">Цифровой маркетинг, реклама & SEO</p>
+                                    <p class="exp_year"></p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- About Me -->
+        <!-- Tech Stack -->
+        <section class="section-tech-stack flat-spacing">
+            <div class="container">
+                <h6 class="mini-title text-caption text-white-64 text-center">
+                    ТЕХНОЛОГИИ
+                </h6>
+            </div>
+            <ul class="tech-stack-list main-action-active">
+                <li class="wg-tech btn-active active">
+                    <div class="tech_text letter-space--2">
+                        <p class="h1 fw-normal">БИЗНЕС & CRM ОСНОВА</p>
+                        <h6 class="fw-normal"></h6>
+                    </div>
+                    <div class="infiniteSlide_tech_main">
+                        <div class="infiniteSlide infiniteSlide_tech" data-clone="5" data-speed="135">
+                            <!-- Clone 1 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Bitrix24</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">CRM и автоматизация бизнес-процессов </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-figma.png" alt="Image">
+                            </div>
+                            <!-- Clone 2 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">amoCRM</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Управление продажами и воронками </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-amocrm.png" alt="Image">
+                            </div>
+                            <!-- Clone 3 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">1C / 1C:Enterprise</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">ERP и системы учета</h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-1c.png" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="wg-tech btn-active">
+                    <div class="tech_text letter-space--2">
+                        <p class="h1 fw-normal">ВЕБ & ЦИФРОВЫЕ ПЛАТФОРМЫ</p>
+                        <h6 class="fw-normal"></h6>
+                    </div>
+                    <div class="infiniteSlide_tech_main">
+                        <div class="infiniteSlide infiniteSlide_tech" data-clone="5" data-speed="135">
+                            <!-- Clone 1 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">WordPress</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Веб-платформы, интегрированные с бизнес-системами                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-wordpress.png" alt="Image">
+                            </div>
+                            <!-- Clone 2 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Tilda</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Лендинги и системы конверсий                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-tilda.png" alt="Image">
+                            </div>
+                            <!-- Clone 3 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Custom Web Development</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">HTML / CSS / JavaScript</h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-javascript.png" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="wg-tech btn-active">
+                    <div class="tech_text letter-space--2">
+                        <p class="h1 fw-normal">BACKEND, АВТОМАТИЗАЦИЯ & AI</p>
+                        <h6 class="fw-normal"></h6>
+                    </div>
+                    <div class="infiniteSlide_tech_main">
+                        <div class="infiniteSlide infiniteSlide_tech" data-clone="5" data-speed="135">
+                            <!-- Clone 1 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Node.js</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Бэкенд-системы и API-интеграции
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-nodejs.png" alt="Image">
+                            </div>
+                            <!-- Clone 2 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Python</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Автоматизация, искусственный интеллект и обработка данных
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-phyton.png" alt="Image">
+                            </div>
+                            <!-- Clone 3 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">AI & Automation Pipelines</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Интеллектуальные потоки автоматизации и обработки данных
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-aiautomation.png" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="wg-tech btn-active">
+                    <div class="tech_text letter-space--2">
+                        <p class="h1 fw-normal">AI & СИСТЕМЫ КОММУНИКАЦИЙ</p>
+                        <h6 class="fw-normal"></h6>
+                    </div>
+                    <div class="infiniteSlide_tech_main">
+                        <div class="infiniteSlide infiniteSlide_tech" data-clone="5" data-speed="135">
+                            <!-- Clone 1 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">AI Integrations</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">AI-ассистенты и системы интеллектуальной автоматизации
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-aibot.png" alt="Image">
+                            </div>
+                            <!-- Clone 2 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Telegram Bots & Mini Apps</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Системы продаж и коммуникации с клиентами
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-telegram.png" alt="Image">
+                            </div>
+                            <!-- Clone 3 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">WhatsApp & Viber Business</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Интегрированная платформа коммуникаций на нескольких каналах
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-viber.png" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="wg-tech btn-active">
+                    <div class="tech_text letter-space--2">
+                        <p class="h1 fw-normal">ЦИФРОВОЙ МАРКЕТИНГ</p>
+                        <h6 class="fw-normal"></h6>
+                    </div>
+                    <div class="infiniteSlide_tech_main">
+                        <div class="infiniteSlide infiniteSlide_tech" data-clone="5" data-speed="135">
+                            <!-- Clone 1 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Adobe</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Профессиональный видеомонтаж для цифрового контента.
+
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-adobe.png" alt="Image">
+                            </div>
+                            <!-- Clone 2 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">SEO & Content Marketing</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">SEO-оптимизация и стратегия контента
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-seo.png" alt="Image">
+                            </div>
+                            <!-- Clone 3 -->
+                            <div class="app_name">
+                                <div class="tech_text letter-space--2">
+                                    <p class="h1 text">Analytics & Tracking</p>
+                                    <h6 class="process fw-normal" style="font-size: 14px !important;">Анализ, отчетность и отслеживание конверсий
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="app_icon">
+                                <img loading="lazy" width="136" height="68" src="assets/images/section/app-analitic.png" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <!-- /Tech Stack -->
+        <!-- Faq -->
+        <section class="section-faq flat-spacing">
+            <div class="container">
+                <div class="s-header d-block">
+                    <h2 class="text-display-2 letter-space--3 text-center effectFade fadeUp">
+                        Часто задаваемые вопросы <br>
+                        
+                    </h2>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="accordion-faq_list" id="accordion-faq_list">
+                            <div class="accordion-faq_item" role="presentation">
+                                <div class="accordion-action text-body-1 letter-space--1 fw-medium collapsed" data-bs-target="#faq-1" role="button"
+                                    data-bs-toggle="collapse" aria-controls="faq-1" aria-expanded="true">
+                                    <span class="accordion-order">01</span>
+                                    <p class="accordion-text">Сколько обычно длится проект?</p>
+                                    <div class="ic-wrap d-flex">
+                                        <i class="icon icon-arrow-caret-down fs-10"></i>
+                                    </div>
+                                </div>
+                                <div id="faq-1" class="collapse" data-bs-parent="#accordion-faq_list">
+                                    <p class="accordion-content">
+                                        Длительность проекта зависит от сложности. В среднем, аудит и первоначальное внедрение занимает от 2 до 6 дней. Сложные проекты автоматизации и CRM могут разрабатываться поэтапно.
+
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="accordion-faq_item" role="presentation">
+                                <div class="accordion-action text-body-1 letter-space--1 fw-medium " data-bs-target="#faq-2" role="button"
+                                    data-bs-toggle="collapse" aria-controls="faq-2" aria-expanded="false">
+                                    <span class="accordion-order">02</span>
+                                    <p class="accordion-text">Вы работаете с международными клиентами?</p>
+                                    <div class="ic-wrap d-flex">
+                                        <i class="icon icon-arrow-caret-down fs-10"></i>
+                                    </div>
+                                </div>
+                                <div id="faq-2" class="collapse show" data-bs-parent="#accordion-faq_list">
+                                    <p class="accordion-content">
+                                        Да. Мы работаем с клиентами из Молдовы и других стран, используя онлайн-инструменты, управление проектами и цифровую коммуникацию для эффективного сотрудничества.
+
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="accordion-faq_item" role="presentation">
+                                <div class="accordion-action text-body-1 letter-space--1 fw-medium collapsed" data-bs-target="#faq-3" role="button"
+                                    data-bs-toggle="collapse" aria-controls="faq-3" aria-expanded="false">
+                                    <span class="accordion-order">03</span>
+                                    <p class="accordion-text">Вы предлагаете как стратегию, так и техническое внедрение?</p>
+                                    <div class="ic-wrap d-flex">
+                                        <i class="icon icon-arrow-caret-down fs-10"></i>
+                                    </div>
+                                </div>
+                                <div id="faq-3" class="collapse" data-bs-parent="#accordion-faq_list">
+                                    <p class="accordion-content">
+                                        Да. Lab Upgrade работает полным циклом: аудит, стратегия, техническое внедрение, автоматизация, интеграция CRM/AI и обучение команды.
+
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="accordion-faq_item" role="presentation">
+                                <div class="accordion-action text-body-1 letter-space--1 fw-medium collapsed" data-bs-target="#faq-4" role="button"
+                                    data-bs-toggle="collapse" aria-controls="faq-4" aria-expanded="false">
+                                    <span class="accordion-order">04</span>
+                                    <p class="accordion-text">Как работает процесс оплаты?</p>
+                                    <div class="ic-wrap d-flex">
+                                        <i class="icon icon-arrow-caret-down fs-10"></i>
+                                    </div>
+                                </div>
+                                <div id="faq-4" class="collapse" data-bs-parent="#accordion-faq_list">
+                                    <p class="accordion-content">
+                                        Оплата производится поэтапно, в зависимости от проекта. После аудита и определения решения мы устанавливаем четкий план внедрения и прозрачные расходы.
+
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="accordion-faq_item" role="presentation">
+                                <div class="accordion-action text-body-1 letter-space--1 fw-medium collapsed" data-bs-target="#faq-5" role="button"
+                                    data-bs-toggle="collapse" aria-controls="faq-5" aria-expanded="false">
+                                    <span class="accordion-order">05</span>
+                                    <p class="accordion-text">Вы предлагаете поддержку после запуска?</p>
+                                    <div class="ic-wrap d-flex">
+                                        <i class="icon icon-arrow-caret-down fs-10"></i>
+                                    </div>
+                                </div>
+                                <div id="faq-5" class="collapse" data-bs-parent="#accordion-faq_list">
+                                    <p class="accordion-content">
+                                        Да. Обеспечиваем постоянную поддержку, оптимизацию, обслуживание и обучение персонала для гарантии правильной работы внедренных систем.
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /Faq -->
+        <!-- CTA -->
+        <section class="section-cta flat-spacing" id="contactScroll">
+            <div class="bg-img">
+                <img loading="lazy" width="1440" height="1081" src="assets/images/item/bg-3.png" alt="Image">
+            </div>
+            <div class="s-header d-block">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-2 offset-lg-2 col-lg-2">
+                            <div class="col-left">
+                                <a href="index-ru.html" class="logo-custom">
+                                    <div class="logo-site-sv">
+                                        <img src="assets/images/logo/labupgradelogo.png" alt="Logo" style="width: 45px; height: auto; max-height: 45px; object-fit: contain;">
+                                    </div>
+                                    <span class="line-vertical left"></span>
+                                    <span class="line-vertical right"></span>
+                                    <span class="line-horizontal top"></span>
+                                    <span class="line-horizontal bottom"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-10 col-lg-6">
+                            <h2 class="text-display-2 letter-space--3 text-end effectFade fadeUp">
+                                Запишись на бесплатный аудит 🔥
+
+ <br>
+                                
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <form class="form-cta">
+                            <div class="form-content">
+                                <div class="tf-grid-layout sm-col-2">
+                                    <fieldset class="tf-field">
+                                        <input class="tf-input" type="text" name="name" placeholder required>
+                                        <label class="tf-lable">Имя <span class="text-primary">*</span></label>
+                                    </fieldset>
+                                    <fieldset class="tf-field">
+                                        <input class="tf-input" type="tel" name="phone" placeholder required>
+                                        <label class="tf-lable">Номер телефона <span class="text-primary">*</span></label>
+                                    </fieldset>
+                                </div>
+                                <div class="tf-grid-layout sm-col-2">
+                                    <fieldset class="tf-field">
+                                        <input class="tf-input" type="email" name="email" placeholder required>
+                                        <label class="tf-lable">Email <span class="text-primary">*</span></label>
+                                    </fieldset>
+                                    <fieldset class="tf-field">
+                                        <input class="tf-input" type="text" name="telegram" placeholder>
+                                        <label class="tf-lable">Telegram <span class="text-white-64">(необязательно)</span></label>
+                                    </fieldset>
+                                </div>
+                                <div class="nc-wrap">
+                                    <p class="select-label fs-14 text-white-64 d-sm-none">Выберите тип бизнеса <span class="text-primary">*</span></p>
+                                    <select name="business_type" required style="display: none;">
+                                        <option value="">-- Выберите тип бизнеса --</option>
+                                        <option value="E-commerce / Интернет-магазины">E-commerce / Интернет-магазины</option>
+                                        <option value="Профессиональные услуги (Клиники, Адвокаты, Консалтинг)">Профессиональные услуги (Клиники, Адвокаты, Консалтинг)</option>
+                                        <option value="HoReCa (Рестораны, Отели, Бары)">HoReCa (Рестораны, Отели, Бары)</option>
+                                        <option value="Розничная торговля / Коммерция">Розничная торговля / Коммерция</option>
+                                        <option value="Производство / Дистрибуция">Производство / Дистрибуция</option>
+                                        <option value="IT / SaaS / Технологии">IT / SaaS / Технологии</option>
+                                        <option value="Недвижимость / Строительство">Недвижимость / Строительство</option>
+                                        <option value="Маркетинг / Агентства">Маркетинг / Агентства</option>
+                                        <option value="Образование / Обучение">Образование / Обучение</option>
+                                        <option value="Другое">Другое</option>
+                                    </select>
+                                    <div class="nice-select">
+                                        <span class="current letter-space--1">Тип бизнеса</span>
+                                        <ul class="list">
+                                            <li class="option disabled">
+                                                -- Выберите тип бизнеса --
+                                            </li>
+                                            <li class="option">
+                                                E-commerce / Интернет-магазины
+                                            </li>
+                                            <li class="option">
+                                                Профессиональные услуги (Клиники, Адвокаты, Консалтинг)
+                                            </li>
+                                            <li class="option">
+                                                HoReCa (Рестораны, Отели, Бары)
+                                            </li>
+                                            <li class="option">
+                                                Розничная торговля / Коммерция
+                                            </li>
+                                            <li class="option">
+                                                Производство / Дистрибуция
+                                            </li>
+                                            <li class="option">
+                                                IT / SaaS / Технологии
+                                            </li>
+                                            <li class="option">
+                                                Недвижимость / Строительство
+                                            </li>
+                                            <li class="option">
+                                                Маркетинг / Агентства
+                                            </li>
+                                            <li class="option">
+                                                Образование / Обучение
+                                            </li>
+                                            <li class="option">
+                                                Другое
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-action">
+                                <button type="submit" class="tf-btn">
+                                    <span class="text-caption">ОТПРАВИТЬ ЗАЯВКУ</span>
+                                </button>
+                                <div style="display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 20px;">
+                                    <p class="text-body-1" style="margin: 0;">
+                                        или напиши напрямую - <a href="mailto:support@labupgrade.in" class="text-primary">support@labupgrade.in</a>
+                                    </p>
+                                    <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                                        <a href="https://t.me/labupgrade_bot" target="_blank" class="link" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 1px solid var(--primary); border-radius: 999px; transition: all 0.3s; text-decoration: none;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.64 8.8C16.49 10.38 15.84 14.22 15.51 15.99C15.37 16.74 15.09 16.99 14.83 17.02C14.25 17.07 13.81 16.64 13.25 16.27C12.37 15.69 11.87 15.33 11.02 14.77C10.03 14.12 10.67 13.76 11.24 13.18C11.39 13.03 13.95 10.7 14 10.49C14.0069 10.4582 14.006 10.4252 13.9973 10.3938C13.9886 10.3624 13.9724 10.3337 13.95 10.31C13.89 10.26 13.81 10.28 13.74 10.29C13.65 10.31 12.25 11.24 9.52 13.08C9.12 13.35 8.76 13.49 8.44 13.48C8.08 13.47 7.4 13.28 6.89 13.11C6.26 12.91 5.77 12.8 5.81 12.45C5.83 12.27 6.08 12.09 6.55 11.9C9.47 10.63 11.41 9.79 12.38 9.39C15.16 8.23 15.73 8.03 16.11 8.03C16.19 8.03 16.38 8.05 16.5 8.15C16.6 8.23 16.63 8.34 16.64 8.42C16.63 8.48 16.65 8.66 16.64 8.8Z" fill="currentColor"/>
+                                            </svg>
+                                            <span class="text-caption fw-medium">Telegram Bot</span>
+                                        </a>
+                                        <a href="https://www.instagram.com/labupgrade/" target="_blank" class="link" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 1px solid var(--primary); border-radius: 999px; transition: all 0.3s; text-decoration: none;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 2C14.717 2 15.056 2.01 16.122 2.06C17.187 2.11 17.912 2.277 18.55 2.525C19.21 2.779 19.766 3.123 20.322 3.678C20.8305 4.1779 21.224 4.78259 21.475 5.45C21.722 6.087 21.89 6.813 21.94 7.878C21.987 8.944 22 9.283 22 12C22 14.717 21.99 15.056 21.94 16.122C21.89 17.187 21.722 17.912 21.475 18.55C21.2247 19.2178 20.8311 19.8226 20.322 20.322C19.822 20.8303 19.2173 21.2238 18.55 21.475C17.913 21.722 17.187 21.89 16.122 21.94C15.056 21.987 14.717 22 12 22C9.283 22 8.944 21.99 7.878 21.94C6.813 21.89 6.088 21.722 5.45 21.475C4.78233 21.2245 4.17753 20.8309 3.678 20.322C3.16941 19.8222 2.77593 19.2175 2.525 18.55C2.277 17.913 2.11 17.187 2.06 16.122C2.013 15.056 2 14.717 2 12C2 9.283 2.01 8.944 2.06 7.878C2.11 6.812 2.277 6.088 2.525 5.45C2.77524 4.78218 3.1688 4.17732 3.678 3.678C4.17767 3.16923 4.78243 2.77573 5.45 2.525C6.088 2.277 6.812 2.11 7.878 2.06C8.944 2.013 9.283 2 12 2ZM12 7C10.6739 7 9.40215 7.52678 8.46447 8.46447C7.52678 9.40215 7 10.6739 7 12C7 13.3261 7.52678 14.5979 8.46447 15.5355C9.40215 16.4732 10.6739 17 12 17C13.3261 17 14.5979 16.4732 15.5355 15.5355C16.4732 14.5979 17 13.3261 17 12C17 10.6739 16.4732 9.40215 15.5355 8.46447C14.5979 7.52678 13.3261 7 12 7ZM18.5 6.75C18.5 6.41848 18.3683 6.10054 18.1339 5.86612C17.8995 5.6317 17.5815 5.5 17.25 5.5C16.9185 5.5 16.6005 5.6317 16.3661 5.86612C16.1317 6.10054 16 6.41848 16 6.75C16 7.08152 16.1317 7.39946 16.3661 7.63388C16.6005 7.8683 16.9185 8 17.25 8C17.5815 8 17.8995 7.8683 18.1339 7.63388C18.3683 7.39946 18.5 7.08152 18.5 6.75ZM12 9C12.7956 9 13.5587 9.31607 14.1213 9.87868C14.6839 10.4413 15 11.2044 15 12C15 12.7956 14.6839 13.5587 14.1213 14.1213C13.5587 14.6839 12.7956 15 12 15C11.2044 15 10.4413 14.6839 9.87868 14.1213C9.31607 13.5587 9 12.7956 9 12C9 11.2044 9.31607 10.4413 9.87868 9.87868C10.4413 9.31607 11.2044 9 12 9Z" fill="currentColor"/>
+                                            </svg>
+                                            <span class="text-caption fw-medium">Instagram</span>
+                                        </a>
+                                        <a href="https://www.facebook.com/labupgrade" target="_blank" class="link" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 1px solid var(--primary); border-radius: 999px; transition: all 0.3s; text-decoration: none;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.97 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z" fill="currentColor"/>
+                                            </svg>
+                                            <span class="text-caption fw-medium">Facebook</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /CTA -->
+        <!-- Footer -->
+        <footer class="tf-footer">
+            <div class="container">
+                <div class="br-line"></div>
+            </div>
+            <div class="footer-inner">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="title text-has-dot text-caption fw-medium mb-md-0">
+                                <span class="br-dot"></span>
+                                ОНЛАЙН 24/7
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-1">
+                            <p class="footer-heading text-caption fw-medium text-white-64">
+                                КАРТА САЙТА
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <ul class="footer-menu-list mb-sm-0">
+                                <li><a href="#serviceScroll" class="link letter-space--2 h5">Услуги</a></li>
+                                <li><a href="#processScroll" class="link letter-space--2 h5">Процесс</a></li>
+                                <li><a href="#aboutScroll" class="link letter-space--2 h5">О нас</a></li>
+                                <li><a href="#contactScroll" class="link letter-space--2 h5">Контакты</a></li>
+                                <li><a href="documents-ru.html" class="link letter-space--2 h5">Документы</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6 col-sm-2 col-md-1">
+                            <p class="footer-heading text-caption fw-medium text-white-64">
+                                СОЦСЕТИ
+                            </p>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <ul class="footer-menu-list mb-0">
+                                <li><a href="https://www.instagram.com/labupgrade/" target="_blank" class="link letter-space--2 h5">Instagram</a></li>
+                                <li><a href="https://www.facebook.com/labupgrade" target="_blank" class="link letter-space--2 h5">Facebook</a></li>
+                                <li><a href="https://t.me/labupgrade_bot" target="_blank" class="link letter-space--2 h5">Telegram Bot</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="bottom">
+                        <p class="text-nocopy text-caption fw-medium letter-space--1">
+                            © 2025 Lab Upgrade. Все права защищены.
+                        </p>
+                        <a href="#" class="action-go-top tf-link-icon link text-caption fw-medium letter-space--1">
+                            НАВЕРХ
+                            <i class="icon icon-arrow-long-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- /Footer -->
+    </main>
+    <!-- Mobile Menu -->
+    <div class="offcanvas-menu">
+        <div class="offcanvas-content">
+            <div class="container h-100">
+                <div class="offcanvas-content_wrapin">
+                    <div class="canvas_head">
+                        <a href="index-ru.html" class="logo-site">
+                            <img src="assets/images/logo/labupgradelogo.png" alt="Logo" style="width: 30px; height: auto; object-fit: contain;">
+                        </a>
+                        <div class="btn-mobile-menu close-mb-menu text-caption link">
+                            <i class="icon icon-close"></i>
+                            ЗАКРЫТЬ
+                        </div>
+                    </div>
+                    <div class="canvas_center">
+                        <ul class="nav-ul-mb">
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="auth-ru.html" class="mb-menu-link text-display-1">
+                                        <span class="text">Авторизация</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Личный Кабинет
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> CRM Платформа
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> AI Ассистент
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="auth-ru.html#register" class="mb-menu-link text-display-1">
+                                        <span class="text">Регистрация
+                                        </span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Создать аккаунт
+
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Новый доступ
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Начать сейчас
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="#contactScroll" class="mb-menu-link text-display-1">
+                                        <span class="text">Бесплатный аудит</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Быстрый аудит
+
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Бесплатный анализ
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Бесплатная консультация
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item close-mb-menu">
+                                    <a href="#contactScroll" class="mb-menu-link text-display-1">
+                                        <span class="text">Контакты</span>
+                                        <div class="infiniteSlide_text_main">
+                                            <div class="infiniteSlide infiniteSlide_text" data-clone="5">
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Telegram Bot
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Facebook
+                                                </p>
+                                                <p class="text-body-2 letter-space--1">
+                                                    <span class="text-primary">//</span> Instagram
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="canvas_foot">
+                        <div class="left">
+                            <a href="mailto:support@labupgrade.in" class="link text-caption">SUPPORT@LABUPGRADE.IN</a>
+                            <p class="text-caption">
+                                ВРЕМЯ <span class="clock"></span>
+                            </p>
+                        </div>
+                        <div class="right">
+                            <a href="https://www.instagram.com/labupgrade/" target="_blank" class="tf-link-icon text-caption link">
+                                <i class="icon icon-arrow-top-right"></i>
+                                INSTAGRAM
+                            </a>
+                            <a href="https://www.facebook.com/labupgrade" target="_blank" class="tf-link-icon text-caption link">
+                                <i class="icon icon-arrow-top-right"></i>
+                                FACEBOOK
+                            </a>
+                            <a href="https://t.me/labupgrade_bot" target="_blank" class="tf-link-icon text-caption link">
+                                <i class="icon icon-arrow-top-right"></i>
+                                TELEGRAM BOT
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Mobile Menu -->
+    <!-- Javascript -->
+    <script src="assets/js/jquery.min.js"></script>
+
+    <script src="assets/js/bootstrap.min.js"></script>
+
+    <script src="assets/js/jquery.nice-select.min.js"></script>
+    <script src="assets/js/swiper-bundle.min.js"></script>
+    <script src="assets/js/slick.min.js"></script>
+    <script src="assets/js/odometer.min.js"></script>
+    <script src="assets/js/carousel.js"></script>
+    <script src="assets/js/infinityslide.js"></script>
+    <script src="assets/js/ScrollSmooth.js"></script>
+    <script src="assets/js/gsap.min.js"></script>
+    <script src="assets/js/SplitText.min.js"></script>
+    <script src="assets/js/ScrollTrigger.min.js"></script>
+    <script src="assets/js/ScrollToPlugin.min.js"></script>
+    <script src="assets/js/gsapAnimation.js"></script>
+
+    <script src="assets/js/main.js"></script>
+    
+    <!-- Lead to Supabase -->
+    <script type="module" src="assets/js/lead-to-supabase.js"></script>
+    
+    <!-- Language Switcher Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.querySelector('.language-btn');
+            const languageDropdown = document.querySelector('.language-dropdown');
+            
+            if (languageBtn && languageDropdown) {
+                languageBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = languageDropdown.style.opacity === '1';
+                    
+                    if (isOpen) {
+                        languageDropdown.style.opacity = '0';
+                        languageDropdown.style.visibility = 'hidden';
+                        languageDropdown.style.transform = 'translateY(-10px)';
+                    } else {
+                        languageDropdown.style.opacity = '1';
+                        languageDropdown.style.visibility = 'visible';
+                        languageDropdown.style.transform = 'translateY(0)';
+                    }
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+                        languageDropdown.style.opacity = '0';
+                        languageDropdown.style.visibility = 'hidden';
+                        languageDropdown.style.transform = 'translateY(-10px)';
+                    }
+                });
+                
+                const languageOptions = languageDropdown.querySelectorAll('.language-option');
+                languageOptions.forEach(option => {
+                    option.addEventListener('mouseenter', function() {
+                        this.style.background = 'rgba(255,255,255,0.1)';
+                    });
+                    option.addEventListener('mouseleave', function() {
+                        this.style.background = 'transparent';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
