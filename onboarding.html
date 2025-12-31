@@ -17,9 +17,9 @@
             --text-muted: #888;
         }
 
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
 
-        /* Sidebar */
+        /* Sidebar - Скрыт на мобильных, виден на ПК */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -28,8 +28,26 @@
             border-right: 1px solid #333;
             padding: 20px;
             z-index: 1000;
+            display: none; /* Скрываем по умолчанию (мобильные) */
         }
-        .main-content { margin-left: 250px; padding: 40px; }
+
+        /* Main Content - На мобильных на всю ширину */
+        .main-content { 
+            width: 100%;
+            padding: 20px;
+            margin-left: 0; 
+            transition: all 0.3s;
+        }
+
+        /* Desktop Styles (Экраны шире 768px) */
+        @media (min-width: 768px) {
+            .sidebar { display: block; } /* Показываем меню */
+            .main-content { 
+                margin-left: 250px; /* Делаем отступ */
+                padding: 40px;
+                width: calc(100% - 250px);
+            }
+        }
         
         .nav-link { color: var(--text-muted); padding: 12px; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
         .nav-link:hover, .nav-link.active { background: #333; color: #fff; }
@@ -43,7 +61,7 @@
             padding: 12px 20px;
             border-radius: 12px;
             width: 100%;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         /* Cards */
@@ -51,7 +69,7 @@
             background: var(--bg-card);
             border: 1px solid #333;
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             height: 100%;
             cursor: pointer;
             transition: all 0.2s;
@@ -64,7 +82,7 @@
             width: 48px; height: 48px;
             border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; margin-bottom: 20px;
+            font-size: 24px; margin-bottom: 15px;
         }
         .bg-blue { background: rgba(13, 110, 253, 0.15); color: #0d6efd; }
         .bg-pink { background: rgba(214, 51, 132, 0.15); color: #d63384; }
@@ -89,11 +107,18 @@
             background-color: #333; color: #fff; border-color: var(--accent); box-shadow: none;
         }
         .btn-close { filter: invert(1); }
+        
+        /* Мобильный заголовок */
+        .mobile-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        @media (min-width: 768px) { .mobile-header { display: none; } }
     </style>
 </head>
 <body>
 
-<div class="sidebar d-none d-md-block">
+<div class="sidebar">
     <h4 class="mb-5 px-2">LabUpgrade<span class="text-primary">.AI</span></h4>
     <nav class="nav flex-column">
         <a class="nav-link active" href="#"><i class="bi bi-grid"></i> Шаблоны</a>
@@ -108,11 +133,16 @@
 
 <div class="main-content">
     
-    <input type="text" class="search-bar" placeholder="🔍 Поиск по шаблонам (например: Запись, CRM, Продажи)...">
+    <div class="mobile-header">
+        <h4 class="m-0">LabUpgrade<span class="text-primary">.AI</span></h4>
+        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-list"></i> Меню</button>
+    </div>
 
-    <h5 class="mb-4 text-white"><i class="bi bi-stars text-primary me-2"></i>Чат-боты с ИИ</h5>
-    <div class="row g-4 mb-5">
-        <div class="col-md-6 col-lg-4">
+    <input type="text" class="search-bar" placeholder="🔍 Поиск (например: Продажи)...">
+
+    <h5 class="mb-3 text-white"><i class="bi bi-stars text-primary me-2"></i>Чат-боты с ИИ</h5>
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-4">
             <div class="template-card" onclick="openSetup('ai_sales', 'AI Продавец')">
                 <span class="badge-no-code">Без конструктора</span>
                 <div class="card-icon bg-blue"><i class="bi bi-robot"></i></div>
@@ -120,7 +150,7 @@
                 <p class="text-muted small mb-0">Обучается на ваших данных. Консультирует, продает и закрывает возражения 24/7.</p>
             </div>
         </div>
-        <div class="col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-4">
             <div class="template-card" onclick="openSetup('ai_support', 'AI Техподдержка')">
                 <span class="badge-no-code">Без конструктора</span>
                 <div class="card-icon bg-blue"><i class="bi bi-life-preserver"></i></div>
@@ -130,16 +160,16 @@
         </div>
     </div>
 
-    <h5 class="mb-4 text-white"><i class="bi bi-instagram text-danger me-2"></i>Instagram & CRM</h5>
-    <div class="row g-4 mb-5">
-        <div class="col-md-6 col-lg-4">
+    <h5 class="mb-3 text-white"><i class="bi bi-instagram text-danger me-2"></i>Instagram & CRM</h5>
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-4">
             <div class="template-card" onclick="openSetup('booking', 'Запись на услугу')">
                 <div class="card-icon bg-pink"><i class="bi bi-calendar-check"></i></div>
                 <h5>Запись на услугу</h5>
                 <p class="text-muted small mb-0">Бот проверяет слоты в Google Calendar и записывает клиента на свободное время.</p>
             </div>
         </div>
-        <div class="col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-4">
             <div class="template-card" onclick="openSetup('keyword', 'Бот на кодовое слово')">
                 <div class="card-icon bg-pink"><i class="bi bi-chat-left-text"></i></div>
                 <h5>Автоответ в Direct</h5>
@@ -199,8 +229,8 @@
     // ==========================================
     // 🔑 ВСТАВЬ СЮДА СВОИ КЛЮЧИ
     // ==========================================
-    const SUPABASE_URL = 'https://kdymhrvudosudnqidejj.supabase.co'; 
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU';
+    const SUPABASE_URL = 'https://твоя-ссылка.supabase.co'; 
+    const SUPABASE_KEY = 'твой-anon-key';
     // ==========================================
 
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -209,13 +239,15 @@
 
     // 1. Проверка входа
     window.onload = async () => {
+        // Инициализация модалки Bootstrap
+        setupModal = new bootstrap.Modal(document.getElementById('setupModal'));
+
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
             window.location.href = '/onboarding.html'; 
         } else {
             currentUser = session.user;
             document.getElementById('userEmail').innerText = currentUser.email;
-            setupModal = new bootstrap.Modal(document.getElementById('setupModal'));
         }
     };
 
@@ -224,31 +256,28 @@
         document.getElementById('modalTitle').innerText = 'Настройка: ' + title;
         document.getElementById('selectedTemplate').value = templateId;
         
-        // Логика показа полей
+        const calField = document.getElementById('calendarField');
         if(templateId === 'booking') {
-            document.getElementById('calendarField').classList.remove('d-none');
+            calField.classList.remove('d-none');
         } else {
-            document.getElementById('calendarField').classList.add('d-none');
+            calField.classList.add('d-none');
         }
         
         setupModal.show();
     }
 
-    // 3. Сохранение (Связь с твоим JSON Backend)
+    // 3. Сохранение
     async function saveConfiguration() {
         const template = document.getElementById('selectedTemplate').value;
         const context = document.getElementById('businessContext').value;
         const tone = document.getElementById('toneSelect').value;
         const calendarId = document.getElementById('calendarId').value;
 
-        // Маппинг шаблона в настройки БД (для твоего n8n)
         let updateData = {
             business_context: context,
-            tone: tone,
-            updated_at: new Date()
+            tone: tone
         };
 
-        // Настраиваем цель бота
         if (template === 'ai_sales') updateData.bot_goal = 'sales';
         if (template === 'ai_support') updateData.bot_goal = 'support';
         if (template === 'booking') {
@@ -256,10 +285,6 @@
             updateData.google_calendar_id = calendarId;
         }
 
-        // Обновляем запись в таблице saas_clients
-        // ВАЖНО: Предполагаем, что у юзера одна активная запись. 
-        // Ищем по owner_id (который мы добавили в SQL ранее)
-        
         const { error } = await supabase
             .from('saas_clients')
             .update(updateData)
@@ -269,11 +294,12 @@
             alert('Ошибка: ' + error.message);
         } else {
             setupModal.hide();
-            alert('✅ Бот успешно перенастроен! Теперь он работает в режиме: ' + template);
+            alert('✅ Настройки обновлены!');
         }
     }
 </script>
 
 </body>
 </html>
+
 
