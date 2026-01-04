@@ -1670,22 +1670,28 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         });
     };
 
-    function handleFBLogin() {
+        function handleFBLogin() {
         FB.login(function(response) {
             if (response.status === 'connected') {
                 const btn = document.getElementById('fb-auth-btn');
-                if (btn) btn.innerHTML = '<span>SUCCESS</span>';
+                if (btn) {
+                    btn.innerHTML = '<span>SUCCESS</span>';
+                    btn.classList.add('is-success'); // Станет зеленой
+                }
                 console.log('FB Login Success');
             }
-        }, {
-            scope: 'pages_messaging,pages_read_engagement,pages_show_list,business_management'
+        }, { 
+            // Полный список разрешений для AI-бота и CRM
+            scope: 'pages_messaging,pages_read_engagement,pages_show_list,business_management,pages_manage_metadata,instagram_basic,instagram_manage_messages' 
         });
     }
+
 </script>
 </body>
 
 
 </html>
+
 
 
 
