@@ -1614,9 +1614,34 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             }
         });
     </script>
+    <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '1138830157608882',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v18.0'
+        });
+    };
+
+    function handleFBLogin() {
+        FB.login(function(response) {
+            if (response.status === 'connected') {
+                const btn = document.getElementById('fb-auth-btn');
+                if (btn) btn.innerHTML = '<span>SUCCESS</span>';
+                console.log('FB Login Success');
+            }
+        }, {
+            scope: 'pages_messaging,pages_read_engagement,pages_show_list,business_management'
+        });
+    }
+</script>
 </body>
 
 
 </html>
+
 
 
