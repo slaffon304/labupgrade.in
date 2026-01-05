@@ -1660,8 +1660,27 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 });
             }
         });
-    </script>
+    </script> 
+    <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({ appId: '1194771652741657', cookie: true, xfbml: true, version: 'v24.0' });
+    };
+
+    function handleFBLogin() {
+        FB.login(function(response) {
+            // Строгая проверка статуса от Facebook
+            if (response.status === 'connected') {
+                const btn = document.getElementById('fb-auth-btn');
+                btn.innerHTML = '<span>SUCCESS</span>';
+                btn.classList.add('is-success');
+            }
+        }, { config_id: '880665631010943' });
+    }
+</script>
+
 </body>
 
 
 </html>
+
