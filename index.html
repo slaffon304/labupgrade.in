@@ -1,147 +1,75 @@
 <!DOCTYPE html>
-
-<!--[if IE 8]><html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
-<!--<![endif]-->
-
 <head>
     <meta charset="utf-8">
     <title>Lab Upgrade - Automatizare Business & CRM</title>
-    <meta name="author" content="Lab Upgrade">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description"
-        content="Lab Upgrade - laborator de automatizare și dezvoltare a business-ului. Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care transformă potențialul în profit stabil.">
-
-    <!-- font -->
-    <link rel="stylesheet" href="assets/fonts/fonts.css">
-    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
-    <!-- css -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
-    <link rel="stylesheet" href="assets/css/animate.css">
-    <link rel="stylesheet" href="assets/css/odometer.min.css">
-    <link rel="stylesheet" href="assets/css/slick.css">
-    <link rel="stylesheet" href="assets/css/slick.theme.css">
     <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
-
-    <!-- Favicon and Touch Icons  -->
     <link rel="shortcut icon" href="assets/images/logo/labupgradelogo.png">
-    <link rel="apple-touch-icon-precomposed" href="assets/images/logo/labupgradelogo.png">
     
-    <!-- Smooth Scroll -->
     <style>
-    html { scroll-behavior: smooth; }
-    /* Дизайн кнопки LOGIN */
-    .fb-custom-btn {
-        background: rgba(255,255,255,0.05); color: white !important;
-        border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
-        padding: 0 16px; height: 44px; display: flex; align-items: center; gap: 10px;
-        font-size: 12px; text-transform: uppercase; cursor: pointer; text-decoration: none !important;
-    }
-    .fb-custom-btn:hover { border-color: #07C42C; box-shadow: 0 0 15px rgba(7, 196, 44, 0.2); }
-    .fb-icon { width: 18px; height: 18px; fill: #1877F2; }
-    .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
-
-    /* Расположение на мобильных: Языки — Слева, Кнопки — Справа */
-    @media (max-width: 768px) {
-        .mobile-header-fix {
-            display: flex !important; width: 100% !important;
-            justify-content: space-between !important; padding: 0 15px !important;
+        html { scroll-behavior: smooth; }
+        .fb-custom-btn {
+            background: rgba(255,255,255,0.05); color: white !important;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+            padding: 0 16px; height: 44px; display: flex; align-items: center; gap: 10px;
+            font-size: 12px; text-transform: uppercase; cursor: pointer; text-decoration: none !important;
         }
-        .right-side-group { display: flex; align-items: center; gap: 8px; }
-        .fb-custom-btn { padding: 0 8px !important; height: 38px !important; font-size: 10px !important; }
-        .fb-icon { width: 14px; height: 14px; }
-    }
-</style>
+        .fb-custom-btn:hover { border-color: #07C42C; box-shadow: 0 0 15px rgba(7, 196, 44, 0.2); }
+        .fb-icon { width: 18px; height: 18px; fill: #1877F2; }
+        .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
 
+        @media (max-width: 768px) {
+            .mobile-header-fix {
+                display: flex !important; width: 100% !important;
+                justify-content: space-between !important; padding: 0 10px !important;
+            }
+            .right-side-group { display: flex; align-items: center; gap: 8px; }
+            .fb-custom-btn { padding: 0 8px !important; height: 38px !important; font-size: 10px !important; }
+        }
+    </style>
 </head>
 
 <body class="counter-scroll">
-    <canvas class="cursor-trail d-none d-xl-block" id="trail"></canvas>
-
-    <!-- Scroll Top -->
-    <button id="goTop">
-        <span class="border-progress"></span>
-        <span class="ic-wrap">
-            <span class="icon icon-arrow-caret-right"></span>
-        </span>
-    </button>
-    <!-- /Scroll Top -->
-
-    <!-- Preload -->
-    <div class="preloader overflow-hidden">
-        <div class="site-name"><span>LAB UPGRADE</span></div>
-        <div class="preloader-gutters">
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-            <div class="bar">
-                <div class="inner-bar"></div>
-            </div>
-        </div>
-    </div>
-    <!-- /Preload -->
-
     <main id="wrapper">
-        <!-- Header -->
         <header class="tf-header">
-    <div class="header-inner">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-7 d-none d-md-block">
-                    <div class="box-navigation">
-                        <ul class="nav-menu-main">
-                            <li class="menu-item"><a href="#serviceScroll" class="item-link">SERVICII</a></li>
-                            <li class="menu-item"><a href="#processScroll" class="item-link">PROCES</a></li>
-                            <li class="menu-item"><a href="#aboutScroll" class="item-link">DESPRE NOI</a></li>
-                            <li class="menu-item"><a href="#contactScroll" class="item-link">CONTACT</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-3 col-md-2 d-none d-sm-block">
-                    <div class="header-contact">
-                        <a href="mailto:support@labupgrade.in" class="link text-caption">SUPPORT@LABUPGRADE.IN</a>
-                    </div>
-                </div>
+            <div class="header-inner">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <a href="index.html">
+                                <img src="assets/images/logo/labupgradelogo.png" alt="Logo" width="40">
+                            </a>
+                        </div>
 
-                <div class="col-12 col-md-auto ms-md-auto d-flex align-items-center mobile-header-fix">
-                    <div class="language-switcher">
-                        <button type="button" style="padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); border-radius: 4px; width: 44px; height: 44px;">
-                            <span style="font-size: 20px;">🇷🇴</span>
-                        </button>
-                    </div>
+                        <div class="col-6 d-none d-md-block">
+                            <ul class="nav-menu-main d-flex list-unstyled m-0">
+                                <li class="menu-item ms-4"><a href="#serviceScroll" class="text-white">SERVICII</a></li>
+                                <li class="menu-item ms-4"><a href="#aboutScroll" class="text-white">DESPRE NOI</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="right-side-group">
-                        <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
-                            <svg class="fb-icon" viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
-                            <span>LOGARE</span>
-                        </button>
-                        <button type="button" class="btn-mobile-menu open-mb-menu text-white">MENIU</button>
+                        <div class="col-10 col-md-4 ms-auto d-flex align-items-center mobile-header-fix">
+                            <div class="language-switcher">
+                                <button type="button" style="padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); border-radius: 4px; width: 44px; height: 44px;">
+                                    <span style="font-size: 20px;">🇷🇴</span>
+                                </button>
+                            </div>
+
+                            <div class="right-side-group">
+                                <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
+                                    <svg class="fb-icon" viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
+                                    <span>LOGARE</span>
+                                </button>
+                                <button type="button" class="btn-mobile-menu open-mb-menu text-white">MENIU</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</header>
+        </header>
+
 
         <!-- /Header -->
         <!-- Hero Banner -->
@@ -1608,4 +1536,5 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 
 </html>
+
 
