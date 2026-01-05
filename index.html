@@ -188,7 +188,7 @@
                             <div class="fb-login-wrapper me-2">
     <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
         <svg class="fb-icon" viewBox="0 0 24 24" fill="white"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
-        <span>LOGIN</span>
+        <span>LOGARE</span>
     </button>
                             </div>
                             
@@ -1650,8 +1650,27 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             }
         });
     </script>
+    <script>
+        function handleFBLogin() {
+    FB.login(function(response) {
+        // ОБЯЗАТЕЛЬНАЯ ПРОВЕРКА: Если статус НЕ 'connected', ничего не меняем
+        if (response.status === 'connected') {
+            const btn = document.getElementById('fb-auth-btn');
+            if (btn) {
+                btn.innerHTML = '<span>SUCCESS</span>';
+                btn.classList.add('is-success');
+            }
+            console.log('FB Login Success!');
+        } else {
+            // Если пользователь закрыл окно или нажал отмену
+            console.log('Login cancelled or failed: ' + response.status);
+        }
+    }, { config_id: '880665631010943' });
+        }
+    </script>
 </body>
 
 
 </html>
+
 
