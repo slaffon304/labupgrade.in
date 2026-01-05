@@ -83,6 +83,34 @@
         border-color: #07C42C;
         color: #07C42C !important;
     }
+            /* Исправление для мобильной версии: Языки слева, остальное справа */
+    @media (max-width: 768px) {
+        /* Делаем контейнер на всю ширину мобильного экрана */
+        .mobile-header-fix {
+            flex: 1 !important;
+            justify-content: space-between !important;
+            padding-left: 10px !important;
+        }
+        /* Отталкиваем языки в левый край */
+        .language-switcher {
+            margin-right: auto !important;
+        }
+        /* Компактная кнопка FB для мобилок */
+        .fb-custom-btn {
+            padding: 0 8px !important;
+            height: 38px !important;
+            font-size: 10px !important;
+        }
+        /* Убираем лишний отступ у обертки FB */
+        .fb-login-wrapper {
+            margin-right: 5px !important;
+        }
+        /* Текст кнопки меню делаем чуть меньше */
+        .btn-mobile-menu {
+            font-size: 10px !important;
+        }
+    }
+        
 </style>
 
 </head>
@@ -164,13 +192,12 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="col-6 col-sm-2 col-md-auto ms-md-auto d-flex justify-content-end align-items-center gap-3">
-                            <!-- Language Switcher -->
+                                                <div class="col col-md-auto ms-md-auto d-flex align-items-center gap-3 mobile-header-fix">
                             <div class="language-switcher" style="position: relative;">
                                 <button type="button" class="language-btn text-caption text-white link" style="display: flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); border-radius: 4px; cursor: pointer; transition: all 0.3s; width: 44px; height: 44px;">
                                     <span class="flag-icon" style="font-size: 20px;">🇷🇴</span>
                                 </button>
-                                <div class="language-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-width: 150px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                                <div class="language-dropdown" style="position: absolute; top: 100%; left: 0; margin-top: 8px; background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-width: 150px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
                                     <a href="index.html" class="language-option" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.1);">
                                         <span style="font-size: 20px;">🇷🇴</span>
                                         <span class="text-caption">Română</span>
@@ -183,6 +210,22 @@
                                         <span style="font-size: 20px;">🇺🇸</span>
                                         <span class="text-caption">English</span>
                                     </a>
+                                </div>
+                            </div>
+
+                            <div class="fb-login-wrapper">
+                                <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
+                                    <svg class="fb-icon" viewBox="0 0 24 24" fill="white"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
+                                    <span>LOGARE</span>
+                                </button>
+                            </div>
+
+                            <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
+                                <i class="icon icon-menu"></i>
+                                MENIU
+                            </button>
+                        </div>
+
                                 </div>
                             </div>
                             <div class="fb-login-wrapper me-2">
@@ -1691,6 +1734,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 
 </html>
+
 
 
 
