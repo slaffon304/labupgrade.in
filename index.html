@@ -31,10 +31,30 @@
     
     <!-- Smooth Scroll -->
     <style>
-        html {
-            scroll-behavior: smooth;
+    html { scroll-behavior: smooth; }
+    /* Дизайн кнопки LOGIN */
+    .fb-custom-btn {
+        background: rgba(255,255,255,0.05); color: white !important;
+        border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+        padding: 0 16px; height: 44px; display: flex; align-items: center; gap: 10px;
+        font-size: 12px; text-transform: uppercase; cursor: pointer; text-decoration: none !important;
+    }
+    .fb-custom-btn:hover { border-color: #07C42C; box-shadow: 0 0 15px rgba(7, 196, 44, 0.2); }
+    .fb-icon { width: 18px; height: 18px; fill: #1877F2; }
+    .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
+
+    /* Расположение на мобильных: Языки — Слева, Кнопки — Справа */
+    @media (max-width: 768px) {
+        .mobile-header-fix {
+            display: flex !important; width: 100% !important;
+            justify-content: space-between !important; padding: 0 15px !important;
         }
-    </style>
+        .right-side-group { display: flex; align-items: center; gap: 8px; }
+        .fb-custom-btn { padding: 0 8px !important; height: 38px !important; font-size: 10px !important; }
+        .fb-icon { width: 14px; height: 14px; }
+    }
+</style>
+
 </head>
 
 <body class="counter-scroll">
@@ -1594,5 +1614,6 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         });
     </script>
 </body>
+
 
 </html>
