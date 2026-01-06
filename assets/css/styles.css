@@ -1509,37 +1509,42 @@ header.header-sticky {
   display: flex;
 }
 @media (max-width: 991px) {
-    /* 1. Главный контейнер: отключаем space-between */
+    /* 1. Взламываем контейнер: убираем gap-3 и justify-content-end из HTML */
     .tf-header .header-inner .row div.col-6.justify-content-end {
         display: flex !important;
         flex: 0 0 100% !important;
         max-width: 100% !important;
         width: 100% !important;
-        justify-content: flex-start !important; /* Все элементы пойдут слева направо */
-        gap: 0 !important; /* Убираем встроенные отступы Bootstrap */
+        justify-content: flex-start !important; /* Все элементы выстраиваются в ряд слева направо */
+        gap: 0 !important; /* Обнуляем gap-3, чтобы элементы могли стоять вплотную */
         padding: 0 15px !important;
     }
 
-    /* 2. FACEBOOK (Первый слева) */
+    /* 2. FACEBOOK (Ставим на ПЕРВОЕ место) */
     .fb-login-wrapper, [onclick*="FB"] {
         order: 1 !important;
-        margin-right: auto !important; /* Эта "пружина" вытолкнет Меню и Флаг в правый край */
+        margin-right: auto !important; /* Эта "пружина" отталкивает Меню и Флаг в самый правый угол */
         display: flex !important;
     }
 
-    /* 3. МЕНЮ (Второй, стоит справа от зазора) */
+    /* 3. МЕНЮ (Ставим на ВТОРОЕ место — оно будет стоять справа от пустоты) */
     .btn-mobile-menu {
         order: 2 !important;
-        margin-left: 20px !important; /* Отступ от пустого места в центре */
+        margin-left: 20px !important; /* Отступ Меню от пустого центра */
         margin-right: 0 !important;
         display: flex !important;
     }
 
-    /* 4. ФЛАГ (Третий, самый крайний справа) */
+    /* 4. ФЛАГ (Ставим на ТРЕТЬЕ место — крайний правый элемент) */
     .language-switcher {
         order: 3 !important;
-        margin-left: 15px !important; /* Прижимается к Меню с небольшим отступом */
+        margin-left: 15px !important; /* Отступ Флага от Меню */
         display: flex !important;
+    }
+
+    /* 5. Скрываем пустую колонку слева, чтобы освободить место */
+    .tf-header .header-inner .row > div:not(.col-6) {
+        display: none !important;
     }
 }
 
