@@ -208,6 +208,33 @@
                 font-size: 24px !important;
             }
         }
+        .doc-text-hidden {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.6;
+}
+.btn-eye {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+.btn-eye:hover {
+    background: var(--primary);
+    color: black;
+}
+        
     </style>
 </head>
 
@@ -324,6 +351,46 @@
         <section class="documents-section flat-spacing">
             <div class="container position-relative z-5">
                 <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-4">
+    <div class="doc-item p-4 h-100">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="doc-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(0, 255, 0, 0.1);">
+                <i class="icon icon-file-text" style="font-size: 28px; color: var(--primary);"></i>
+            </div>
+            <button onclick="toggleDoc('privacy-text')" class="btn-eye">
+                <i class="icon icon-eye"></i>
+            </button>
+        </div>
+        <h5 class="text-white fw-semibold mb-3">Privacy Policy</h5>
+        <p class="text-white-64 small mb-0">Politica de confidențialitate (Facebook requirement).</p>
+        <div id="privacy-text" class="doc-text-hidden">
+            <strong>Lab Upgrade</strong> colectează numele și email-ul prin Facebook Login exclusiv pentru crearea contului și personalizarea experienței. Nu vindem și nu transmitem datele tale terților. Poți solicita ștergerea accesului oricând din setările Facebook.
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 col-lg-4 mb-4">
+    <div class="doc-item p-4 h-100">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="doc-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(255, 0, 0, 0.1);">
+                <i class="icon icon-trash" style="font-size: 28px; color: #ff4d4d;"></i>
+            </div>
+            <button onclick="toggleDoc('deletion-text')" class="btn-eye">
+                <i class="icon icon-eye"></i>
+            </button>
+        </div>
+        <h5 class="text-white fw-semibold mb-3">Data Deletion</h5>
+        <p class="text-white-64 small mb-0">Instrucțiuni pentru ștergerea datelor utilizatorului.</p>
+        <div id="deletion-text" class="doc-text-hidden">
+            Pentru a șterge datele tale: <br>
+            1. Mergi la Facebook -> Settings & Privacy -> Settings.<br>
+            2. Caută "Apps and Websites" și selectează <strong>Lab Upgrade</strong>.<br>
+            3. Apasă "Remove". <br>
+            4. Opțional: trimite un mail la <strong>support@labupgrade.in</strong> pentru curățarea bazei de date.
+        </div>
+    </div>
+</div>
+                    
                     <div class="col-lg-12">
                         
                     </div>
@@ -686,8 +753,20 @@
     
     <!-- Lead to Supabase -->
     <script type="module" src="assets/js/lead-to-supabase.js"></script>
+<script>
+function toggleDoc(id) {
+    const el = document.getElementById(id);
+    if (el.style.display === "block") {
+        el.style.display = "none";
+    } else {
+        el.style.display = "block";
+    }
+}
+</script>
+    
 </body>
 
 </html>
+
 
 
