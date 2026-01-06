@@ -1509,27 +1509,46 @@ header.header-sticky {
   display: flex;
 }
 @media (max-width: 991px) {
-  /* 1. Делаем всю строку «резиновой» */
-  .tf-header .header-inner .row {
-    display: flex !important;
-    justify-content: space-between !important;
-    flex-wrap: nowrap !important;
-  }
+    /* 1. Растягиваем строку на всю ширину и убираем отступы */
+    .tf-header .header-inner .row {
+        display: flex !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 
-  /* 2. Игнорируем стандартные колонки, чтобы они не зажимали кнопки */
-  .tf-header .header-inner .row > div {
-    display: contents !important; 
-  }
+    /* 2. Прячем блоки, которые физически мешают элементам быть слева */
+    .tf-header .header-inner .row > div:not(.col-6) {
+        display: none !important;
+    }
 
-  /* 3. Facebook — ПРИНУДИТЕЛЬНО ВЛЕВО */
-  .fb-login-wrapper {
-    order: -1 !important; /* Ставит в самое начало */
-    margin-right: auto !important; /* Расталкивает остальных вправо */
-  }
+    /* 3. Делаем колонку с кнопками полноэкранным контейнером */
+    .tf-header .header-inner .row > div.col-6 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0 15px !important;
+    }
 
-  /* 4. Язык и Меню — ПРИНУДИТЕЛЬНО ВПРАВО */
-  .language-switcher { order: 1 !important; }
-  .btn-mobile-menu { order: 2 !important; margin-left: 15px !important; }
+    /* 4. Расставляем элементы по углам */
+    .fb-login-wrapper {
+        order: -1 !important; /* Facebook первый слева */
+        margin-right: auto !important; /* Выталкивает всё остальное вправо */
+        display: flex !important;
+    }
+
+    .language-switcher {
+        order: 1 !important; /* Язык в правой группе */
+        margin-left: auto !important; /* Прижимает группу вправо */
+    }
+
+    .btn-mobile-menu {
+        order: 2 !important; /* Меню крайнее справа */
+        margin-left: 15px !important;
+    }
 }
 
 @media (max-width: 767px) {
