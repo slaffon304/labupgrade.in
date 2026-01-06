@@ -1509,47 +1509,46 @@ header.header-sticky {
   display: flex;
 }
 @media (max-width: 991px) {
-    /* 1. Растягиваем строку на всю ширину и убираем отступы */
-    .tf-header .header-inner .row {
-        display: flex !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    /* 2. Прячем блоки, которые физически мешают элементам быть слева */
-    .tf-header .header-inner .row > div:not(.col-6) {
-        display: none !important;
-    }
-
-    /* 3. Делаем колонку с кнопками полноэкранным контейнером */
-    .tf-header .header-inner .row > div.col-6 {
+@media (max-width: 991px) {
+    /* 1. Расширяем "зажатую" колонку на весь экран */
+    .tf-header .header-inner .row div.col-6.justify-content-end {
         flex: 0 0 100% !important;
         max-width: 100% !important;
         width: 100% !important;
         display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
+        /* Разносим всё содержимое по краям экрана */
+        justify-content: space-between !important; 
         padding: 0 15px !important;
     }
 
-    /* 4. Расставляем элементы по углам */
-    .fb-login-wrapper {
-        order: -1 !important; /* Facebook первый слева */
-        margin-right: auto !important; /* Выталкивает всё остальное вправо */
+    /* 2. Находим кнопку входа (как бы она ни называлась) */
+    /* Мы ищем её по классам, которые ты используешь для FB */
+    .fb-login-wrapper, 
+    .fb-custom-btn, 
+    [onclick*="FB"],
+    .tf-header .header-inner .row div.col-6 > *:not(.language-switcher):not(.btn-mobile-menu) {
+        order: -1 !important; /* Принудительно кидаем её в левый угол */
+        margin-right: auto !important;
         display: flex !important;
     }
 
+    /* 3. Группируем Язык и Меню в правом углу */
     .language-switcher {
-        order: 1 !important; /* Язык в правой группе */
-        margin-left: auto !important; /* Прижимает группу вправо */
+        order: 1 !important;
+        margin-left: auto !important; /* Дополнительно толкаем вправо */
     }
 
     .btn-mobile-menu {
-        order: 2 !important; /* Меню крайнее справа */
-        margin-left: 15px !important;
+        order: 2 !important;
+        margin-left: 10px !important;
+    }
+
+    /* 4. Убираем пустую левую колонку (col-6/col-7), чтобы она не мешала */
+    .tf-header .header-inner .row > div:first-child {
+        display: none !important;
     }
 }
+
 
 @media (max-width: 767px) {
   .tf-header.style-2 {
