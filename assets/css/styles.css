@@ -1509,46 +1509,37 @@ header.header-sticky {
   display: flex;
 }
 @media (max-width: 991px) {
-@media (max-width: 991px) {
-    /* 1. Расширяем "зажатую" колонку на весь экран */
+    /* 1. Родитель - теперь просто разрешает элементам стоять в ряд без авто-распределения */
     .tf-header .header-inner .row div.col-6.justify-content-end {
+        display: flex !important;
+        width: 100% !important;
         flex: 0 0 100% !important;
         max-width: 100% !important;
-        width: 100% !important;
-        display: flex !important;
-        /* Разносим всё содержимое по краям экрана */
-        justify-content: space-between !important; 
+        justify-content: flex-start !important; /* Отключаем space-between */
         padding: 0 15px !important;
     }
 
-    /* 2. Находим кнопку входа (как бы она ни называлась) */
-    /* Мы ищем её по классам, которые ты используешь для FB */
-    .fb-login-wrapper, 
-    .fb-custom-btn, 
-    [onclick*="FB"],
+    /* 2. FACEBOOK (LOGIN/LOGARE/ВОЙТИ) - ПЕРВЫЙ СЛЕВА */
+    .fb-login-wrapper, .fb-custom-btn, [onclick*="FB"],
     .tf-header .header-inner .row div.col-6 > *:not(.language-switcher):not(.btn-mobile-menu) {
-        order: -1 !important; /* Принудительно кидаем её в левый угол */
-        margin-right: auto !important;
+        order: -1 !important;
+        margin-right: auto !important; /* Эта пружина вытолкнет ВСЁ остальное вправо */
         display: flex !important;
     }
 
-    /* 3. Группируем Язык и Меню в правом углу */
-    .language-switcher {
-        order: 2 !important;
-        margin-left: auto !important; /* Дополнительно толкаем вправо */
-    }
-
+    /* 3. МЕНЮ - ВТОРОЙ (стоит слева от флага в правой группе) */
     .btn-mobile-menu {
         order: 1 !important;
-        margin-left: 10px !important;
+        margin-left: 20px !important; /* Отступ от "пустоты" */
+        margin-right: 0 !important;
     }
 
-    /* 4. Убираем пустую левую колонку (col-6/col-7), чтобы она не мешала */
-    .tf-header .header-inner .row > div:first-child {
-        display: none !important;
+    /* 4. ФЛАГ - ТРЕТИЙ (крайний правый) */
+    .language-switcher {
+        order: 2 !important;
+        margin-left: 15px !important; /* Прижимается к меню */
     }
 }
-
 
 @media (max-width: 767px) {
   .tf-header.style-2 {
