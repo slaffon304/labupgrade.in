@@ -1508,14 +1508,38 @@ header.header-sticky {
 .tf-header.style-2 .tf-list li {
   display: flex;
 }
-@media (max-width: 1199px) {
-  .tf-header {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-bottom: -74px;
+@media (max-width: 991px) {
+  /* 1. Настройка главного контейнера шапки */
+  .tf-header .header-inner .row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important; /* Запрещаем перенос на вторую строку */
+    width: 100% !important;
+    margin: 0 !important;
   }
-  .tf-header.style-2 {
-    margin-bottom: -106px;
+
+  /* 2. Логотип (левая колонка) */
+  .tf-header .header-inner .row > div:first-child {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    padding-left: 0 !important;
+  }
+
+  /* 3. Контейнер для кнопок (правая колонка) */
+  .tf-header .header-inner .row > div:last-child {
+    flex: 1 !important;
+    width: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important; /* Прижимает всё вправо */
+    align-items: center !important;
+    gap: 15px !important; /* Феншуй-отступ между флагом и меню */
+    padding-right: 0 !important;
+  }
+
+  /* 4. Фикс для самой иконки языка и меню */
+  .language-switcher, .btn-mobile-menu {
+    margin: 0 !important;
   }
 }
 @media (max-width: 767px) {
