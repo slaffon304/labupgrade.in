@@ -1509,39 +1509,39 @@ header.header-sticky {
   display: flex;
 }
 @media (max-width: 991px) {
-  /* 1. Настройка главного контейнера шапки */
+  /* 1. Делаем контейнер гибким и разносим содержимое по краям */
   .tf-header .header-inner .row {
     display: flex !important;
-    justify-content: space-between !important;
+    justify-content: space-between !important; /* Разносит FB влево, остальное вправо */
     align-items: center !important;
-    flex-wrap: nowrap !important; /* Запрещаем перенос на вторую строку */
+    flex-wrap: nowrap !important;
     width: 100% !important;
     margin: 0 !important;
+    padding: 0 10px !important;
   }
 
-  /* 2. Логотип (левая колонка) */
-  .tf-header .header-inner .row > div:first-child {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    padding-left: 0 !important;
+  /* 2. Левая часть (Кнопка Facebook) */
+  .fb-login-wrapper {
+    margin-left: 0 !important;
+    order: 1 !important; /* Гарантируем первое место слева */
   }
 
-  /* 3. Контейнер для кнопок (правая колонка) */
+  /* 3. Правая часть (Язык и Меню) */
   .tf-header .header-inner .row > div:last-child {
     flex: 1 !important;
-    width: auto !important;
     display: flex !important;
     justify-content: flex-end !important; /* Прижимает всё вправо */
     align-items: center !important;
-    gap: 15px !important; /* Феншуй-отступ между флагом и меню */
-    padding-right: 0 !important;
+    gap: 15px !important; /* Отступ между языком и меню */
+    order: 2 !important;
   }
 
-  /* 4. Фикс для самой иконки языка и меню */
-  .language-switcher, .btn-mobile-menu {
-    margin: 0 !important;
+  /* Убираем лишние пустые колонки, которые могут мешать */
+  .tf-header .header-inner .row > div:not(:last-child):not(.fb-login-wrapper) {
+    display: none !important;
   }
 }
+
 @media (max-width: 767px) {
   .tf-header.style-2 {
     margin-bottom: -74px;
