@@ -1509,37 +1509,27 @@ header.header-sticky {
   display: flex;
 }
 @media (max-width: 991px) {
-  /* 1. Делаем контейнер гибким и разносим содержимое по краям */
+  /* 1. Делаем всю строку «резиновой» */
   .tf-header .header-inner .row {
     display: flex !important;
-    justify-content: space-between !important; /* Разносит FB влево, остальное вправо */
-    align-items: center !important;
+    justify-content: space-between !important;
     flex-wrap: nowrap !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 10px !important;
   }
 
-  /* 2. Левая часть (Кнопка Facebook) */
+  /* 2. Игнорируем стандартные колонки, чтобы они не зажимали кнопки */
+  .tf-header .header-inner .row > div {
+    display: contents !important; 
+  }
+
+  /* 3. Facebook — ПРИНУДИТЕЛЬНО ВЛЕВО */
   .fb-login-wrapper {
-    margin-left: 0 !important;
-    order: 1 !important; /* Гарантируем первое место слева */
+    order: -1 !important; /* Ставит в самое начало */
+    margin-right: auto !important; /* Расталкивает остальных вправо */
   }
 
-  /* 3. Правая часть (Язык и Меню) */
-  .tf-header .header-inner .row > div:last-child {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: flex-end !important; /* Прижимает всё вправо */
-    align-items: center !important;
-    gap: 15px !important; /* Отступ между языком и меню */
-    order: 2 !important;
-  }
-
-  /* Убираем лишние пустые колонки, которые могут мешать */
-  .tf-header .header-inner .row > div:not(:last-child):not(.fb-login-wrapper) {
-    display: none !important;
-  }
+  /* 4. Язык и Меню — ПРИНУДИТЕЛЬНО ВПРАВО */
+  .language-switcher { order: 1 !important; }
+  .btn-mobile-menu { order: 2 !important; margin-left: 15px !important; }
 }
 
 @media (max-width: 767px) {
