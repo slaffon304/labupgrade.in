@@ -35,6 +35,55 @@
             scroll-behavior: smooth;
         }
     </style>
+    <style>
+    .fb-login-wrapper {
+        display: flex;
+        align-items: center;
+    }
+    .fb-custom-btn {
+        /* Стили как у кнопки языка */
+        background: rgba(255,255,255,0.05);
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 4px;
+        
+        padding: 0 16px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        
+        /* Твои шрифты */
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none !important;
+    }
+    
+    /* Эффект при наведении — свечение в стиле LabUpgrade */
+    .fb-custom-btn:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: #07C42C; /* Твой фирменный зеленый */
+        box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
+    }
+
+    .fb-icon {
+        width: 18px;
+        height: 18px;
+        fill: #1877F2; /* Оставляем иконку синей, чтобы Meta понимала, что это вход через FB */
+    }
+
+    /* Стиль для кнопки после успешного входа */
+    .fb-custom-btn.is-success {
+        border-color: #07C42C;
+        color: #07C42C !important;
+    }
+</style>
 </head>
 
 <body class="counter-scroll">
@@ -134,6 +183,12 @@
                                         <span class="text-caption">English</span>
                                     </a>
                                 </div>
+                            </div>
+                            <div class="fb-login-wrapper me-2">
+    <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
+        <svg class="fb-icon" viewBox="0 0 24 24" fill="white"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
+        <span>LOGIN</span>
+    </button>
                             </div>
                             <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
                                 <i class="icon icon-menu"></i>
@@ -1593,6 +1648,31 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
             }
         });
     </script>
+    <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '1194771652741657',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v24.0'
+        });
+    };
+
+    function handleFBLogin() {
+        FB.login(function(response) {
+            if (response.status === 'connected') {
+                const btn = document.getElementById('fb-auth-btn');
+                if (btn) btn.innerHTML = '<span>SUCCESS</span>';
+                console.log('FB Login Success');
+            }
+        }, {
+            config_id: '880665631010943'
+        });
+    }
+</script>
 </body>
+
 
 </html>
