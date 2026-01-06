@@ -349,9 +349,7 @@
 
         <!-- Documents Section -->
         <section class="documents-section flat-spacing">
-            <div class="container position-relative z-5">
-                <div class="row">
-                    <div class="col-md-6 col-lg-4 mb-4">
+            <div cla<div class="col-md-6 col-lg-4 mb-4">
     <div class="doc-item p-4 h-100">
         <div class="d-flex justify-content-between align-items-start mb-4">
             <div class="doc-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(0, 255, 0, 0.1);">
@@ -362,9 +360,17 @@
             </button>
         </div>
         <h5 class="text-white fw-semibold mb-3">Privacy Policy</h5>
-        <p class="text-white-64 small mb-0">Politica de confidențialitate (Facebook requirement).</p>
-        <div id="privacy-text" class="doc-text-hidden">
-            <strong>Lab Upgrade</strong> colectează numele și email-ul prin Facebook Login exclusiv pentru crearea contului și personalizarea experienței. Nu vindem și nu transmitem datele tale terților. Poți solicita ștergerea accesului oricând din setările Facebook.
+        <p class="text-white-64 small mb-0">Политика обработки персональных данных Lab Upgrade.</p>
+        
+        <div id="privacy-text" class="doc-text-hidden" style="max-height: 300px; overflow-y: auto; text-align: left; padding-right: 10px;">
+            <h6 class="text-white mb-3">1. ОБЩИЕ ПОЛОЖЕНИЯ</h6>
+            <p>1.1. Настоящая Политика разработана в соответствии с требованиями международного законодательства о защите данных (GDPR) и определяет принципы обработки персональных данных платформой <strong>Lab Upgrade</strong> (далее — "Оператор").</p>
+            <p>1.2. Оператор ставит важнейшей целью соблюдение прав и свобод человека при обработке его персональных данных, в том числе защиты прав на неприкосновенность частной жизни.</p>
+            <h6 class="text-white mb-3">2. ПЕРЕЧЕНЬ СОБИРАЕМЫХ ДАННЫХ</h6>
+            <p>2.1. При использовании Facebook Login мы получаем доступ только к следующим данным: Имя, Фамилия, Email и публичное фото профиля. Эти данные используются исключительно для автоматического создания личного кабинета пользователя.</p>
+            <p>2.2. Оператор не передает ваши данные третьим лицам без вашего прямого согласия, за исключением случаев, предусмотренных законом.</p>
+            <h6 class="text-white mb-3">3. ПРАВА СУБЪЕКТА</h6>
+            <p>3.1. Вы имеете право на получение информации, касающейся обработки ваших персональных данных, а также право требовать их уточнения, блокирования или уничтожения.</p>
         </div>
     </div>
 </div>
@@ -380,16 +386,20 @@
             </button>
         </div>
         <h5 class="text-white fw-semibold mb-3">Data Deletion</h5>
-        <p class="text-white-64 small mb-0">Instrucțiuni pentru ștergerea datelor utilizatorului.</p>
+        <p class="text-white-64 small mb-0">Как отозвать права доступа приложения.</p>
+        
         <div id="deletion-text" class="doc-text-hidden">
-            Pentru a șterge datele tale: <br>
-            1. Mergi la Facebook -> Settings & Privacy -> Settings.<br>
-            2. Caută "Apps and Websites" și selectează <strong>Lab Upgrade</strong>.<br>
-            3. Apasă "Remove". <br>
-            4. Opțional: trimite un mail la <strong>support@labupgrade.in</strong> pentru curățarea bazei de date.
+            <p>Мы уважаем вашу конфиденциальность и предоставляем простой способ удаления ваших данных из нашего приложения.</p>
+            <p><strong>Вариант 1 (Автоматический):</strong><br>
+            Перейдите по официальной ссылке настроек Facebook:<br>
+            <a href="https://m.facebook.com/settings/business_integrations" target="_blank" style="color: var(--primary); text-decoration: underline;">Настройки интеграций Facebook</a><br>
+            Найдите <strong>Lab Upgrade</strong> и нажмите "Удалить".</p>
+            <p><strong>Вариант 2 (Запрос администратору):</strong><br>
+            Вы можете отправить письмо на <strong>support@labupgrade.in</strong> с темой "Удаление данных", и мы удалим вашу учетную запись вручную в течение 24 часов.</p>
         </div>
     </div>
 </div>
+
                     
                     <div class="col-lg-12">
                         
@@ -767,6 +777,7 @@ function toggleDoc(id) {
 </body>
 
 </html>
+
 
 
 
