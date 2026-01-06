@@ -1534,12 +1534,12 @@ header.header-sticky {
 
     /* 3. Группируем Язык и Меню в правом углу */
     .language-switcher {
-        order: 1 !important;
+        order: 2 !important;
         margin-left: auto !important; /* Дополнительно толкаем вправо */
     }
 
     .btn-mobile-menu {
-        order: 2 !important;
+        order: 1 !important;
         margin-left: 10px !important;
     }
 
