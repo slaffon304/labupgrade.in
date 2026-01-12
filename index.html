@@ -1657,6 +1657,45 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             }
         });
     </script>
+    <style>
+    #success-modal {
+        display: none; position: fixed; z-index: 999999;
+        left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.85);
+        backdrop-filter: blur(5px);
+        align-items: center; justify-content: center;
+    }
+    .modal-box {
+        background: #0f0f0f; border: 1px solid #333; border-top: 3px solid #07C42C;
+        padding: 40px; width: 90%; max-width: 420px;
+        text-align: center; border-radius: 12px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        color: white; font-family: sans-serif;
+    }
+    .modal-btn {
+        background: #07C42C; color: #000; border: none;
+        padding: 12px 40px; font-weight: 700; cursor: pointer;
+        border-radius: 6px; font-size: 14px; letter-spacing: 1px;
+        text-transform: uppercase; margin-top: 20px;
+        display: inline-block; min-width: 150px;
+    }
+    .modal-btn:hover { background: #05a024; }
+</style>
+
+<div id="success-modal">
+    <div class="modal-box">
+        <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
+        <div style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">Conectat cu succes!</div>
+        <div style="color: #888; margin-bottom: 10px;">
+            Cont Facebook asociat.
+        </div>
+        <div style="color: #07C42C; font-weight: bold; font-size: 18px; margin-bottom: 20px;" id="fb-user-name">
+            User
+        </div>
+        <button class="modal-btn" onclick="document.getElementById('success-modal').style.display='none'">INCHIDE</button>
+    </div>
+</div>
+    
     <div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
@@ -1730,7 +1769,16 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     if (data.success) {
                         // УСПЕХ
                         const pageName = data.pages.length > 0 ? data.pages[0].name : 'Page';
-                        alert(`SUCCESS! Page "${pageName}" connected.\nClient ID: ${myClientId}`);
+                                                // Вместо alert показываем окно
+                        FB.api('/me', function(user) {
+                            // Вставляем имя в окно
+                            const nameBox = document.getElementById('fb-user-name');
+                            if(nameBox) nameBox.innerText = user.name;
+                            
+                            // Открываем окно
+                            document.getElementById('success-modal').style.display = 'flex';
+                        });
+
                         
                         if(btn) {
                             btn.innerHTML = '<span>CONNECTED ✅</span>';
@@ -1753,7 +1801,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             }
         }, {
             config_id: '1543250686795839', // Твой конфиг прав
-            scope: 'pages_show_list,pages_messaging,pages_manage_metadata,instagram_basic,instagram_manage_messages'
+            scope: 'pages_show_list,pages_messaging,pages_manage_metadata,instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,pages_read_user_content,pages_manage_engagement,pages_read_engagement'
         });
     }
 </script>
@@ -1763,6 +1811,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 
 </html>
+
 
 
 
