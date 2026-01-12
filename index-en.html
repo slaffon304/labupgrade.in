@@ -1704,13 +1704,26 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
         line-height: 1.6; margin-bottom: 25px; 
     }
     .user-name-highlight { color: #07C42C; font-weight: bold; }
-    .modal-btn {
-        background: #07C42C; color: #000; border: none; 
-        padding: 14px 35px; font-weight: 700; cursor: pointer; 
-        border-radius: 6px; font-size: 14px; letter-spacing: 1px;
-        text-transform: uppercase; transition: all 0.3s;
-        width: 100%;
+        .modal-btn {
+        background: #07C42C; 
+        color: #000; 
+        border: none; 
+        padding: 14px 50px; /* Сделал пошире, чтобы было красиво */
+        font-weight: 700; 
+        cursor: pointer; 
+        border-radius: 6px; 
+        font-size: 14px; 
+        letter-spacing: 1px;
+        text-transform: uppercase; 
+        transition: all 0.3s;
+        
+        /* 🔥 ИЗМЕНЕНИЯ ЗДЕСЬ 🔥 */
+        width: auto;            /* Кнопка не на всю ширину */
+        display: inline-block;  /* Ведет себя как блок */
+        min-width: 150px;       /* Минимальная ширина для солидности */
+        margin-top: 10px;       /* Отступ сверху */
     }
+
     .modal-btn:hover { background: #05a024; box-shadow: 0 0 15px rgba(7,196,44,0.3); }
 </style>
 
@@ -1778,6 +1791,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
