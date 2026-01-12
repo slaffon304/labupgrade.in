@@ -1658,9 +1658,97 @@
             }
         });
     </script>
-    <div id="fb-root"></div>
+    <style>
+    #success-modal {
+        display: none; 
+        position: fixed; 
+        z-index: 999999; /* Поверх всего */
+        left: 0; 
+        top: 0; 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0,0,0,0.85); /* Темный фон */
+        backdrop-filter: blur(8px); /* Размытие фона */
+        align-items: center; 
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    #success-modal.visible {
+        opacity: 1;
+    }
+    .modal-box {
+        background: #0f0f0f; 
+        border: 1px solid #333; 
+        border-top: 3px solid #07C42C; /* Твоя зеленая полоска */
+        padding: 40px; 
+        width: 90%; 
+        max-width: 420px; 
+        text-align: center; 
+        border-radius: 12px; 
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+    #success-modal.visible .modal-box {
+        transform: translateY(0);
+    }
+    .modal-icon { font-size: 48px; margin-bottom: 20px; }
+    .modal-title { 
+        color: white; font-family: inherit; font-size: 24px; 
+        font-weight: 600; margin-bottom: 10px; letter-spacing: -0.5px;
+    }
+    .modal-text { 
+        color: #888; font-family: inherit; font-size: 15px; 
+        line-height: 1.6; margin-bottom: 25px; 
+    }
+    .user-name-highlight { color: #07C42C; font-weight: bold; }
+        .modal-btn {
+        background: #07C42C; 
+        color: #000; 
+        border: none; 
+        padding: 14px 50px; /* Сделал пошире, чтобы было красиво */
+        font-weight: 700; 
+        cursor: pointer; 
+        border-radius: 6px; 
+        font-size: 14px; 
+        letter-spacing: 1px;
+        text-transform: uppercase; 
+        transition: all 0.3s;
+        
+        /* 🔥 ИЗМЕНЕНИЯ ЗДЕСЬ 🔥 */
+        width: auto;            /* Кнопка не на всю ширину */
+        display: inline-block;  /* Ведет себя как блок */
+        min-width: 150px;       /* Минимальная ширина для солидности */
+        margin-top: 10px;       /* Отступ сверху */
+    }
+
+    .modal-btn:hover { background: #05a024; box-shadow: 0 0 15px rgba(7,196,44,0.3); }
+</style>
+
+<div id="success-modal">
+    <div class="modal-box">
+        <div class="modal-icon">✅</div>
+        <div class="modal-title">Успешное подключение!</div>
+        <div class="modal-text">
+            Аккаунт Facebook подключен.<br>
+            Подключено как: <span id="fb-user-name" class="user-name-highlight">User</span>
+        </div>
+        <button class="modal-btn" onclick="closeModal()">ПРОДОЛЖИТЬ</button>
+    </div>
+</div>
+
+<div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 <script>
+    // Функция закрытия окна
+    function closeModal() {
+        document.getElementById('success-modal').classList.remove('visible');
+        setTimeout(function() {
+            document.getElementById('success-modal').style.display = 'none';
+        }, 300);
+    }
+
     window.fbAsyncInit = function() {
         FB.init({
             appId      : '1194771652741657',
@@ -1673,8 +1761,23 @@
     function handleFBLogin() {
         FB.login(function(response) {
             if (response.status === 'connected') {
+                // 1. Меняем текст в кнопке (как ты просил)
                 const btn = document.getElementById('fb-auth-btn');
                 if (btn) btn.innerHTML = '<span>SUCCESS</span>';
+                
+                // 2. Получаем имя и открываем окно
+                FB.api('/me', function(user) {
+                    document.getElementById('fb-user-name').innerText = user.name;
+                    
+                    // Показываем окно с анимацией
+                    const modal = document.getElementById('success-modal');
+                    modal.style.display = 'flex';
+                    // Небольшая задержка для срабатывания CSS-перехода
+                    setTimeout(function() {
+                        modal.classList.add('visible');
+                    }, 10);
+                });
+                
                 console.log('FB Login Success');
             }
         }, {
@@ -1687,6 +1790,7 @@
 
 
 </html>
+
 
 
 
