@@ -1661,128 +1661,148 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
     </script>
     <style>
     #success-modal {
-        display: none; 
-        position: fixed; 
-        z-index: 999999; /* Поверх всего */
-        left: 0; 
-        top: 0; 
-        width: 100%; 
-        height: 100%; 
-        background-color: rgba(0,0,0,0.85); /* Темный фон */
-        backdrop-filter: blur(8px); /* Размытие фона */
-        align-items: center; 
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    #success-modal.visible {
-        opacity: 1;
+        display: none; position: fixed; z-index: 999999;
+        left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.85);
+        backdrop-filter: blur(5px);
+        align-items: center; justify-content: center;
     }
     .modal-box {
-        background: #0f0f0f; 
-        border: 1px solid #333; 
-        border-top: 3px solid #07C42C; /* Твоя зеленая полоска */
-        padding: 40px; 
-        width: 90%; 
-        max-width: 420px; 
-        text-align: center; 
-        border-radius: 12px; 
+        background: #0f0f0f; border: 1px solid #333; border-top: 3px solid #07C42C;
+        padding: 40px; width: 90%; max-width: 420px;
+        text-align: center; border-radius: 12px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        transform: translateY(20px);
-        transition: transform 0.3s ease;
+        color: white; font-family: sans-serif;
     }
-    #success-modal.visible .modal-box {
-        transform: translateY(0);
+    .modal-btn {
+        background: #07C42C; color: #000; border: none;
+        padding: 12px 40px; font-weight: 700; cursor: pointer;
+        border-radius: 6px; font-size: 14px; letter-spacing: 1px;
+        text-transform: uppercase; margin-top: 20px;
+        display: inline-block; min-width: 150px;
     }
-    .modal-icon { font-size: 48px; margin-bottom: 20px; }
-    .modal-title { 
-        color: white; font-family: inherit; font-size: 24px; 
-        font-weight: 600; margin-bottom: 10px; letter-spacing: -0.5px;
-    }
-    .modal-text { 
-        color: #888; font-family: inherit; font-size: 15px; 
-        line-height: 1.6; margin-bottom: 25px; 
-    }
-    .user-name-highlight { color: #07C42C; font-weight: bold; }
-        .modal-btn {
-        background: #07C42C; 
-        color: #000; 
-        border: none; 
-        padding: 14px 50px; /* Сделал пошире, чтобы было красиво */
-        font-weight: 700; 
-        cursor: pointer; 
-        border-radius: 6px; 
-        font-size: 14px; 
-        letter-spacing: 1px;
-        text-transform: uppercase; 
-        transition: all 0.3s;
-        
-        /* 🔥 ИЗМЕНЕНИЯ ЗДЕСЬ 🔥 */
-        width: auto;            /* Кнопка не на всю ширину */
-        display: inline-block;  /* Ведет себя как блок */
-        min-width: 150px;       /* Минимальная ширина для солидности */
-        margin-top: 10px;       /* Отступ сверху */
-    }
-
-    .modal-btn:hover { background: #05a024; box-shadow: 0 0 15px rgba(7,196,44,0.3); }
+    .modal-btn:hover { background: #05a024; }
 </style>
 
 <div id="success-modal">
     <div class="modal-box">
-        <div class="modal-icon">✅</div>
-        <div class="modal-title">Connection Successful!</div>
-        <div class="modal-text">
-            Facebook Account has been linked.<br>
-            Connected as: <span id="fb-user-name" class="user-name-highlight">User</span>
+        <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
+        <div style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">Connection succesfull!</div>
+        <div style="color: #888; margin-bottom: 10px;">
+            Facebook account linked.
         </div>
-        <button class="modal-btn" onclick="closeModal()">CONTINUE</button>
+        <div style="color: #07C42C; font-weight: bold; font-size: 18px; margin-bottom: 20px;" id="fb-user-name">
+            User
+        </div>
+        <button class="modal-btn" onclick="document.getElementById('success-modal').style.display='none'">CONTINUE</button>
     </div>
 </div>
-
-<div id="fb-root"></div>
+    
+    <div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-<script>
-    // Функция закрытия окна
-    function closeModal() {
-        document.getElementById('success-modal').classList.remove('visible');
-        setTimeout(function() {
-            document.getElementById('success-modal').style.display = 'none';
-        }, 300);
-    }
 
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '1194771652741657',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v24.0'
-        });
+<script>
+    // 1. КОНФИГУРАЦИЯ (Заполни только эти 2 поля)
+    const CONFIG = {
+        appId: '1194771652741657', // Твой FB App ID
+        functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task', // Ссылка на функцию
+        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU' // Anon Public Key
     };
 
+    // 2. ИНИЦИАЛИЗАЦИЯ FB
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : CONFIG.appId,
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v19.0' // Используем стабильную версию
+        });
+        console.log("FB SDK Ready");
+    };
+
+    // 3. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: ГЕНЕРАЦИЯ ИЛИ ПОЛУЧЕНИЕ ID
+    function getOrCreateClientId() {
+        // Проверяем, есть ли уже ID в браузере
+        let clientId = localStorage.getItem('lab_client_id');
+        
+        if (!clientId) {
+            // Если нет - генерируем новый UUID
+            clientId = crypto.randomUUID();
+            localStorage.setItem('lab_client_id', clientId);
+            console.log("Сгенерирован новый ID клиента:", clientId);
+        } else {
+            console.log("Найден существующий ID клиента:", clientId);
+        }
+        return clientId;
+    }
+
+    // 4. ОСНОВНАЯ ФУНКЦИЯ (ВЕШАЕТСЯ НА КНОПКУ)
     function handleFBLogin() {
+        const btn = document.getElementById('fb-auth-btn') || document.querySelector('.fb-custom-btn');
+        
+        console.log("Начинаем процесс подключения...");
+        
         FB.login(function(response) {
             if (response.status === 'connected') {
-                // 1. Меняем текст в кнопке (как ты просил)
-                const btn = document.getElementById('fb-auth-btn');
-                if (btn) btn.innerHTML = '<span>SUCCESS</span>';
+                console.log('1. FB авторизация успешна');
                 
-                // 2. Получаем имя и открываем окно
-                FB.api('/me', function(user) {
-                    document.getElementById('fb-user-name').innerText = user.name;
+                // Визуальный эффект загрузки
+                if(btn) btn.innerHTML = '<span style="color: inherit;">Connecting...</span>';
+
+                const userToken = response.authResponse.accessToken;
+                const myClientId = getOrCreateClientId();
+
+                // Отправка на Бэкенд
+                fetch(CONFIG.functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + CONFIG.supabaseKey
+                    },
+                    body: JSON.stringify({ 
+                        userAccessToken: userToken,
+                        clientId: myClientId
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('2. Ответ сервера:', data);
                     
-                    // Показываем окно с анимацией
-                    const modal = document.getElementById('success-modal');
-                    modal.style.display = 'flex';
-                    // Небольшая задержка для срабатывания CSS-перехода
-                    setTimeout(function() {
-                        modal.classList.add('visible');
-                    }, 10);
+                    if (data.success) {
+                        // УСПЕХ
+                        const pageName = data.pages.length > 0 ? data.pages[0].name : 'Page';
+                                                // Вместо alert показываем окно
+                        FB.api('/me', function(user) {
+                            // Вставляем имя в окно
+                            const nameBox = document.getElementById('fb-user-name');
+                            if(nameBox) nameBox.innerText = user.name;
+                            
+                            // Открываем окно
+                            document.getElementById('success-modal').style.display = 'flex';
+                        });
+
+                        
+                        if(btn) {
+                            btn.innerHTML = '<span>CONNECTED ✅</span>';
+                            btn.style.borderColor = '#4CAF50';
+                            btn.style.color = '#4CAF50';
+                        }
+                    } else {
+                        // ОШИБКА ЛОГИКИ
+                        throw new Error(data.error || 'Unknown server error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Ошибка:', err);
+                    alert('Error: ' + err.message);
+                    if(btn) btn.innerHTML = '<span>TRY AGAIN</span>';
                 });
-                
-                console.log('FB Login Success');
+
+            } else {
+                console.log('Пользователь отменил вход');
             }
         }, {
-            config_id: '1543250686795839'
+            config_id: '1543250686795839', // Твой конфиг прав
         });
     }
 </script>
@@ -1791,6 +1811,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
