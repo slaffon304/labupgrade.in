@@ -35,143 +35,69 @@
             scroll-behavior: smooth;
         }
     </style>
-        <style>
-    .fb-login-wrapper {
-        display: flex;
-        align-items: center;
-    }
-    .fb-custom-btn {
-        /* Стили как у кнопки языка */
-        background: rgba(255,255,255,0.05);
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 4px;
+    <style>
+                html {
+            scroll-behavior: smooth;
+        }
+        .fb-login-wrapper {
+            display: flex;
+            align-items: center;
+        }
         
-        padding: 0 16px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        /* === СТИЛИ КНОПКИ (ИСПРАВЛЕННЫЕ) === */
+        .fb-custom-btn {
+            background: rgba(255,255,255,0.05);
+            color: white !important;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            padding: 0 16px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            
+            /* Шрифт */
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            
+            /* 🔥 ГЛАВНОЕ: Убираем заглавные буквы 🔥 */
+            text-transform: none;
+            
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
         
-        /* Твои шрифты */
-        font-family: inherit;
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.5px; /* Чуть уменьшил, чтобы строчные буквы не разлетались */
-        
-        /* 🔥 ИСПРАВЛЕНИЕ ЗАГЛАВНЫХ БУКВ 🔥 */
-        text-transform: none; 
-        
-        transition: all 0.3s ease;
-        cursor: pointer;
-        text-decoration: none !important;
-    }
-    
-    .fb-custom-btn:hover {
-        background: rgba(255,255,255,0.1);
-        border-color: #07C42C; /* Твой зеленый */
-        box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
-    }
+        .fb-custom-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #07C42C;
+            box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
+        }
 
-    .fb-icon {
-        width: 24px; /* Чуть уменьшил иконку для аккуратности */
-        height: 24px;
-        fill: #1877F2; 
-    }
+        .fb-icon { width: 24px; height: 24px; fill: #1877F2; }
+        .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
 
-    /* === НОВЫЕ СТИЛИ ДЛЯ ВСПЛЫВАЮЩЕГО ОКНА (MODAL) === */
-    #success-modal {
-        display: none; /* Скрыто по умолчанию */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.85); /* Темный фон */
-        backdrop-filter: blur(5px); /* Размытие фона (красиво!) */
-        z-index: 10000; /* Поверх всего */
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    #success-modal.active {
-        display: flex;
-        opacity: 1;
-    }
-
-    .modal-content {
-        background: #0f0f0f;
-        border: 1px solid #333;
-        border-top: 3px solid #07C42C; /* Твоя зеленая полоска сверху */
-        padding: 40px;
-        border-radius: 8px;
-        text-align: center;
-        max-width: 450px;
-        width: 90%;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        color: white;
-        font-family: inherit;
-        position: relative;
-    }
-
-    .modal-icon-box {
-        width: 60px;
-        height: 60px;
-        background: rgba(7, 196, 44, 0.1);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px auto;
-        font-size: 30px;
-    }
-
-    .modal-title {
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: white;
-    }
-
-    .modal-text {
-        font-size: 14px;
-        color: #888;
-        line-height: 1.6;
-        margin-bottom: 30px;
-    }
-
-    .user-badge {
-        background: #1a1a1a;
-        padding: 10px 15px;
-        border-radius: 4px;
-        color: #07C42C;
-        font-weight: 600;
-        display: inline-block;
-        border: 1px solid #333;
-    }
-
-    .close-btn {
-        background: #07C42C;
-        color: black;
-        border: none;
-        padding: 12px 30px;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .close-btn:hover {
-        background: #05a024;
-        box-shadow: 0 0 15px rgba(7, 196, 44, 0.4);
-    }
+        /* === СТИЛИ ВСПЛЫВАЮЩЕГО ОКНА === */
+        #success-modal {
+            display: none; position: fixed; z-index: 99999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85); /* Затемнение */
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #0f0f0f; border: 1px solid #333; border-top: 3px solid #07C42C;
+            padding: 40px; width: 90%; max-width: 450px;
+            text-align: center; color: white; border-radius: 8px; font-family: sans-serif;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .close-btn {
+            background: #07C42C; color: #000; border: none; font-weight: bold;
+            padding: 12px 30px; margin-top: 25px; cursor: pointer; border-radius: 4px;
+        }
 </style>
-
 </head>
 
 <body class="counter-scroll">
@@ -1732,76 +1658,62 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
                         languageDropdown.style.opacity = '0';
                         languageDropdown.style.visibility = 'hidden';
                         languageDropdown.style.transform = 'translateY(-10px)';
-                  <div id="success-modal">
-    <div class="modal-content">
-        <div class="modal-icon-box">✅</div>
-        <div class="modal-title">Connection Successful!</div>
-        <div style="color: #888; margin-bottom: 20px;">
-            Facebook Account linked successfully.<br>
-            <div class="user-badge" id="fb-user-name">User</div>
+                      <div id="success-modal">
+        <div class="modal-content">
+            <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
+            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 10px; color: white;">Connection Successful!</h2>
+            <div style="color: #888; line-height: 1.6;">
+                Facebook Account Linked.<br>
+                <span style="display:block; margin-top:15px; color:#ccc;">Connected as:</span>
+                <span id="fb-user-name" style="font-size: 18px; font-weight: bold; color: #07C42C;">Loading...</span>
+            </div>
+            <button class="close-btn" onclick="document.getElementById('success-modal').style.display='none'">CONTINUE</button>
         </div>
-        <button class="close-btn" onclick="document.getElementById('success-modal').style.display='none'">CONTINUE</button>
     </div>
-</div>
 
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-<script>
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '1194771652741657',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v24.0'
-        });
-    };
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '1194771652741657',
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v24.0'
+            });
+        };
 
-    function handleFBLogin() {
-        console.log("Login button clicked"); // Проверка в консоли
-        FB.login(function(response) {
-            if (response.status === 'connected') {
-                // 1. Меняем вид кнопки
-                const btn = document.getElementById('fb-auth-btn');
-                if (btn) {
-                    btn.innerHTML = '<span style="color:#07C42C">CONNECTED ✅</span>';
-                    btn.classList.add('is-success');
-                    btn.style.borderColor = '#07C42C';
+        // Эта функция срабатывает, когда ты жмешь на кнопку входа
+        function handleFBLogin() {
+            console.log('Login Initiated...');
+            FB.login(function(response) {
+                if (response.status === 'connected') {
+                    // 1. Меняем вид кнопки на "CONNECTED"
+                    var btn = document.getElementById('fb-auth-btn');
+                    if (btn) {
+                        btn.classList.add('is-success'); // Зеленая рамка
+                        btn.style.borderColor = '#07C42C';
+                        btn.style.color = '#07C42C';
+                        var span = btn.querySelector('span');
+                        if(span) span.innerText = 'CONNECTED';
+                    }
+
+                    // 2. Получаем имя и показываем окно
+                    FB.api('/me', function(user) {
+                        document.getElementById('fb-user-name').innerText = user.name;
+                        document.getElementById('success-modal').style.display = 'flex';
+                    });
+                } else {
+                    console.log('User cancelled login.');
                 }
-
-                // 2. Получаем имя и показываем окно
-                FB.api('/me', function(user) {
-                    document.getElementById('fb-user-name').innerText = user.name;
-                    document.getElementById('success-modal').style.display = 'flex';
-                });
-            } else {
-                console.log('User cancelled login or did not fully authorize.');
-            }
-        }, {
-            config_id: '1543250686795839'
-        });
-    }
-</script>
-  }
-                });
-                
-                const languageOptions = languageDropdown.querySelectorAll('.language-option');
-                languageOptions.forEach(option => {
-                    option.addEventListener('mouseenter', function() {
-                        this.style.background = 'rgba(255,255,255,0.1)';
-                    });
-                    option.addEventListener('mouseleave', function() {
-                        this.style.background = 'transparent';
-                    });
-                });
-            }
-        });
+            }, {
+                config_id: '1543250686795839'
+            });
+        }
     </script>
-    
-    
 </body>
-
-
 </html>
+
 
 
 
