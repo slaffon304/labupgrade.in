@@ -1803,7 +1803,12 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
             }
         }, {
             config_id: '1543250686795839', // Твой конфиг прав
-            scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_manage_engagement,pages_read_user_content'
+            scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_manage_engagement,pages_read_user_content',
+            extras: {
+                setup: {
+                    channel: "IG_API_ONBOARDING"
+                }
+            }
         });
     }
 </script>
@@ -1812,6 +1817,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
