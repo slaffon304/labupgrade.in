@@ -1684,130 +1684,207 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
     .modal-btn:hover { background: #05a024; }
 </style>
 
-<div id="success-modal">
-    <div class="modal-box">
-        <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
-        <div style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">Connection succesfull!</div>
-        <div style="color: #888; margin-bottom: 10px;">
-            Facebook account linked.
+<div id="success-modal" style="display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+    <div style="background-color: #0f0f0f; border: 1px solid #333; border-top: 3px solid #07C42C; padding: 40px; width: 90%; max-width: 450px; text-align: center; color: white; border-radius: 8px; font-family: sans-serif; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+        <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
+        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 10px; color: white;">Connected!</h2>
+        <div style="color: #888; margin-bottom: 20px;" id="modal-text">
+            Account linked successfully.
         </div>
-        <div style="color: #07C42C; font-weight: bold; font-size: 18px; margin-bottom: 20px;" id="fb-user-name">
-            User
-        </div>
-        <button class="modal-btn" onclick="document.getElementById('success-modal').style.display='none'">CONTINUE</button>
+        <button onclick="document.getElementById('success-modal').style.display='none'; window.history.replaceState({}, document.title, window.location.pathname);" style="background: #07C42C; color: #000; border: none; font-weight: bold; padding: 12px 30px; cursor: pointer; border-radius: 4px;">CONTINUE</button>
     </div>
 </div>
+
+<style>
+    .connect-btn {
+        width: 100%;
+        max-width: 300px;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px auto;
+        transition: 0.3s;
+        text-decoration: none;
+        font-family: sans-serif;
+    }
+    /* Стиль FB */
+    .btn-fb {
+        background-color: #1877F2;
+        color: white;
+        border: 1px solid #1877F2;
+    }
+    .btn-fb:hover { background-color: #155db5; }
     
-    <div id="fb-root"></div>
+    /* Стиль IG (Градиент) */
+    .btn-ig {
+        background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+        color: white;
+        border: 1px solid #c13584;
+    }
+    .btn-ig:hover { opacity: 0.9; }
+</style>
+
+<div style="text-align: center; margin-top: 20px;">
+    <button id="fb-auth-btn" class="connect-btn btn-fb" onclick="handleFBLogin()">
+        <svg style="width:20px; height:20px; margin-right:10px; fill:white;" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Connect Facebook
+    </button>
+
+    <button id="ig-auth-btn" class="connect-btn btn-ig" onclick="handleInstagramLogin()">
+        <svg style="width:20px; height:20px; margin-right:10px; fill:white;" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Connect Instagram
+    </button>
+</div>
+
+<div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 <script>
-    // 1. КОНФИГУРАЦИЯ (Заполни только эти 2 поля)
+    // 1. КОНФИГУРАЦИЯ
     const CONFIG = {
-        appId: '1194771652741657', // Твой FB App ID
-        functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task', // Ссылка на функцию
-        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU' // Anon Public Key
+        appId: '1194771652741657',
+        // Умное определение текущего URL (без хешей) для редиректа
+        redirectUri: window.location.origin + window.location.pathname,
+        functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task', 
+        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU'
     };
 
-    // 2. ИНИЦИАЛИЗАЦИЯ FB
+    // Инициализация FB SDK
     window.fbAsyncInit = function() {
         FB.init({
             appId      : CONFIG.appId,
             cookie     : true,
             xfbml      : true,
-            version    : 'v19.0' // Используем стабильную версию
+            version    : 'v19.0'
         });
-        console.log("FB SDK Ready");
     };
 
-    // 3. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: ГЕНЕРАЦИЯ ИЛИ ПОЛУЧЕНИЕ ID
+    // Client ID Helper
     function getOrCreateClientId() {
-        // Проверяем, есть ли уже ID в браузере
         let clientId = localStorage.getItem('lab_client_id');
-        
         if (!clientId) {
-            // Если нет - генерируем новый UUID
             clientId = crypto.randomUUID();
             localStorage.setItem('lab_client_id', clientId);
-            console.log("Сгенерирован новый ID клиента:", clientId);
-        } else {
-            console.log("Найден существующий ID клиента:", clientId);
         }
         return clientId;
     }
 
-    // 4. ОСНОВНАЯ ФУНКЦИЯ (ВЕШАЕТСЯ НА КНОПКУ)
+    // ==========================================
+    // ЛОГИКА FACEBOOK (Стандартная)
+    // ==========================================
     function handleFBLogin() {
-        const btn = document.getElementById('fb-auth-btn') || document.querySelector('.fb-custom-btn');
-        
-        console.log("Начинаем процесс подключения...");
-        
+        const btn = document.getElementById('fb-auth-btn');
+        if(btn) btn.innerHTML = 'Connecting FB...';
+
         FB.login(function(response) {
             if (response.status === 'connected') {
-                console.log('1. FB авторизация успешна');
-                
-                // Визуальный эффект загрузки
-                if(btn) btn.innerHTML = '<span style="color: inherit;">Connecting...</span>';
-
-                const userToken = response.authResponse.accessToken;
-                const myClientId = getOrCreateClientId();
-
-                // Отправка на Бэкенд
-                fetch(CONFIG.functionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + CONFIG.supabaseKey
-                    },
-                    body: JSON.stringify({ 
-                        userAccessToken: userToken,
-                        clientId: myClientId
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log('2. Ответ сервера:', data);
-                    
-                    if (data.success) {
-                        // УСПЕХ
-                        const pageName = data.pages.length > 0 ? data.pages[0].name : 'Page';
-                                                // Вместо alert показываем окно
-                        FB.api('/me', function(user) {
-                            // Вставляем имя в окно
-                            const nameBox = document.getElementById('fb-user-name');
-                            if(nameBox) nameBox.innerText = user.name;
-                            
-                            // Открываем окно
-                            document.getElementById('success-modal').style.display = 'flex';
-                        });
-
-                        
-                        if(btn) {
-                            btn.innerHTML = '<span>CONNECTED ✅</span>';
-                            btn.style.borderColor = '#4CAF50';
-                            btn.style.color = '#4CAF50';
-                        }
-                    } else {
-                        // ОШИБКА ЛОГИКИ
-                        throw new Error(data.error || 'Unknown server error');
-                    }
-                })
-                .catch(err => {
-                    console.error('Ошибка:', err);
-                    alert('Error: ' + err.message);
-                    if(btn) btn.innerHTML = '<span>TRY AGAIN</span>';
-                });
-
+                const token = response.authResponse.accessToken;
+                sendTokenToServer(token, 'facebook'); // <-- Тип facebook
             } else {
-                console.log('Пользователь отменил вход');
+                if(btn) btn.innerHTML = 'Connect Facebook';
+                console.log('FB Login Cancelled');
             }
         }, {
-            scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_manage_engagement,pages_read_user_content',
-            extras: {
-                setup: {
-                    channel: "IG_API_ONBOARDING"
+            // ТОЛЬКО ПРАВА ДЛЯ FACEBOOK (Без Инстаграма)
+            scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,pages_manage_engagement,pages_read_user_content'
+        });
+    }
+
+    // ==========================================
+    // ЛОГИКА INSTAGRAM (Redirect + Onboarding)
+    // ==========================================
+    function handleInstagramLogin() {
+        const btn = document.getElementById('ig-auth-btn');
+        if(btn) btn.innerHTML = 'Redirecting...';
+
+        // Формируем ссылку для Instagram Onboarding
+        const authUrl = `https://www.facebook.com/v24.0/dialog/oauth?` +
+            `client_id=${CONFIG.appId}` +
+            `&display=page` +
+            `&extras={"setup":{"channel":"IG_API_ONBOARDING"}}` + // <-- МАГИЯ ONBOARDING
+            `&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}` +
+            `&response_type=token` +
+            // ПРАВА ДЛЯ ИНСТАГРАМА
+            `&scope=instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_show_list,pages_read_engagement`;
+
+        // Улетаем на Фейсбук
+        window.location.href = authUrl;
+    }
+
+    // ==========================================
+    // ЛОВЕЦ ТОКЕНА (При возврате из Инсты)
+    // ==========================================
+    window.onload = function() {
+        // Проверяем, есть ли хеш в URL (#access_token=...)
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const accessToken = params.get('access_token');
+            const longLivedToken = params.get('long_lived_token'); // Может быть, а может и нет
+
+            if (accessToken) {
+                console.log("Найден токен Инстаграм!");
+                
+                // Визуально меняем кнопку Инсты
+                const btn = document.getElementById('ig-auth-btn');
+                if(btn) {
+                    btn.innerHTML = 'Processing...';
+                    btn.style.opacity = '0.7';
                 }
+
+                // Отправляем как 'instagram'
+                sendTokenToServer(longLivedToken || accessToken, 'instagram');
             }
+        }
+    };
+
+    // ==========================================
+    // ОТПРАВКА НА СЕРВЕР (Общая функция)
+    // ==========================================
+    function sendTokenToServer(token, type) {
+        const clientId = getOrCreateClientId();
+
+        fetch(CONFIG.functionUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + CONFIG.supabaseKey
+            },
+            body: JSON.stringify({ 
+                userAccessToken: token,
+                clientId: clientId,
+                platform: type // 'facebook' или 'instagram' (ВАЖНО ДЛЯ БЭКЕНДА!)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(`Server response (${type}):`, data);
+            
+            if (data.success) {
+                // Меняем текст кнопки
+                if (type === 'facebook') {
+                    const btn = document.getElementById('fb-auth-btn');
+                    if(btn) { btn.innerHTML = 'FACEBOOK LINKED ✅'; btn.style.borderColor = '#4CAF50'; }
+                } else {
+                    const btn = document.getElementById('ig-auth-btn');
+                    if(btn) { btn.innerHTML = 'INSTAGRAM LINKED ✅'; btn.style.borderColor = '#4CAF50'; }
+                }
+
+                // Показываем модалку
+                const modalText = document.getElementById('modal-text');
+                modalText.innerText = (type === 'facebook' ? 'Facebook' : 'Instagram') + ' account connected successfully.';
+                document.getElementById('success-modal').style.display = 'flex';
+            } else {
+                throw new Error(data.error || 'Unknown error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error: ' + err.message);
         });
     }
 </script>
@@ -1816,6 +1893,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
