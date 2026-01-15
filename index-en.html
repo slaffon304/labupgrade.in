@@ -31,39 +31,55 @@
     
     <!-- Smooth Scroll -->
     <style>
-    /* 1. УБИВАЕМ ЧЕРНУЮ ПОЛОСУ (Жестко) */
-    #fb-root { display: none !important; height: 0 !important; width: 0 !important; overflow: hidden !important; }
+    /* 1. УБИВАЕМ ТЕХНИЧЕСКИЙ БЛОК FB */
+    #fb-root { display: none !important; height: 0 !important; width: 0 !important; }
 
-    /* 2. КОНТЕЙНЕР: На ПК строго в ряд */
+    /* 2. КОНТЕЙНЕР КНОПОК */
     .fb-login-wrapper {
-        display: flex;
-        flex-direction: row !important;
-        align-items: center;
+        display: flex !important;
+        align-items: center !important;
         gap: 10px;
+        margin: 0 !important; /* Убираем внешние отступы */
+        padding: 0 !important;
     }
 
-    /* 3. МОБИЛЬНАЯ ВЕРСИЯ (Меньше 991px) */
+    /* === ПК ВЕРСИЯ (Строго в ряд) === */
+    @media (min-width: 992px) {
+        .fb-login-wrapper {
+            flex-direction: row !important; /* В одну линию */
+            flex-wrap: nowrap !important;   /* Запрет переноса */
+        }
+        /* Убираем отступы у самих кнопок на ПК */
+        .fb-custom-btn { margin-bottom: 0 !important; }
+    }
+
+    /* === МОБИЛЬНАЯ ВЕРСИЯ (Столбиком) === */
     @media (max-width: 991px) {
         .fb-login-wrapper {
-            flex-direction: column !important; /* Столбиком */
-            align-items: flex-end; /* Прижать вправо */
+            flex-direction: column !important;
+            align-items: flex-end !important; /* Прижать вправо */
             gap: 5px;
-            margin-top: 5px;
+            margin-top: 5px !important;
         }
-        /* Уменьшаем кнопки на телефоне */
-        .fb-custom-btn { height: 32px; font-size: 10px; padding: 0 10px; }
+        .fb-custom-btn { 
+            height: 32px !important; 
+            font-size: 10px !important; 
+            padding: 0 10px !important;
+            width: auto !important;
+        }
     }
 
-    /* 4. СТИЛЬ КНОПОК */
+    /* 3. ДИЗАЙН КНОПОК */
     .fb-custom-btn {
         background: rgba(255,255,255,0.05);
         color: white !important;
         border: 1px solid rgba(255,255,255,0.2);
         border-radius: 4px;
         padding: 0 14px;
-        height: 44px;
-        display: flex;
+        height: 44px; /* Высота под кнопку языка */
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         
         font-family: inherit;
@@ -78,17 +94,22 @@
         white-space: nowrap;
     }
 
-    /* ИКОНКИ */
-    .btn-icon-img { width: 18px; height: 18px; display: block; }
+    /* 4. ИКОНКИ (SVG - заливка) */
+    .btn-icon-svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor; /* Иконка берет цвет текста */
+        display: block;
+        flex-shrink: 0;
+    }
 
-    /* ХОВЕРЫ */
+    /* Ховеры */
     .fb-custom-btn:hover {
         background: rgba(255,255,255,0.1);
         border-color: #07C42C;
-        box-shadow: 0 0 10px rgba(7, 196, 44, 0.2);
         color: #07C42C !important;
+        box-shadow: 0 0 10px rgba(7, 196, 44, 0.2);
     }
-    
     .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
 </style>
 </head>
@@ -191,17 +212,21 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="fb-login-wrapper me-2">
+                            <div class="fb-login-wrapper">
     <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyLjA0QzkuOTYgMi4wNCA4LjE3IDIuMDQgNi43NiAzLjQ1IDUuMzUgNC44NiA1LjM1IDYuNjUgNS4zNSA4LjZ2Mi4yM0gzLjV2My45M2gxLjg1VjIyaDQuMTJ2LTcuMjRoMy4xMmwuNDEtMy45M2gtMy41M1Y4Ljg1YzAtMS4wNi4yNS0xLjYgMS40OS0xLjZoMS44N1YzLjU5aC0yLjYxQzEyIDIuMDQgMTIgMi4wNCAxMiAyLjA0eiIvPjwvc3ZnPg==" class="btn-icon-img" alt="F">
+        <svg class="btn-icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
         <span id="fb-text">Facebook Log In</span>
     </button>
     
     <button type="button" class="fb-custom-btn" id="ig-auth-btn" onclick="handleInstagramLogin();">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyLjE2M2MzLjIwNCAwIDMuNTg0LjAxMiA0Ljg1LjA3IDMuMjUyLjE0OCA0Ljc3MSAxLjY5MSA0LjkxOSA0LjkxOS4wNTggMS4yNjUuMDY5IDEuNjQ1LjA2OSA0Ljg0OSAwIDMuMjA1LS4wMTIgMy41ODQtLjA2OSA0Ljg0OS0uMTQ5IDMuMjI1LTEuNjY0IDQuNzcxLTQuOTE5IDQuOTE5LTEuMjY2LjA1OC0xLjY0NC4wNy00Ljg1LjA3LTMuMjA0IDAtMy41ODQtLjAxMi00Ljg0OS0uMDctMy4yNi0uMTQ5LTQuNzcxLTEuNjk5LTQuOTE5LTQuOTItLjA1OC0xLjI2NS0uMDctMS42NDQtLjA3LTQuODQ5IDAtMy4yMDQuMDEzLTMuNTgzLjA3LTQuODQ5LjE0OS0zLjIyNyAxLjY2NC00Ljc3MSA0LjkxOS00LjkxOSAxLjI2Ni0uMDU3IDEuNjQ1LS4wNjkgNC44NDktLjA2OXptMC0yLjE2M2MtMy4yNTkgMC0zLjY2Ny4wMTQtNC45NDcuMDcyLTQuMzU4LjItNi43OCAyLjYxOC02Ljk4IDYuOTgtLjA1OSAxLjI4MS0uMDczIDEuNjg5LS4wNzMgNC45NDggMCAzLjI1OS4wMTQgMy42NjguLjA3MiA0Ljk0OC4yIDQuMzU4IDIuNjE4IDYuNzggNi45OCA2Ljk4IDEuMjgxLjA1OCAxLjY4OS4wNzIgNC45NDguMDcyIDMuMjU5IDAgMy42NjgtLjAxNCA0Ljk0OC0uMDcyIDQuMzU0LS4yIDYuNzgyLTIuNjE4IDYuOTc5LTYuOTguMDU5LTEuMjguMDczLTEuNjg5LjA3My00Ljk0OCAwLTMuMjU5LS4wMTQtMy42NjctLjA3Mi00Ljk0Ny0uMTk2LTQuMzU0LTIuNjE3LTYuNzgtNi45NzktNi45OC0xLjI4MS0uMDU5LTEuNjktLjA3My00Ljk0OS0uMDczem0wIDUuODM4Yy0zLjQwMyAwLTYuMTYyIDIuNzU5LTYuMTYyIDYuMTYyczIuNzU5IDYuMTYzIDYuMTYyIDYuMTYzIDYuMTYyLTIuNzU5IDYuMTYyLTYuMTYzYzAtMy40MDMtMi43NTktNi4xNjItNi4xNjItNi4xNjJ6bTAgMTAuMTYyYy0yLjIwOSAwLTQtMS43OS00LTQgMC0yLjIwOSAxLjc5MS00IDQtNHM0IDEuNzkxIDQgNGMwIDIuMjEtMS43OTEgNC00IDR6bTYuNDA2LTExLjg0NWMtLjc5NiAwLTEuNDQxLjY0NS0xLjQ0MSAxLjQ0cy42NDUgMS40NCAxLjQ0MSAxLjQ0Yy43OTUgMCAxLjQzOS0uNjQ1IDEuNDM5LTEuNDRzLS42NDQtMS40NC0xLjQzOS0xLjQ0eiIvPjwvc3ZnPg==" class="btn-icon-img" alt="IG">
-        <span id="ig-text">Instagram Log In</span>
+        <svg class="btn-icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+        <span id="fb-text">Facebook Log In</span>
     </button>
-</div>
+                            </div>
                             <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
                                 <i class="icon icon-menu"></i>
                                 MENU
@@ -1791,6 +1816,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
