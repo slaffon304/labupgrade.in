@@ -36,54 +36,55 @@
         }
     </style>
     <style>
-    .fb-login-wrapper {
+    /* Контейнер для кнопок в шапке (столбиком) */
+    .auth-buttons-column {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        gap: 6px; /* Отступ между кнопками */
     }
+
+    /* Общий стиль кнопок (Твой дизайн: прозрачный фон, рамка) */
     .fb-custom-btn {
-        /* Стили как у кнопки языка */
         background: rgba(255,255,255,0.05);
         color: white !important;
         border: 1px solid rgba(255,255,255,0.2);
         border-radius: 4px;
-        
-        padding: 0 16px;
-        height: 44px;
+        padding: 0 12px; /* Чуть меньше паддинг, чтобы влезли */
+        height: 36px;    /* Чуть меньше высота, чтобы не рвать хедер */
         display: flex;
         align-items: center;
-        gap: 10px;
-        
-        /* Твои шрифты */
+        gap: 8px;
         font-family: inherit;
-        font-size: 12px;
+        font-size: 11px; /* Шрифт чуть меньше */
         font-weight: 500;
         letter-spacing: 1px;
         text-transform: uppercase;
-        
         transition: all 0.3s ease;
         cursor: pointer;
         text-decoration: none !important;
+        width: 100%;
+        justify-content: flex-start;
     }
     
-    /* Эффект при наведении — свечение в стиле LabUpgrade */
+    /* Эффект при наведении */
     .fb-custom-btn:hover {
         background: rgba(255,255,255,0.1);
-        border-color: #07C42C; /* Твой фирменный зеленый */
-        box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
+        border-color: #07C42C;
+        box-shadow: 0 0 10px rgba(7, 196, 44, 0.2);
     }
 
     .fb-icon {
-        width: 36px;
-        height: 36px;
-        fill: #1877F2; /* Оставляем иконку синей, чтобы Meta понимала, что это вход через FB */
+        width: 20px;
+        height: 20px;
+        fill: white; /* Иконки белые, как на твоем дизайне */
     }
-
-    /* Стиль для кнопки после успешного входа */
+    
+    /* Успешный статус */
     .fb-custom-btn.is-success {
         border-color: #07C42C;
         color: #07C42C !important;
     }
-</style>
+    </style>
 </head>
 
 <body class="counter-scroll">
@@ -1893,6 +1894,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
