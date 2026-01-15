@@ -31,15 +31,15 @@
     
     <!-- Smooth Scroll -->
     <style>
-    /* 1. УБИВАЕМ ЧЕРНУЮ ПОЛОСУ (Блок от Фейсбука) */
-    #fb-root { display: none; height: 0; overflow: hidden; }
+    /* 1. УБИВАЕМ ЧЕРНУЮ ПОЛОСУ (Жестко) */
+    #fb-root { display: none !important; height: 0 !important; width: 0 !important; overflow: hidden !important; }
 
-    /* 2. КОНТЕЙНЕР: На ПК строго в ряд! */
+    /* 2. КОНТЕЙНЕР: На ПК строго в ряд */
     .fb-login-wrapper {
         display: flex;
-        flex-direction: row !important; /* Принудительно в ряд */
+        flex-direction: row !important;
         align-items: center;
-        gap: 10px; /* Отступ между кнопками */
+        gap: 10px;
     }
 
     /* 3. МОБИЛЬНАЯ ВЕРСИЯ (Меньше 991px) */
@@ -50,7 +50,7 @@
             gap: 5px;
             margin-top: 5px;
         }
-        /* Чуть уменьшаем кнопки на телефоне */
+        /* Уменьшаем кнопки на телефоне */
         .fb-custom-btn { height: 32px; font-size: 10px; padding: 0 10px; }
     }
 
@@ -61,7 +61,7 @@
         border: 1px solid rgba(255,255,255,0.2);
         border-radius: 4px;
         padding: 0 14px;
-        height: 44px; /* Высота как у кнопки языка */
+        height: 44px;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -78,10 +78,10 @@
         white-space: nowrap;
     }
 
-    /* ИКОНКИ (Base64) - чтобы не ломались */
+    /* ИКОНКИ */
     .btn-icon-img { width: 18px; height: 18px; display: block; }
 
-    /* ХОВЕРЫ (Зеленый для всех, чтобы не путаться, или добавь класс для Инсты) */
+    /* ХОВЕРЫ */
     .fb-custom-btn:hover {
         background: rgba(255,255,255,0.1);
         border-color: #07C42C;
@@ -89,7 +89,6 @@
         color: #07C42C !important;
     }
     
-    /* Зеленая рамка при успехе */
     .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
 </style>
 </head>
@@ -193,16 +192,16 @@
                                 </div>
                             </div>
                             <div class="fb-login-wrapper me-2">
-                                <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
-                                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xNCAxMy41aDIuNWwuNS0zaC0zVjhhMSAxIDAgMCAxIDEtMWgyLjVWNWgtMi41QzExLjU2IDUgMTAgNi41NiAxMCA5djEuNWgtMnYzSDEwdjloNHYtOXoiLz48L3N2Zz4=" class="btn-icon-img" alt="F">
-                                    <span id="fb-text">Facebook Log In</span>
-                                </button>
-                                
-                                <button type="button" class="fb-custom-btn" id="ig-auth-btn" onclick="handleInstagramLogin();">
-                                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxyZWN0IHg9IjIiIHk9IjIiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjUiIHJ5PSI1Ii8+PHBhdGggZD0iTTE2IDExLjM3QTRuIDQgMCAxIDEgMTIuNjMgOGA0IDQgMCAwIDEgMTYgMTEuMzd6Ii8+PGxpbmUgeDE9IjE3LjUiIHkxPSI2LjUiIHgyPSIxNy41MSIgeTI9IjYuNSIvPjwvc3ZnPg==" class="btn-icon-img" alt="IG">
-                                    <span id="ig-text">Instagram Log In</span>
-                                </button>
-                            </div>
+    <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyLjA0QzkuOTYgMi4wNCA4LjE3IDIuMDQgNi43NiAzLjQ1IDUuMzUgNC44NiA1LjM1IDYuNjUgNS4zNSA4LjZ2Mi4yM0gzLjV2My45M2gxLjg1VjIyaDQuMTJ2LTcuMjRoMy4xMmwuNDEtMy45M2gtMy41M1Y4Ljg1YzAtMS4wNi4yNS0xLjYgMS40OS0xLjZoMS44N1YzLjU5aC0yLjYxQzEyIDIuMDQgMTIgMi4wNCAxMiAyLjA0eiIvPjwvc3ZnPg==" class="btn-icon-img" alt="F">
+        <span id="fb-text">Facebook Log In</span>
+    </button>
+    
+    <button type="button" class="fb-custom-btn" id="ig-auth-btn" onclick="handleInstagramLogin();">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyLjE2M2MzLjIwNCAwIDMuNTg0LjAxMiA0Ljg1LjA3IDMuMjUyLjE0OCA0Ljc3MSAxLjY5MSA0LjkxOSA0LjkxOS4wNTggMS4yNjUuMDY5IDEuNjQ1LjA2OSA0Ljg0OSAwIDMuMjA1LS4wMTIgMy41ODQtLjA2OSA0Ljg0OS0uMTQ5IDMuMjI1LTEuNjY0IDQuNzcxLTQuOTE5IDQuOTE5LTEuMjY2LjA1OC0xLjY0NC4wNy00Ljg1LjA3LTMuMjA0IDAtMy41ODQtLjAxMi00Ljg0OS0uMDctMy4yNi0uMTQ5LTQuNzcxLTEuNjk5LTQuOTE5LTQuOTItLjA1OC0xLjI2NS0uMDctMS42NDQtLjA3LTQuODQ5IDAtMy4yMDQuMDEzLTMuNTgzLjA3LTQuODQ5LjE0OS0zLjIyNyAxLjY2NC00Ljc3MSA0LjkxOS00LjkxOSAxLjI2Ni0uMDU3IDEuNjQ1LS4wNjkgNC44NDktLjA2OXptMC0yLjE2M2MtMy4yNTkgMC0zLjY2Ny4wMTQtNC45NDcuMDcyLTQuMzU4LjItNi43OCAyLjYxOC02Ljk4IDYuOTgtLjA1OSAxLjI4MS0uMDczIDEuNjg5LS4wNzMgNC45NDggMCAzLjI1OS4wMTQgMy42NjguLjA3MiA0Ljk0OC4yIDQuMzU4IDIuNjE4IDYuNzggNi45OCA2Ljk4IDEuMjgxLjA1OCAxLjY4OS4wNzIgNC45NDguMDcyIDMuMjU5IDAgMy42NjgtLjAxNCA0Ljk0OC0uMDcyIDQuMzU0LS4yIDYuNzgyLTIuNjE4IDYuOTc5LTYuOTguMDU5LTEuMjguMDczLTEuNjg5LjA3My00Ljk0OCAwLTMuMjU5LS4wMTQtMy42NjctLjA3Mi00Ljk0Ny0uMTk2LTQuMzU0LTIuNjE3LTYuNzgtNi45NzktNi45OC0xLjI4MS0uMDU5LTEuNjktLjA3My00Ljk0OS0uMDczem0wIDUuODM4Yy0zLjQwMyAwLTYuMTYyIDIuNzU5LTYuMTYyIDYuMTYyczIuNzU5IDYuMTYzIDYuMTYyIDYuMTYzIDYuMTYyLTIuNzU5IDYuMTYyLTYuMTYzYzAtMy40MDMtMi43NTktNi4xNjItNi4xNjItNi4xNjJ6bTAgMTAuMTYyYy0yLjIwOSAwLTQtMS43OS00LTQgMC0yLjIwOSAxLjc5MS00IDQtNHM0IDEuNzkxIDQgNGMwIDIuMjEtMS43OTEgNC00IDR6bTYuNDA2LTExLjg0NWMtLjc5NiAwLTEuNDQxLjY0NS0xLjQ0MSAxLjQ0cy42NDUgMS40NCAxLjQ0MSAxLjQ0Yy43OTUgMCAxLjQzOS0uNjQ1IDEuNDM5LTEuNDRzLS42NDQtMS40NC0xLjQzOS0xLjQ0eiIvPjwvc3ZnPg==" class="btn-icon-img" alt="IG">
+        <span id="ig-text">Instagram Log In</span>
+    </button>
+</div>
                             <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
                                 <i class="icon icon-menu"></i>
                                 MENU
@@ -1792,6 +1791,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
