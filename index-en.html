@@ -36,54 +36,94 @@
         }
     </style>
     <style>
-    .fb-login-wrapper {
+        /* Контейнер для кнопок */
+    .auth-buttons-group {
         display: flex;
         align-items: center;
+        gap: 8px;
     }
-    .fb-custom-btn {
-        /* Стили как у кнопки языка */
-        background: rgba(255,255,255,0.05);
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 4px;
-        
-        padding: 0 16px;
-        height: 44px;
+
+    /* Общий стиль кнопок */
+    .social-auth-btn {
         display: flex;
         align-items: center;
-        gap: 10px;
-        
-        /* Твои шрифты */
-        font-family: inherit;
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        
-        transition: all 0.3s ease;
+        justify-content: center;
+        gap: 6px; /* Чуть меньше отступ */
+        height: 44px;
+        padding: 0 12px; /* Компактнее */
+        border-radius: 4px;
         cursor: pointer;
+        transition: all 0.3s ease;
         text-decoration: none !important;
+        border: 1px solid rgba(255,255,255,0.2);
+        font-family: inherit;
+        font-size: 11px; /* Чуть меньше шрифт, чтобы влезло две */
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: white !important;
+        background: rgba(255,255,255,0.05);
+    }
+
+    /* Специфика FB */
+    .btn-fb-auth:hover {
+        background: rgba(24, 119, 242, 0.2);
+        border-color: #1877F2;
+        box-shadow: 0 0 15px rgba(24, 119, 242, 0.2);
+    }
+
+    /* Специфика Instagram */
+    .btn-ig-auth:hover {
+        background: linear-gradient(45deg, rgba(240, 148, 51, 0.2) 0%, rgba(220, 39, 67, 0.2) 100%);
+        border-color: #e1306c;
+        box-shadow: 0 0 15px rgba(220, 39, 67, 0.2);
+    }
+
+    .social-icon {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    /* Состояние успеха */
+    .social-auth-btn.is-connected {
+        background: rgba(7, 196, 44, 0.1) !important;
+        border-color: #07C42C !important;
+        color: #07C42C !important;
+        pointer-events: none;
+    }
+
+    /* Адаптив: на мобильном скрываем текст, оставляем иконки */
+    @media (max-width: 500px) {
+        .btn-text { display: none; }
+        .social-auth-btn { padding: 0 10px; }
     }
     
-    /* Эффект при наведении — свечение в стиле LabUpgrade */
-    .fb-custom-btn:hover {
-        background: rgba(255,255,255,0.1);
-        border-color: #07C42C; /* Твой фирменный зеленый */
-        box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
+    /* Окно успеха (оставляем как было, но чуть правим для ID) */
+    #success-modal {
+        display: none; position: fixed; z-index: 999999;
+        left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.85);
+        backdrop-filter: blur(5px);
+        align-items: center; justify-content: center;
     }
+    .modal-box {
+        background: #0f0f0f; border: 1px solid #333; border-top: 3px solid #07C42C;
+        padding: 40px; width: 90%; max-width: 420px;
+        text-align: center; border-radius: 12px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        color: white; font-family: sans-serif;
+    }
+    .modal-btn {
+        background: #07C42C; color: #000; border: none;
+        padding: 12px 40px; font-weight: 700; cursor: pointer;
+        border-radius: 6px; font-size: 14px; letter-spacing: 1px;
+        text-transform: uppercase; margin-top: 20px;
+        display: inline-block; min-width: 150px;
+    }
+    .modal-btn:hover { background: #05a024; }
+        </style>
 
-    .fb-icon {
-        width: 36px;
-        height: 36px;
-        fill: #1877F2; /* Оставляем иконку синей, чтобы Meta понимала, что это вход через FB */
-    }
-
-    /* Стиль для кнопки после успешного входа */
-    .fb-custom-btn.is-success {
-        border-color: #07C42C;
-        color: #07C42C !important;
-    }
-</style>
 </head>
 
 <body class="counter-scroll">
@@ -1812,6 +1852,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
