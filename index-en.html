@@ -31,11 +31,21 @@
     
     <!-- Smooth Scroll -->
         <style>
+    body { padding-top: 0 !important; margin-top: 0 !important; }
+    #fb-root { display: none !important; height: 0 !important; width: 0 !important; overflow: hidden !important; }
+
     .fb-login-wrapper {
-        display: flex;
-        align-items: center;
+        display: flex !important;
+        align-items: center !important; 
+        justify-content: center !important;
+        position: relative !important;
+        z-index: 2 !important;
+        gap: 10px;
+        margin: 0 !important;
+        padding: 0 !important;
     }
-@media (min-width: 992px) {
+
+    @media (min-width: 992px) {
         .fb-login-wrapper {
             flex-direction: row !important;
             flex-wrap: nowrap !important;
@@ -48,9 +58,8 @@
             flex-direction: column !important;
             align-items: flex-end !important;
             gap: 5px;
-            margin-top: 1px !important;
+            margin-top: 0 !important; 
         }
-        
         .fb-custom-btn { 
             height: 32px !important; 
             font-size: 10px !important; 
@@ -60,49 +69,46 @@
     }
 
     .fb-custom-btn {
-        /* Стили как у кнопки языка */
-        background: rgba(255,255,255,0.05);
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 4px;
-        
-        padding: 0 16px;
+        width: auto;
         height: 44px;
-        display: flex;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: white !important;
+        display: inline-flex;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 14px;
         
-        /* Твои шрифты */
         font-family: inherit;
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 1px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
         text-transform: uppercase;
         
         transition: all 0.3s ease;
         cursor: pointer;
         text-decoration: none !important;
+        white-space: nowrap;
     }
-    
-    /* Эффект при наведении — свечение в стиле LabUpgrade */
+
+    .btn-icon-svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+        display: block;
+        flex-shrink: 0;
+    }
+
     .fb-custom-btn:hover {
         background: rgba(255,255,255,0.1);
-        border-color: #07C42C; /* Твой фирменный зеленый */
-        box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
-    }
-
-    .fb-icon {
-        width: 36px;
-        height: 36px;
-        fill: #1877F2; /* Оставляем иконку синей, чтобы Meta понимала, что это вход через FB */
-    }
-
-    /* Стиль для кнопки после успешного входа */
-    .fb-custom-btn.is-success {
         border-color: #07C42C;
         color: #07C42C !important;
+        box-shadow: 0 0 10px rgba(7, 196, 44, 0.2);
     }
-    </style>
+    .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
+</style>
 </head>
 
 <body class="counter-scroll">
@@ -1807,6 +1813,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
