@@ -36,54 +36,74 @@
         }
     </style>
     <style>
-    /* Контейнер кнопок: На ПК в ряд, на телефоне в столбик */
+    /* 1. Контейнер для кнопок */
     .auth-buttons-group {
         display: flex;
-        flex-direction: row; /* По умолчанию в ряд (для ПК) */
-        gap: 10px; /* Отступ между кнопками */
         align-items: center;
+        gap: 10px; /* Отступ между кнопками на ПК */
     }
 
-    @media (max-width: 768px) {
-        .auth-buttons-group {
-            flex-direction: column; /* На мобильном в столбик */
-            gap: 6px;
-            align-items: flex-end; /* Прижать вправо к меню */
-        }
-    }
-
-    /* Стиль кнопок */
-    .fb-custom-btn {
+    /* 2. Стиль кнопок (Общий) */
+    .header-auth-btn {
         background: rgba(255,255,255,0.05);
-        color: white !important;
         border: 1px solid rgba(255,255,255,0.2);
+        color: white !important;
         border-radius: 4px;
-        padding: 0 12px;
-        height: 36px;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         
         font-family: inherit;
-        font-size: 11px;
-        font-weight: 500;
+        font-weight: 600;
         letter-spacing: 0.5px;
-        text-transform: uppercase; /* Твой стиль */
-        
-        transition: all 0.3s ease;
+        text-transform: uppercase;
         cursor: pointer;
+        transition: all 0.3s ease;
         text-decoration: none !important;
-        white-space: nowrap; /* Чтобы текст не переносился */
-    }
-    
-    .fb-custom-btn:hover {
-        background: rgba(255,255,255,0.1);
-        border-color: #07C42C;
-        box-shadow: 0 0 10px rgba(7, 196, 44, 0.2);
+        white-space: nowrap;
     }
 
-    .fb-icon { width: 18px; height: 18px; fill: white; }
-    .fb-custom-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
+    /* Эффект при наведении */
+    .header-auth-btn:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: #07C42C;
+        box-shadow: 0 0 15px rgba(7, 196, 44, 0.2);
+        color: #07C42C !important;
+    }
+    
+    .btn-icon-svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* 3. НАСТРОЙКИ ДЛЯ ПК (Широкий экран) */
+    @media (min-width: 992px) {
+        .auth-buttons-group {
+            flex-direction: row; /* В ряд */
+        }
+        .header-auth-btn {
+            height: 44px; /* Высота как у кнопки языка */
+            padding: 0 16px;
+            font-size: 11px;
+        }
+    }
+
+    /* 4. НАСТРОЙКИ ДЛЯ МОБИЛЬНЫХ (Маленький экран) */
+    @media (max-width: 991px) {
+        .auth-buttons-group {
+            flex-direction: column; /* Столбиком */
+            gap: 5px; /* Маленький отступ */
+            align-items: flex-end; /* Прижать к правому краю */
+        }
+        .header-auth-btn {
+            height: 30px; /* Компактная высота для мобильных */
+            padding: 0 10px;
+            font-size: 9px; /* Шрифт чуть меньше */
+            width: auto;
+            min-width: 140px; /* Чтобы были одной ширины */
+        }
+    }
+    
+    /* Успешный статус */
+    .header-auth-btn.is-success { border-color: #07C42C; color: #07C42C !important; }
 </style>
 </head>
 
@@ -185,21 +205,17 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="auth-buttons-column me-2">
-                                <button type="button" class="fb-custom-btn" id="fb-auth-btn" onclick="handleFBLogin();">
-                                    <svg class="fb-icon" viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
-                                    <span>Facebook Log In</span>
+                            <div class="auth-buttons-group me-3">
+                                <button type="button" class="header-auth-btn" id="fb-auth-btn" onclick="handleFBLogin();">
+                                    <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24V15.563H7.078V12.073H10.125V9.413C10.125 6.387 11.917 4.716 14.658 4.716C15.917 4.716 17.344 4.952 17.344 4.952V7.922H15.83C14.34 7.922 13.875 8.853 13.875 9.808V12.073H17.203L16.671 15.563H13.875V24C19.612 23.094 24 18.1 24 12.073Z"/></svg>
+                                    <span id="fb-text">FACEBOOK LOG IN</span>
                                 </button>
                                 
-                                <button type="button" class="fb-custom-btn" id="ig-auth-btn" onclick="handleInstagramLogin();">
-                                    <svg class="fb-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                                    <span>Instagram Log In</span>
+                                <button type="button" class="header-auth-btn" id="ig-auth-btn" onclick="handleInstagramLogin();">
+                                    <svg class="btn-icon-svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                    <span id="ig-text">INSTAGRAM LOG IN</span>
                                 </button>
                             </div>
-                            <button type="button" class="btn-mobile-menu open-mb-menu text-caption text-white link">
-                                <i class="icon icon-menu"></i>
-                                MENU
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1669,104 +1685,141 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
     // 1. КОНФИГУРАЦИЯ
     const CONFIG = {
         appId: '1194771652741657',
+        // Автоматически берем текущий адрес для возврата (index.html, index-en.html и т.д.)
         redirectUri: window.location.origin + window.location.pathname,
         functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task', 
         supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU'
     };
 
+    // Инициализация FB
     window.fbAsyncInit = function() {
-        FB.init({ appId: CONFIG.appId, cookie: true, xfbml: true, version: 'v19.0' });
+        FB.init({
+            appId      : CONFIG.appId,
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v19.0'
+        });
     };
 
+    // Helper: Получить/Создать ID клиента
     function getOrCreateClientId() {
         let clientId = localStorage.getItem('lab_client_id');
-        if (!clientId) { clientId = crypto.randomUUID(); localStorage.setItem('lab_client_id', clientId); }
+        if (!clientId) {
+            clientId = crypto.randomUUID();
+            localStorage.setItem('lab_client_id', clientId);
+        }
         return clientId;
     }
 
-    // --- FACEBOOK (Popup) ---
+    // --- ЛОГИКА FACEBOOK (POPUP) ---
     function handleFBLogin() {
         const btnText = document.getElementById('fb-text');
-        if(btnText) btnText.innerText = 'WAIT...';
+        if(btnText) btnText.innerText = 'CONNECTING...';
 
         FB.login(function(response) {
             if (response.status === 'connected') {
                 sendTokenToServer(response.authResponse.accessToken, 'facebook');
             } else {
-                if(btnText) btnText.innerText = 'Facebook Log In';
+                if(btnText) btnText.innerText = 'FACEBOOK LOG IN';
+                console.log('FB Cancelled');
             }
         }, {
+            // Права ТОЛЬКО для Facebook
             scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,pages_manage_engagement,pages_read_user_content'
         });
     }
 
-    // --- INSTAGRAM (Redirect) ---
+    // --- ЛОГИКА INSTAGRAM (REDIRECT + ONBOARDING) ---
     function handleInstagramLogin() {
         const btnText = document.getElementById('ig-text');
-        if(btnText) btnText.innerText = 'REDIRECT...';
+        if(btnText) btnText.innerText = 'REDIRECTING...';
 
+        // Формируем ссылку для редиректа на "Мастер Настройки"
         const authUrl = `https://www.facebook.com/v24.0/dialog/oauth?` +
             `client_id=${CONFIG.appId}` +
             `&display=page` +
             `&extras={"setup":{"channel":"IG_API_ONBOARDING"}}` + 
             `&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}` +
             `&response_type=token` +
+            // Права ТОЛЬКО для Instagram
             `&scope=instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_show_list,pages_read_engagement`;
 
+        // Уходим на сайт Фейсбука
         window.location.href = authUrl;
     }
 
-    // --- ВОЗВРАТ ---
+    // --- ПРОВЕРКА ПОСЛЕ ВОЗВРАТА С INSTAGRAM ---
     window.onload = function() {
         if (window.location.hash && window.location.hash.includes('access_token')) {
             const params = new URLSearchParams(window.location.hash.substring(1));
             const token = params.get('long_lived_token') || params.get('access_token');
 
             if (token) {
+                // Чистим URL
                 window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Показываем статус на кнопке
                 const igText = document.getElementById('ig-text');
                 if(igText) igText.innerText = 'SAVING...';
+
+                // Отправляем токен с пометкой 'instagram'
                 sendTokenToServer(token, 'instagram');
             }
         }
     };
 
-    // --- ОТПРАВКА ---
+    // --- ОТПРАВКА НА СЕРВЕР ---
     function sendTokenToServer(token, type) {
+        const clientId = getOrCreateClientId();
+
         fetch(CONFIG.functionUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CONFIG.supabaseKey },
-            body: JSON.stringify({ userAccessToken: token, clientId: getOrCreateClientId(), platform: type })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + CONFIG.supabaseKey
+            },
+            body: JSON.stringify({ 
+                userAccessToken: token,
+                clientId: clientId,
+                platform: type // 'facebook' или 'instagram'
+            })
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                // Красим кнопку
+                // Красим кнопку в зеленый
                 const btnId = type === 'facebook' ? 'fb-auth-btn' : 'ig-auth-btn';
                 const textId = type === 'facebook' ? 'fb-text' : 'ig-text';
+                
                 const btn = document.getElementById(btnId);
                 const txt = document.getElementById(textId);
-                
-                if(btn) { btn.classList.add('is-success'); btn.style.borderColor = '#07C42C'; btn.style.color = '#07C42C'; }
+
+                if(btn) { 
+                    btn.classList.add('is-success'); 
+                    btn.style.borderColor = '#07C42C'; 
+                    btn.style.color = '#07C42C'; 
+                }
                 if(txt) txt.innerText = 'CONNECTED ✅';
 
-                // Модалка
-                document.getElementById('modal-text').innerText = (type === 'facebook' ? 'Facebook' : 'Instagram') + ' connected!';
-                document.getElementById('success-modal').style.display = 'flex';
+                // Показываем модальное окно
+                const modal = document.getElementById('success-modal');
+                const fbName = document.getElementById('fb-user-name');
+                if(fbName) fbName.innerText = (type === 'facebook' ? 'Facebook' : 'Instagram') + ' Connected';
+                if(modal) modal.style.display = 'flex';
             }
         })
         .catch(err => {
             alert('Error: ' + err.message);
-            document.getElementById('fb-text').innerText = 'Facebook Log In';
-            document.getElementById('ig-text').innerText = 'Instagram Log In';
+            document.getElementById('fb-text').innerText = 'FACEBOOK LOG IN';
+            document.getElementById('ig-text').innerText = 'INSTAGRAM LOG IN';
         });
     }
 </script>
-
 </body>
 
 
 </html>
+
 
 
 
