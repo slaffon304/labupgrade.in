@@ -1669,90 +1669,96 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
     }
     .modal-box {
         background: #0f0f0f; border: 1px solid #333; border-top: 3px solid #07C42C;
-        padding: 40px; width: 90%; max-width: 420px;
-        text-align: center; border-radius: 12px;
+        padding: 40px; width: 95%; max-width: 420px;
+        text-align: center; border-radius: 24px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.6);
         color: white; font-family: sans-serif;
     }
     .modal-btn {
         background: #07C42C; color: #000; border: none;
-        padding: 12px 40px; font-weight: 700; cursor: pointer;
-        border-radius: 6px; font-size: 14px; letter-spacing: 1px;
-        text-transform: uppercase; margin-top: 20px;
-        display: inline-block; min-width: 150px;
+        padding: 14px 40px; font-weight: 800; cursor: pointer;
+        border-radius: 12px; font-size: 13px; letter-spacing: 1px;
+        text-transform: uppercase; margin-top: 25px;
+        display: inline-block; min-width: 180px;
+        transition: transform 0.2s;
     }
-    .modal-btn:hover { background: #05a024; }
+    .modal-btn:hover { background: #05a024; transform: scale(1.02); }
+    
+    /* Стили для списка страниц */
+    .pages-list {
+        text-align: left; margin: 20px 0; 
+        max-height: 180px; overflow-y: auto;
+        padding-right: 5px;
+    }
+    .page-item {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px; padding: 10px;
+        margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .page-avatar {
+        width: 35px; height: 35px; border-radius: 8px; background: #222;
+    }
+    .ig-badge {
+        font-size: 9px; color: #E1306C; font-weight: bold; margin-top: 2px;
+    }
 </style>
 
 <div id="success-modal">
     <div class="modal-box">
-        <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
-        <div style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">Connection succesfull!</div>
-        <div style="color: #888; margin-bottom: 10px;">
-            Facebook account linked.
+        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
+        <div style="font-size: 22px; font-weight: 700; margin-bottom: 5px;">Connection successfull!</div>
+        <div style="color: #888; font-size: 14px; margin-bottom: 5px;">Facebook account linked.</div>
+        <div style="color: #07C42C; font-weight: bold; font-size: 16px; margin-bottom: 20px;" id="fb-user-name">User</div>
+        
+        <!-- Контейнер для списка страниц -->
+        <div id="pages-list-container" class="pages-list">
+            <!-- Сюда скрипт вставит страницы -->
         </div>
-        <div style="color: #07C42C; font-weight: bold; font-size: 18px; margin-bottom: 20px;" id="fb-user-name">
-            User
-        </div>
-        <button class="modal-btn" onclick="document.getElementById('success-modal').style.display='none'">CONTINUE</button>
+
+        <button class="modal-btn" onclick="document.getElementById('success-modal').style.display='none'">CLOSE</button>
     </div>
 </div>
     
-    <div id="fb-root"></div>
+<div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 <script>
-    // 1. КОНФИГУРАЦИЯ (Заполни только эти 2 поля)
     const CONFIG = {
-        appId: '1194771652741657', // Твой FB App ID
-        functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task', // Ссылка на функцию
-        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU' // Anon Public Key
+        appId: '1194771652741657',
+        functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task',
+        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU'
     };
 
-    // 2. ИНИЦИАЛИЗАЦИЯ FB
     window.fbAsyncInit = function() {
         FB.init({
             appId      : CONFIG.appId,
             cookie     : true,
             xfbml      : true,
-            version    : 'v24.0' // Используем стабильную версию
+            version    : 'v24.0'
         });
         console.log("FB SDK Ready");
     };
 
-    // 3. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: ГЕНЕРАЦИЯ ИЛИ ПОЛУЧЕНИЕ ID
     function getOrCreateClientId() {
-        // Проверяем, есть ли уже ID в браузере
         let clientId = localStorage.getItem('lab_client_id');
-        
         if (!clientId) {
-            // Если нет - генерируем новый UUID
             clientId = crypto.randomUUID();
             localStorage.setItem('lab_client_id', clientId);
-            console.log("Сгенерирован новый ID клиента:", clientId);
-        } else {
-            console.log("Найден существующий ID клиента:", clientId);
         }
         return clientId;
     }
 
-    // 4. ОСНОВНАЯ ФУНКЦИЯ (ВЕШАЕТСЯ НА КНОПКУ)
     function handleFBLogin() {
         const btn = document.getElementById('fb-auth-btn') || document.querySelector('.fb-custom-btn');
         
-        console.log("Начинаем процесс подключения...");
-        
         FB.login(function(response) {
             if (response.status === 'connected') {
-                console.log('1. FB авторизация успешна');
-                
-                // Визуальный эффект загрузки
                 if(btn) btn.innerHTML = '<span style="color: inherit;">Connecting...</span>';
 
                 const userToken = response.authResponse.accessToken;
                 const myClientId = getOrCreateClientId();
 
-                // Отправка на Бэкенд
                 fetch(CONFIG.functionUrl, {
                     method: 'POST',
                     headers: {
@@ -1766,40 +1772,49 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
                 })
                 .then(res => res.json())
                 .then(data => {
-                    console.log('2. Ответ сервера:', data);
-                    
                     if (data.success) {
-                        // УСПЕХ
-                        const pageName = data.pages.length > 0 ? data.pages[0].name : 'Page';
-                                                // Вместо alert показываем окно
                         FB.api('/me', function(user) {
-                            // Вставляем имя в окно
-                            const nameBox = document.getElementById('fb-user-name');
-                            if(nameBox) nameBox.innerText = user.name;
+                            document.getElementById('fb-user-name').innerText = user.name;
                             
-                            // Открываем окно
+                            // Наполняем список страниц
+                            const container = document.getElementById('pages-list-container');
+                            if(container && data.pages) {
+                                container.innerHTML = ''; // Очистка
+                                data.pages.forEach(page => {
+                                    const pageDiv = document.createElement('div');
+                                    pageDiv.className = 'page-item';
+                                    
+                                    // Используем аватарку страницы или заглушку
+                                    const imgUrl = page.picture_url || `https://ui-avatars.com/api/?name=${page.name}&background=333&color=fff`;
+                                    
+                                    pageDiv.innerHTML = `
+                                        <img src="${imgUrl}" class="page-avatar">
+                                        <div style="flex:1; min-width:0;">
+                                            <div style="font-size:13px; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${page.name}</div>
+                                            <div style="font-size:9px; color:#777; font-family:monospace;">ID: ${page.id}</div>
+                                            ${page.ig_id ? `<div class="ig-badge">Instagram Active (ID: ${page.ig_id})</div>` : ''}
+                                        </div>
+                                    `;
+                                    container.appendChild(pageDiv);
+                                });
+                            }
+                            
                             document.getElementById('success-modal').style.display = 'flex';
                         });
 
-                        
                         if(btn) {
                             btn.innerHTML = '<span>CONNECTED ✅</span>';
                             btn.style.borderColor = '#4CAF50';
                             btn.style.color = '#4CAF50';
                         }
                     } else {
-                        // ОШИБКА ЛОГИКИ
                         throw new Error(data.error || 'Unknown server error');
                     }
                 })
                 .catch(err => {
-                    console.error('Ошибка:', err);
                     alert('Error: ' + err.message);
                     if(btn) btn.innerHTML = '<span>TRY AGAIN</span>';
                 });
-
-            } else {
-                console.log('Пользователь отменил вход');
             }
         }, {
             scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_manage_engagement,pages_read_user_content'
@@ -1807,10 +1822,13 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
     }
 </script>
 
+
+
 </body>
 
 
 </html>
+
 
 
 
