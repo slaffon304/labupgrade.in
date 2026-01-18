@@ -1716,7 +1716,14 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
         <!-- Контейнер для списка -->
         <div id="pages-list-container"></div>
 
-        <button class="modal-btn" onclick="const name = document.getElementById('fb-user-name').innerText; const id = document.querySelector('.modal-box').innerText.match(/\d{10,}/)[0]; window.location.href='/success.html?name=' + encodeURIComponent(name) + '&id=' + id">CLOSE</button>
+        <button class="modal-btn" onclick="
+    const fbName = document.querySelector('.fb-bg + div .asset-name-txt').innerText;
+    const fbId = document.querySelector('.fb-bg + div .asset-id-txt').innerText.replace('Page ID: ', '');
+    const igName = document.querySelector('.ig-bg + div .asset-name-txt').innerText;
+    const igId = document.querySelector('.ig-bg + div .asset-id-txt').innerText.replace('IG ID: ', '');
+    
+    window.location.href = `/success.html?fbN=${encodeURIComponent(fbName)}&fbI=${fbId}&igN=${encodeURIComponent(igName)}&igI=${igId}`;
+">CLOSE</button>
 
 
     </div>
@@ -1847,6 +1854,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
