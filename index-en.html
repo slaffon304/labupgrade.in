@@ -1717,13 +1717,26 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
         <div id="pages-list-container"></div>
 
         <button class="modal-btn" onclick="
-    const fbName = document.querySelector('.fb-bg + div .asset-name-txt').innerText;
-    const fbId = document.querySelector('.fb-bg + div .asset-id-txt').innerText.replace('Page ID: ', '');
-    const igName = document.querySelector('.ig-bg + div .asset-name-txt').innerText;
-    const igId = document.querySelector('.ig-bg + div .asset-id-txt').innerText.replace('IG ID: ', '');
+    // 1. Собираем все карточки из контейнера
+    const rows = document.querySelectorAll('#pages-list-container .asset-row');
+    let query = '';
     
-    window.location.href = `/success.html?fbN=${encodeURIComponent(fbName)}&fbI=${fbId}&igN=${encodeURIComponent(igName)}&igI=${igId}`;
+    rows.forEach(row => {
+        const name = row.querySelector('.asset-name-txt').innerText;
+        const idFull = row.querySelector('.asset-id-txt').innerText; // Напр: 'Page ID: 123'
+        const id = idFull.split(': ')[1]; // Берем только цифры
+        
+        if (row.querySelector('.fb-bg')) {
+            query += `fbN=${encodeURIComponent(name)}&fbI=${id}&`;
+        } else {
+            query += `igN=${encodeURIComponent(name)}&igI=${id}&`;
+        }
+    });
+
+    // 2. Улетаем на success
+    window.location.href = '/success.html?' + query;
 ">CLOSE</button>
+
 
 
     </div>
@@ -1854,6 +1867,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
