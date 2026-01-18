@@ -1716,7 +1716,8 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
         <!-- Контейнер для списка -->
         <div id="pages-list-container"></div>
 
-        <button class="modal-btn" onclick="document.getElementById('success-modal').style.display='none'">CLOSE</button>
+        <button class="modal-btn" onclick="const name = document.getElementById('fb-user-name').innerText; window.location.href='/success.html?name=' + encodeURIComponent(name)">CLOSE</button>
+
     </div>
 </div>
     
@@ -1845,6 +1846,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
