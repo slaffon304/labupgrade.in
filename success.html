@@ -3,66 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connection Successful | Lab Upgrade</title>
+    <title>Agent Dashboard | Lab Upgrade</title>
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .container {
-            border: 2px solid #00ff00;
-            padding: 40px;
-            border-radius: 15px;
-            background: rgba(0, 255, 0, 0.05);
-            max-width: 400px;
-        }
-        h1 {
-            color: #00ff00;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 18px;
-            color: #ccc;
-        }
-        .username {
-            color: #fff;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .status-badge {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 5px 15px;
-            background: #00ff00;
-            color: #000;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-        }
+        body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { border: 1px solid #07C42C; padding: 30px; border-radius: 12px; background: #111; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,255,0,0.1); }
+        .green { color: #07C42C; font-weight: bold; }
+        .id-text { color: #888; font-size: 12px; margin-top: 5px; }
+        .status { background: #07C42C; color: #000; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 15px; display: inline-block; }
+        
+        .management-box { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #333; text-align: left; font-size: 13px; color: #aaa; }
+        .management-box h3 { font-size: 14px; color: #fff; margin-bottom: 10px; }
+        .link { color: #07C42C; text-decoration: none; font-weight: bold; }
+        .link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome, <span id="user-name" class="username">User</span>!</h1>
-        <p>Your AI Agent is now active for this profile.</p>
-        <div class="status-badge">● ONLINE 24/7</div>
+    <div class="card">
+        <div style="font-size: 40px;">🤖</div>
+        <h2 id="ig-name" class="green">@username</h2>
+        <div id="ig-id" class="id-text">ID: 000000000000</div>
+        <div class="status">AI AGENT ACTIVE</div>
+        
+        <p style="font-size: 14px; color: #ccc; margin-top: 20px;">System is now monitoring messages and comments for this profiles.</p>
+
+        <div class="management-box">
+            <h3>Manage Your Data</h3>
+            <p>To revoke permissions or delete your data, you can visit your <a href="https://www.facebook.com/settings?tab=business_tools" target="_blank" class="link">Facebook Business Settings</a> or contact our support.</p>
+            <p>Detailed policies and instructions: <a href="https://labupgrade.in/documents-en.html" class="link">labupgrade.in/documents-en.html</a></p>
+        </div>
     </div>
 
     <script>
-        // Простой скрипт для отображения имени из параметров URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
-        if (name) {
-            document.getElementById('user-name').textContent = '@' + name;
-        }
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('name')) document.getElementById('ig-name').textContent = '@' + params.get('name');
+        if (params.get('id')) document.getElementById('ig-id').textContent = 'ID: ' + params.get('id');
     </script>
 </body>
 </html>
