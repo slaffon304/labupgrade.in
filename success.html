@@ -5,36 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connection Success | Lab Upgrade</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .card { border: 1px solid #07C42C; padding: 25px; border-radius: 12px; background: #0b0b0b; width: 100%; max-width: 360px; text-align: center; }
-        .green-title { color: #07C42C; font-weight: bold; font-size: 22px; margin-bottom: 20px; }
-        .asset-row { display: flex; align-items: center; background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; border: 1px solid #333; }
-        .asset-icon-box { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { border: 1px solid #07C42C; padding: 30px; border-radius: 16px; background: #0b0b0b; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0, 255, 0, 0.1); }
+        .green-title { color: #07C42C; font-weight: bold; font-size: 24px; margin-bottom: 10px; }
+        /* Стиль для перемещенного текста */
+        .monitoring-text { font-size: 14px; color: #ccc; margin-bottom: 25px; line-height: 1.4; }
+        
+        .asset-row { display: flex; align-items: center; background: #161616; padding: 14px; border-radius: 10px; margin-bottom: 12px; text-align: left; border: 1px solid #222; transition: transform 0.2s; }
+        .asset-icon-box { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px; }
         .fb-bg { background-color: #1877F2; }
         .ig-bg { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
-        .asset-name-txt { font-weight: 600; font-size: 14px; color: #fff; }
-        .asset-id-txt { font-size: 11px; color: #888; margin-top: 2px; }
-        .status-badge { background: #07C42C; color: #000; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin: 15px 0; display: inline-block; }
-        .footer-info { margin-top: 20px; padding-top: 15px; border-top: 1px solid #222; font-size: 12px; color: #666; text-align: left; }
-        .link { color: #07C42C; text-decoration: none; font-weight: bold; }
+        .asset-name-txt { font-weight: 600; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .asset-id-txt { font-size: 11px; color: #666; margin-top: 3px; letter-spacing: 0.5px; }
+        
+        .status-badge { background: rgba(7, 196, 44, 0.1); color: #07C42C; border: 1px solid #07C42C; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; margin: 25px 0 0 0; display: inline-block; }
+        
+        /* Обновленный футер */
+        .footer-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid #222; text-align: center; font-size: 12px; color: #777; line-height: 1.6; }
+        .footer-title { color: #eee; font-weight: bold; margin-bottom: 5px; display: block; }
+        .link { color: #07C42C; text-decoration: underline; font-weight: bold; transition: 0.3s; }
+        .link:hover { color: #0be43a; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+        <div style="font-size: 50px; margin-bottom: 15px;">✅</div>
         <div class="green-title">Profiles Active</div>
+        <p class="monitoring-text">AI Workforce is now monitoring messages and comments for these profiles.</p>
         
         <div id="dynamic-assets">
             </div>
 
-        <div class="status-badge">AI AGENT ONLINE</div>
-        
-        <p style="font-size: 13px; color: #aaa;">AI Workforce is now monitoring messages and comments for these profiles.</p>
+        <div class="status-badge">● AI AGENT ONLINE</div>
 
         <div class="footer-info">
-            <b style="color:#eee">Data Management:</b><br>
-            To revoke permissions or manage your data, visit our portal: 
-            <a href="https://labupgrade.in/documents-en.html" class="link">labupgrade.in/documents-en.html</a>
+            <span class="footer-title">Data Management:</span>
+            To revoke permissions or manage your data, visit our 
+            <a href="https://labupgrade.in/documents-en.html" class="link">special page</a>.
         </div>
     </div>
 
@@ -44,21 +51,25 @@
 
         function createCard(name, id, type) {
             const isFB = type === 'fb';
+            // Используем переданные данные или дефолтные, если их нет
+            const displayName = name || (isFB ? 'Facebook Page' : 'Instagram Account');
+            const displayId = id || 'Not Connected';
+            
             const icon = isFB ? 
-                '<svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>' : 
-                '<svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.245 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.245-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.245-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.245 3.608-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.62 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
+                '<svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>' : 
+                '<svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.245 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.245-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.245-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.245 3.608-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.62 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
 
             return `
                 <div class="asset-row">
                     <div class="asset-icon-box ${isFB ? 'fb-bg' : 'ig-bg'}">${icon}</div>
                     <div style="flex:1;">
-                        <div class="asset-name-txt">${name || (isFB ? 'Lab Upgrade AI' : 'lab_upgrade_ai')}</div>
-                        <div class="asset-id-txt">${isFB ? 'Page' : 'IG'} ID: ${id || '0000000000'}</div>
+                        <div class="asset-name-txt">${displayName}</div>
+                        <div class="asset-id-txt">${isFB ? 'Page' : 'IG'} ID: ${displayId}</div>
                     </div>
                 </div>`;
         }
 
-        // Если данных нет в URL, всё равно рисуем карточки (Safe Mode для ревью)
+        // Рендерим карточки. Если параметров нет, покажутся дефолтные значения.
         container.innerHTML += createCard(params.get('fbN'), params.get('fbI'), 'fb');
         container.innerHTML += createCard(params.get('igN'), params.get('igI'), 'ig');
     </script>
