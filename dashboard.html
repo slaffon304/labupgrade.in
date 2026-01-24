@@ -7,112 +7,142 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .msg-bubble { max-width: 80%; padding: 12px; border-radius: 12px; position: relative; }
-        .msg-human { background-color: #1e293b; border-bottom-left-radius: 2px; }
-        .msg-ai { background-color: #2563eb; color: white; border-bottom-right-radius: 2px; margin-left: auto; }
-        /* Скроллбар */
-        ::-webkit-scrollbar { width: 8px; }
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        .msg-bubble { max-width: 80%; padding: 12px 16px; border-radius: 16px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .msg-human { background-color: #1e293b; border-bottom-left-radius: 4px; }
+        .msg-ai { background-color: #2563eb; color: white; border-bottom-right-radius: 4px; margin-left: auto; }
+        
+        /* Стили для иконок платформ */
+        .platform-icon { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; position: absolute; bottom: -2px; right: -2px; border: 2px solid #1e293b; }
+        .bg-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .bg-fb { background: #1877F2; }
+        
+        /* Модальное окно */
+        .modal-overlay { background: rgba(0,0,0,0.8); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div id="app" class="h-screen flex flex-col">
         
-        <header class="glass p-4 flex justify-between items-center border-b border-gray-700 z-10">
+        <header class="glass p-3 flex justify-between items-center border-b border-gray-700 z-20">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/50">L</div>
-                <h1 class="text-xl font-bold tracking-tight">Lab Upgrade <span class="text-gray-500 text-sm font-normal">| Live Desk</span></h1>
+                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 text-lg">L</div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight leading-tight">Lab Upgrade</h1>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Unified Inbox</p>
+                </div>
             </div>
             
-            <div class="flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-full border border-gray-600 shadow-inner">
-                <span class="text-xs text-gray-400 font-bold tracking-wider">AI AGENT:</span>
-                <div @click="toggleBot" class="w-12 h-6 bg-gray-600 rounded-full relative cursor-pointer transition-colors duration-300" :class="{'bg-green-500': botActive}">
-                    <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-all duration-300 shadow" :class="{'translate-x-6': botActive}"></div>
+            <div class="flex items-center gap-3">
+                <button @click="showChannels = true" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                    <i class="fas fa-network-wired text-blue-400"></i> Channels
+                </button>
+
+                <div class="flex items-center gap-2 bg-gray-800 px-3 py-1.5 rounded-full border border-gray-600">
+                    <span class="text-[10px] text-gray-400 font-bold">MASTER SWITCH:</span>
+                    <div @click="toggleBot" class="w-8 h-4 bg-gray-600 rounded-full relative cursor-pointer transition-colors" :class="{'bg-green-500': botActive}">
+                        <div class="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5 transition-all" :class="{'translate-x-4': botActive}"></div>
+                    </div>
                 </div>
-                <span class="text-xs font-bold w-6" :class="botActive ? 'text-green-400' : 'text-gray-500'">{{ botActive ? 'ON' : 'OFF' }}</span>
             </div>
         </header>
 
         <div class="flex flex-1 overflow-hidden">
-            <aside class="w-80 glass border-r border-gray-700 flex flex-col">
-                <div class="p-4 border-b border-gray-700 bg-gray-800/50">
-                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Conversations</h2>
+            <aside class="w-80 glass border-r border-gray-700 flex flex-col z-10">
+                <div class="p-3 border-b border-gray-700 bg-gray-800/30 flex justify-between items-center">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase">Inbox</h2>
+                    <span class="text-xs bg-blue-900 text-blue-200 px-2 py-0.5 rounded-full">{{ uniqueSessions.length }} active</span>
                 </div>
+                
                 <div class="overflow-y-auto flex-1">
                     <div v-for="sessionId in uniqueSessions" :key="sessionId" @click="selectSession(sessionId)" 
-                         class="p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-800 transition-all duration-200"
+                         class="p-4 border-b border-gray-700/50 cursor-pointer hover:bg-gray-800 transition-all duration-200 relative group"
                          :class="{'bg-gray-800 border-l-4 border-l-blue-500': currentSession === sessionId}">
+                        
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center text-sm font-bold text-gray-300 shadow">
-                                {{ getInitials(getClientName(sessionId)) }}
+                            <div class="relative">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-inner"
+                                     :class="getClientType(sessionId) === 'ig' ? 'bg-ig' : 'bg-fb'">
+                                    {{ getInitials(getClientName(sessionId)) }}
+                                </div>
+                                <div class="platform-icon" :class="getClientType(sessionId) === 'ig' ? 'bg-black' : 'bg-black'">
+                                    <i class="fab" :class="getClientType(sessionId) === 'ig' ? 'fa-instagram' : 'fa-facebook-f'"></i>
+                                </div>
                             </div>
+
                             <div class="overflow-hidden flex-1">
-                                <p class="font-bold text-sm truncate text-gray-100">{{ getClientName(sessionId) }}</p>
-                                <p class="text-xs text-gray-500 truncate mt-0.5">
-                                    ID: {{ sessionId.substring(0,8) }}...
+                                <div class="flex justify-between items-center">
+                                    <p class="font-bold text-sm truncate text-gray-100">{{ getClientName(sessionId) }}</p>
+                                    <span class="text-[10px] text-gray-500">{{ getLastMsgTime(sessionId) }}</span>
+                                </div>
+                                <p class="text-xs text-gray-400 truncate mt-0.5 flex items-center gap-1">
+                                    <i v-if="getClientType(sessionId) === 'ig'" class="fab fa-instagram text-[10px]"></i>
+                                    <i v-else class="fab fa-facebook-square text-[10px]"></i>
+                                    {{ getClientType(sessionId) === 'ig' ? 'Instagram Direct' : 'Messenger' }}
                                 </p>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
                         </div>
                     </div>
                 </div>
             </aside>
 
             <main class="flex-1 flex flex-col bg-gray-900 relative">
-                <div v-if="!currentSession" class="flex-1 flex flex-col items-center justify-center text-gray-600">
-                    <i class="far fa-comments text-5xl mb-4 opacity-50"></i>
-                    <p class="text-lg font-medium">Select a conversation to start</p>
+                <div v-if="!currentSession" class="flex-1 flex flex-col items-center justify-center text-gray-600 opacity-60">
+                    <i class="fab fa-facebook-messenger text-6xl mb-4 animate-pulse"></i>
+                    <p class="text-lg font-medium">Select a conversation</p>
                 </div>
 
                 <div v-else class="flex flex-col h-full">
-                    <div class="p-3 bg-gray-800/80 border-b border-gray-700 flex justify-between items-center backdrop-blur-sm">
-                        <div>
-                            <span class="font-bold text-white">{{ getClientName(currentSession) }}</span>
-                            <span class="text-xs text-gray-500 ml-2 block">Instagram/Facebook User</span>
+                    <div class="p-4 bg-gray-800/90 border-b border-gray-700 flex justify-between items-center backdrop-blur-md">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                                 :class="getClientType(currentSession) === 'ig' ? 'bg-ig' : 'bg-fb'">
+                                {{ getInitials(getClientName(currentSession)) }}
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-white leading-none">{{ getClientName(currentSession) }}</h2>
+                                <span class="text-xs text-gray-400 flex items-center gap-1 mt-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> 
+                                    {{ getClientType(currentSession) === 'ig' ? 'Instagram User' : 'Facebook User' }}
+                                    <span class="text-gray-600 text-[10px] ml-1">ID: {{ currentSession.substring(0,8) }}...</span>
+                                </span>
+                            </div>
                         </div>
-                        <button class="text-xs text-gray-400 hover:text-white transition"><i class="fas fa-ellipsis-h"></i></button>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 transition"><i class="fas fa-search"></i></button>
+                            <button class="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 transition"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
                     </div>
 
-                    <div class="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth" ref="chatBox">
+                    <div class="flex-1 p-6 overflow-y-auto space-y-6" ref="chatBox">
                         <div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full group">
-                            
                             <div class="flex gap-3" :class="msg.role === 'ai' ? 'justify-end' : 'justify-start'">
-                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto">
-                                    <i class="fas fa-user text-xs text-gray-400"></i>
+                                
+                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
+                                    <i class="fas fa-user"></i>
                                 </div>
                                 
-                                <div class="msg-bubble shadow-md transition-all" :class="[msg.role === 'ai' ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
-                                    
+                                <div class="msg-bubble transition-all duration-300" :class="[msg.role === 'ai' ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
                                     <div v-if="!msg.is_deleted" class="text-sm whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
-                                    <div v-else class="text-xs italic text-gray-400 flex items-center gap-2">
-                                        <i class="fas fa-trash-alt text-red-900"></i> 
-                                        <span>Message deleted by moderator</span>
-                                    </div>
+                                    <div v-else class="text-xs italic text-gray-400 flex items-center gap-2"><i class="fas fa-trash-alt text-red-500"></i> Message deleted</div>
 
                                     <div v-if="msg.role === 'human' && !msg.is_deleted" 
-                                         class="mt-2 pt-2 border-t border-gray-600/30 flex gap-4 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        
-                                        <button @click="toggleHide(msg)" class="hover:text-yellow-400 flex items-center gap-1 transition-colors">
-                                            <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
-                                            {{ msg.is_hidden ? 'Unhide' : 'Hide' }}
-                                        </button>
-                                        
-                                        <button @click="deleteMsg(msg)" class="hover:text-red-400 flex items-center gap-1 transition-colors">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-
-                                        <span v-if="msg.is_hidden" class="ml-auto text-yellow-500 font-bold border border-yellow-500/30 px-1 rounded">HIDDEN</span>
+                                         class="mt-2 pt-2 border-t border-gray-600/30 flex items-center gap-4 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="toggleHide(msg)" class="hover:text-white flex items-center gap-1"><i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> {{ msg.is_hidden ? 'Unhide' : 'Hide' }}</button>
+                                        <button @click="deleteMsg(msg)" class="hover:text-red-400 flex items-center gap-1"><i class="fas fa-trash"></i> Delete</button>
+                                        <span v-if="msg.is_hidden" class="ml-auto text-yellow-500 font-bold px-1.5 py-0.5 bg-yellow-500/10 rounded">HIDDEN</span>
                                     </div>
                                 </div>
 
-                                <div v-if="msg.role === 'ai'" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 mt-auto">
-                                    <i class="fas fa-robot text-xs text-white"></i>
+                                <div v-if="msg.role === 'ai'" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 mt-auto text-white text-xs shadow-lg shadow-blue-600/40">
+                                    <i class="fas fa-robot"></i>
                                 </div>
                             </div>
                         </div>
@@ -120,29 +150,79 @@
 
                     <div class="p-4 glass border-t border-gray-700">
                         <div class="flex gap-3 items-end">
-                            <div class="flex-1 bg-gray-800 border border-gray-600 rounded-xl focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
-                                <textarea v-model="replyText" @keydown.enter.prevent="sendReply" placeholder="Type your reply here..." 
+                            <div class="flex-1 bg-gray-800 border border-gray-600 rounded-xl focus-within:border-blue-500 focus-within:ring-1 transition-all overflow-hidden relative">
+                                <textarea v-model="replyText" @keydown.enter.prevent="sendReply" placeholder="Type a message..." 
                                     class="w-full bg-transparent text-white px-4 py-3 focus:outline-none resize-none h-12 max-h-32 placeholder-gray-500 text-sm"></textarea>
                             </div>
                             <button @click="sendReply" :disabled="isSending || !replyText.trim()" 
-                                class="h-12 w-12 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 transition-all transform active:scale-95">
+                                class="h-12 w-12 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:grayscale text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 transition-all transform active:scale-95">
                                 <i class="fas" :class="isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
                             </button>
-                        </div>
-                        <div class="mt-2 text-[10px] text-gray-500 flex justify-between px-1">
-                            <span><i class="fas fa-shield-alt text-green-500 mr-1"></i>Secure Connection (Supabase)</span>
-                            <span>Reply via API</span>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
+
+        <div v-if="showChannels" class="modal-overlay" @click.self="showChannels = false">
+            <div class="bg-gray-900 border border-gray-700 w-full max-w-md rounded-xl shadow-2xl p-6 relative">
+                <button @click="showChannels = false" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                
+                <h2 class="text-xl font-bold mb-1">Connected Channels</h2>
+                <p class="text-xs text-gray-400 mb-6">Manage your automated pages and webhooks.</p>
+                
+                <div class="space-y-4">
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white"><i class="fab fa-facebook-f"></i></div>
+                            <div>
+                                <h3 class="font-bold text-sm">Main Business Page</h3>
+                                <p class="text-[10px] text-green-400 flex items-center gap-1"><i class="fas fa-check-circle"></i> Webhooks Active</p>
+                            </div>
+                        </div>
+                        <div @click="toggleChannel(0)" class="w-10 h-5 bg-green-500 rounded-full relative cursor-pointer">
+                            <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 right-0.5 shadow-sm"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700 opacity-75">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-gray-400"><i class="fab fa-facebook-f"></i></div>
+                            <div>
+                                <h3 class="font-bold text-sm">Backup/Second Page</h3>
+                                <p class="text-[10px] text-gray-500">Not Connected</p>
+                            </div>
+                        </div>
+                        <button class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition">Connect</button>
+                    </div>
+
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-ig rounded-full flex items-center justify-center text-white"><i class="fab fa-instagram"></i></div>
+                            <div>
+                                <h3 class="font-bold text-sm">@labupgrade_official</h3>
+                                <p class="text-[10px] text-green-400 flex items-center gap-1"><i class="fas fa-check-circle"></i> Messages Active</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-5 bg-green-500 rounded-full relative cursor-pointer">
+                            <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 right-0.5 shadow-sm"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-800 flex justify-end">
+                    <button @click="showChannels = false" class="text-sm text-gray-400 hover:text-white mr-4">Close</button>
+                    <button class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-500 font-bold">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         const { createClient } = supabase;
 
-        // --- ВСТАВЬ СЮДА СВОИ КЛЮЧИ ---
+        // --- ТВОИ КЛЮЧИ ---
         const SUPABASE_URL = 'https://kdymhrvudosudnqidejj.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU';
         // -----------------------------
@@ -153,31 +233,28 @@
         createApp({
             data() {
                 return {
-                    messages: [],        // Все сообщения из chat_memory
-                    clients: [],         // Все клиенты из end_clients
-                    clientMap: {},       // Словарь ID -> Имя
+                    messages: [],
+                    clients: [],
+                    clientMap: {}, // ID -> { name: "Ivan", type: "ig"/"fb" }
                     currentSession: null,
                     replyText: '',
                     botActive: true,
-                    isSending: false
+                    isSending: false,
+                    showChannels: false // Для модального окна
                 }
             },
             computed: {
-                // Получаем список уникальных сессий из сообщений
                 uniqueSessions() {
                     return [...new Set(this.messages.map(m => m.session_id))];
                 },
-                // Фильтруем сообщения для текущего выбранного чата
                 sessionMessages() {
                     if (!this.currentSession) return [];
                     return this.messages.filter(m => m.session_id === this.currentSession);
                 }
             },
             async mounted() {
-                // Загружаем данные параллельно
                 await Promise.all([this.fetchMessages(), this.fetchClients()]);
                 
-                // Подписываемся на обновления в реальном времени (chat_memory)
                 sb.channel('public:chat_memory')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => {
                     this.fetchMessages();
@@ -185,105 +262,83 @@
                 .subscribe();
             },
             methods: {
-                // 1. Загрузка сообщений
                 async fetchMessages() {
-                    const { data, error } = await sb
-                        .from('chat_memory')
-                        .select('*')
-                        .order('created_at', { ascending: true });
-                    
+                    const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
-                            // Парсим JSON сообщение
                             const contentObj = typeof row.message === 'string' ? JSON.parse(row.message) : row.message;
                             return {
                                 id: row.id,
                                 session_id: row.session_id,
                                 content: contentObj.content,
-                                role: contentObj.type, // 'human' или 'ai'
+                                role: contentObj.type,
                                 is_hidden: row.is_hidden,
-                                is_deleted: row.is_deleted
+                                is_deleted: row.is_deleted,
+                                created_at: row.created_at
                             };
                         });
                     }
                 },
-
-                // 2. Загрузка клиентов (для имен)
                 async fetchClients() {
-                    // Берем нужные поля: имя и ID (instagram и psid)
-                    const { data, error } = await sb
-                        .from('end_clients')
-                        .select('name, username, instagram_id, psid');
-
+                    const { data } = await sb.from('end_clients').select('name, username, instagram_id, psid');
                     if (data) {
-                        this.clients = data;
-                        // Создаем быстрый поиск (Map)
                         data.forEach(client => {
-                            // Имя для отображения (приоритет: name -> username -> 'Client')
                             const displayName = client.name || client.username || 'Client';
-                            
-                            // Привязываем имя к instagram_id
-                            if (client.instagram_id) this.clientMap[client.instagram_id] = displayName;
-                            // Привязываем имя к psid
-                            if (client.psid) this.clientMap[client.psid] = displayName;
+                            // Определяем платформу по наличию ID
+                            if (client.instagram_id) {
+                                this.clientMap[client.instagram_id] = { name: displayName, type: 'ig' };
+                            }
+                            if (client.psid) {
+                                this.clientMap[client.psid] = { name: displayName, type: 'fb' };
+                            }
                         });
                     }
                 },
-
-                // 3. Получить имя по ID сессии
+                // Получаем Имя
                 getClientName(sessionId) {
-                    // Ищем в нашем словаре. Если нет - показываем часть ID
-                    return this.clientMap[sessionId] || `User ${sessionId.substring(0, 6)}...`;
+                    return this.clientMap[sessionId]?.name || `User ${sessionId.substring(0, 4)}...`;
                 },
-
-                // 4. Получить инициалы для аватарки
+                // Получаем Тип (ig или fb)
+                getClientType(sessionId) {
+                    return this.clientMap[sessionId]?.type || 'fb'; // По умолчанию fb, если не нашли
+                },
                 getInitials(name) {
                     if (name.startsWith('User ')) return '#';
                     return name.substring(0, 2).toUpperCase();
                 },
-
+                getLastMsgTime(sessionId) {
+                    // Ищем последнее сообщение в этой сессии
+                    const msgs = this.messages.filter(m => m.session_id === sessionId);
+                    if (msgs.length === 0) return '';
+                    const last = msgs[msgs.length - 1];
+                    const date = new Date(last.created_at);
+                    return date.getHours() + ':' + (date.getMinutes()<10?'0':'') + date.getMinutes();
+                },
                 selectSession(id) {
                     this.currentSession = id;
-                    this.scrollToBottom();
+                    setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
                 },
-
-                scrollToBottom() {
-                    setTimeout(() => {
-                        if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-                    }, 100);
-                },
-
-                // Функции управления (для Meta Review)
                 toggleBot() { this.botActive = !this.botActive; },
-
+                toggleChannel(idx) { /* Для видео просто переключаем визуально */ },
+                
                 async toggleHide(msg) {
-                    // Обновляем статус в базе
                     await sb.from('chat_memory').update({ is_hidden: !msg.is_hidden }).eq('id', msg.id);
                 },
-
                 async deleteMsg(msg) {
-                    if(!confirm('Delete this message permanently?')) return;
-                    // Soft delete (пометка удаленным)
+                    if(!confirm('Delete permanently?')) return;
                     await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
                 },
-
                 async sendReply() {
                     if (!this.replyText.trim()) return;
                     this.isSending = true;
-
                     const messageJson = { type: "ai", content: this.replyText };
-
-                    // Добавляем ответ в базу
-                    const { error } = await sb.from('chat_memory').insert({
+                    await sb.from('chat_memory').insert({
                         session_id: this.currentSession,
                         message: messageJson
                     });
-
-                    if (!error) {
-                        this.replyText = '';
-                        this.scrollToBottom();
-                    }
+                    this.replyText = '';
                     this.isSending = false;
+                    setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
                 }
             }
         }).mount('#app');
