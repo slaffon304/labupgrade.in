@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Upgrade | CRM Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .msg-bubble { max-width: 80%; padding: 12px; border-radius: 12px; position: relative; }
+        .msg-human { background-color: #1e293b; border-bottom-left-radius: 2px; }
+        .msg-ai { background-color: #2563eb; color: white; border-bottom-right-radius: 2px; margin-left: auto; }
+        /* Скроллбар */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body>
+    <div id="app" class="h-screen flex flex-col">
+        
+        <header class="glass p-4 flex justify-between items-center border-b border-gray-700 z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/50">L</div>
+                <h1 class="text-xl font-bold tracking-tight">Lab Upgrade <span class="text-gray-500 text-sm font-normal">| Live Desk</span></h1>
+            </div>
+            
+            <div class="flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-full border border-gray-600 shadow-inner">
+                <span class="text-xs text-gray-400 font-bold tracking-wider">AI AGENT:</span>
+                <div @click="toggleBot" class="w-12 h-6 bg-gray-600 rounded-full relative cursor-pointer transition-colors duration-300" :class="{'bg-green-500': botActive}">
+                    <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-all duration-300 shadow" :class="{'translate-x-6': botActive}"></div>
+                </div>
+                <span class="text-xs font-bold w-6" :class="botActive ? 'text-green-400' : 'text-gray-500'">{{ botActive ? 'ON' : 'OFF' }}</span>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <aside class="w-80 glass border-r border-gray-700 flex flex-col">
+                <div class="p-4 border-b border-gray-700 bg-gray-800/50">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Conversations</h2>
+                </div>
+                <div class="overflow-y-auto flex-1">
+                    <div v-for="sessionId in uniqueSessions" :key="sessionId" @click="selectSession(sessionId)" 
+                         class="p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-800 transition-all duration-200"
+                         :class="{'bg-gray-800 border-l-4 border-l-blue-500': currentSession === sessionId}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center text-sm font-bold text-gray-300 shadow">
+                                {{ getInitials(getClientName(sessionId)) }}
+                            </div>
+                            <div class="overflow-hidden flex-1">
+                                <p class="font-bold text-sm truncate text-gray-100">{{ getClientName(sessionId) }}</p>
+                                <p class="text-xs text-gray-500 truncate mt-0.5">
+                                    ID: {{ sessionId.substring(0,8) }}...
+                                </p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="flex-1 flex flex-col bg-gray-900 relative">
+                <div v-if="!currentSession" class="flex-1 flex flex-col items-center justify-center text-gray-600">
+                    <i class="far fa-comments text-5xl mb-4 opacity-50"></i>
+                    <p class="text-lg font-medium">Select a conversation to start</p>
+                </div>
+
+                <div v-else class="flex flex-col h-full">
+                    <div class="p-3 bg-gray-800/80 border-b border-gray-700 flex justify-between items-center backdrop-blur-sm">
+                        <div>
+                            <span class="font-bold text-white">{{ getClientName(currentSession) }}</span>
+                            <span class="text-xs text-gray-500 ml-2 block">Instagram/Facebook User</span>
+                        </div>
+                        <button class="text-xs text-gray-400 hover:text-white transition"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+
+                    <div class="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth" ref="chatBox">
+                        <div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full group">
+                            
+                            <div class="flex gap-3" :class="msg.role === 'ai' ? 'justify-end' : 'justify-start'">
+                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto">
+                                    <i class="fas fa-user text-xs text-gray-400"></i>
+                                </div>
+                                
+                                <div class="msg-bubble shadow-md transition-all" :class="[msg.role === 'ai' ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
+                                    
+                                    <div v-if="!msg.is_deleted" class="text-sm whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
+                                    <div v-else class="text-xs italic text-gray-400 flex items-center gap-2">
+                                        <i class="fas fa-trash-alt text-red-900"></i> 
+                                        <span>Message deleted by moderator</span>
+                                    </div>
+
+                                    <div v-if="msg.role === 'human' && !msg.is_deleted" 
+                                         class="mt-2 pt-2 border-t border-gray-600/30 flex gap-4 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        
+                                        <button @click="toggleHide(msg)" class="hover:text-yellow-400 flex items-center gap-1 transition-colors">
+                                            <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
+                                            {{ msg.is_hidden ? 'Unhide' : 'Hide' }}
+                                        </button>
+                                        
+                                        <button @click="deleteMsg(msg)" class="hover:text-red-400 flex items-center gap-1 transition-colors">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+
+                                        <span v-if="msg.is_hidden" class="ml-auto text-yellow-500 font-bold border border-yellow-500/30 px-1 rounded">HIDDEN</span>
+                                    </div>
+                                </div>
+
+                                <div v-if="msg.role === 'ai'" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 mt-auto">
+                                    <i class="fas fa-robot text-xs text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 glass border-t border-gray-700">
+                        <div class="flex gap-3 items-end">
+                            <div class="flex-1 bg-gray-800 border border-gray-600 rounded-xl focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+                                <textarea v-model="replyText" @keydown.enter.prevent="sendReply" placeholder="Type your reply here..." 
+                                    class="w-full bg-transparent text-white px-4 py-3 focus:outline-none resize-none h-12 max-h-32 placeholder-gray-500 text-sm"></textarea>
+                            </div>
+                            <button @click="sendReply" :disabled="isSending || !replyText.trim()" 
+                                class="h-12 w-12 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 transition-all transform active:scale-95">
+                                <i class="fas" :class="isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
+                            </button>
+                        </div>
+                        <div class="mt-2 text-[10px] text-gray-500 flex justify-between px-1">
+                            <span><i class="fas fa-shield-alt text-green-500 mr-1"></i>Secure Connection (Supabase)</span>
+                            <span>Reply via API</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const { createClient } = supabase;
+
+        // --- ВСТАВЬ СЮДА СВОИ КЛЮЧИ ---
+        const SUPABASE_URL = 'ТВОЙ_SUPABASE_URL'; 
+        const SUPABASE_KEY = 'ТВОЙ_SUPABASE_KEY';
+        // -----------------------------
+
+        const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    messages: [],        // Все сообщения из chat_memory
+                    clients: [],         // Все клиенты из end_clients
+                    clientMap: {},       // Словарь ID -> Имя
+                    currentSession: null,
+                    replyText: '',
+                    botActive: true,
+                    isSending: false
+                }
+            },
+            computed: {
+                // Получаем список уникальных сессий из сообщений
+                uniqueSessions() {
+                    return [...new Set(this.messages.map(m => m.session_id))];
+                },
+                // Фильтруем сообщения для текущего выбранного чата
+                sessionMessages() {
+                    if (!this.currentSession) return [];
+                    return this.messages.filter(m => m.session_id === this.currentSession);
+                }
+            },
+            async mounted() {
+                // Загружаем данные параллельно
+                await Promise.all([this.fetchMessages(), this.fetchClients()]);
+                
+                // Подписываемся на обновления в реальном времени (chat_memory)
+                sb.channel('public:chat_memory')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => {
+                    this.fetchMessages();
+                })
+                .subscribe();
+            },
+            methods: {
+                // 1. Загрузка сообщений
+                async fetchMessages() {
+                    const { data, error } = await sb
+                        .from('chat_memory')
+                        .select('*')
+                        .order('created_at', { ascending: true });
+                    
+                    if (data) {
+                        this.messages = data.map(row => {
+                            // Парсим JSON сообщение
+                            const contentObj = typeof row.message === 'string' ? JSON.parse(row.message) : row.message;
+                            return {
+                                id: row.id,
+                                session_id: row.session_id,
+                                content: contentObj.content,
+                                role: contentObj.type, // 'human' или 'ai'
+                                is_hidden: row.is_hidden,
+                                is_deleted: row.is_deleted
+                            };
+                        });
+                    }
+                },
+
+                // 2. Загрузка клиентов (для имен)
+                async fetchClients() {
+                    // Берем нужные поля: имя и ID (instagram и psid)
+                    const { data, error } = await sb
+                        .from('end_clients')
+                        .select('name, username, instagram_id, psid');
+
+                    if (data) {
+                        this.clients = data;
+                        // Создаем быстрый поиск (Map)
+                        data.forEach(client => {
+                            // Имя для отображения (приоритет: name -> username -> 'Client')
+                            const displayName = client.name || client.username || 'Client';
+                            
+                            // Привязываем имя к instagram_id
+                            if (client.instagram_id) this.clientMap[client.instagram_id] = displayName;
+                            // Привязываем имя к psid
+                            if (client.psid) this.clientMap[client.psid] = displayName;
+                        });
+                    }
+                },
+
+                // 3. Получить имя по ID сессии
+                getClientName(sessionId) {
+                    // Ищем в нашем словаре. Если нет - показываем часть ID
+                    return this.clientMap[sessionId] || `User ${sessionId.substring(0, 6)}...`;
+                },
+
+                // 4. Получить инициалы для аватарки
+                getInitials(name) {
+                    if (name.startsWith('User ')) return '#';
+                    return name.substring(0, 2).toUpperCase();
+                },
+
+                selectSession(id) {
+                    this.currentSession = id;
+                    this.scrollToBottom();
+                },
+
+                scrollToBottom() {
+                    setTimeout(() => {
+                        if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+                    }, 100);
+                },
+
+                // Функции управления (для Meta Review)
+                toggleBot() { this.botActive = !this.botActive; },
+
+                async toggleHide(msg) {
+                    // Обновляем статус в базе
+                    await sb.from('chat_memory').update({ is_hidden: !msg.is_hidden }).eq('id', msg.id);
+                },
+
+                async deleteMsg(msg) {
+                    if(!confirm('Delete this message permanently?')) return;
+                    // Soft delete (пометка удаленным)
+                    await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
+                },
+
+                async sendReply() {
+                    if (!this.replyText.trim()) return;
+                    this.isSending = true;
+
+                    const messageJson = { type: "ai", content: this.replyText };
+
+                    // Добавляем ответ в базу
+                    const { error } = await sb.from('chat_memory').insert({
+                        session_id: this.currentSession,
+                        message: messageJson
+                    });
+
+                    if (!error) {
+                        this.replyText = '';
+                        this.scrollToBottom();
+                    }
+                    this.isSending = false;
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
