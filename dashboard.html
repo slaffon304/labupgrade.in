@@ -100,7 +100,7 @@
                                 <span class="text-[9px] text-gray-500 ml-7">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
                             </div>
 
-                            <div @click.stop="togglePageStatus()" class="flex items-center gap-2">
+                            <div @click.stop="togglePageStatus(session.pageId)" class="flex items-center gap-2">
                                 <span class="text-[9px] font-bold" :class="session.isPageActive ? 'text-green-500' : 'text-gray-500'">
                                     {{ session.isPageActive ? 'ON' : 'OFF' }}
                                 </span>
@@ -142,7 +142,7 @@
                                         <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
                                     </div>
                                     <div v-else class="text-xs italic text-gray-400 flex items-center gap-2"><i class="fas fa-trash-alt text-red-500"></i> Deleted</div>
-                                                                        <div v-if="msg.role === 'human' && !msg.is_deleted" class="mt-2 pt-2 border-t border-gray-500/30 flex items-center gap-4 text-[10px] text-white/70">
+                                    <div v-if="msg.role === 'human' && !msg.is_deleted" class="mt-2 pt-2 border-t border-gray-500/30 flex items-center gap-4 text-[10px] text-white/70">
                                         <button @click.stop="toggleHide(msg)" class="hover:text-white flex items-center gap-1 cursor-pointer transition-colors px-1 py-0.5 rounded hover:bg-white/10">
                                             <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
                                             <span>{{ msg.is_hidden ? 'Unhide' : 'Hide' }}</span>
@@ -152,7 +152,6 @@
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -254,7 +253,9 @@
                                 String(s.ig_id).trim() === String(pageId).trim()
                             );
                             if (saas) {
-                                const st = String(saas.subscription_status || '').trim().toLowerCase();
+                                // ИСПРАВЛЕНО: Читаем из РАЗНЫХ колонок в зависимости от типа чата
+                                let col = (type === 'ig') ? 'subscription_status_ig' : 'subscription_status_fb';
+                                const st = String(saas[col] || '').trim().toLowerCase();
                                 isPageActive = (st === 'active' || st === 'trial');
                             }
                         }
@@ -306,11 +307,11 @@
                     });
                 },
 
-                // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
-                                      async togglePageStatus(pageId) {
+                // ГЛАВНАЯ ФУНКЦИЯ (Теперь работает с двумя колонками)
+                async togglePageStatus(pageId) {
                     if (!pageId) return;
 
-                    // 1. Находим страницу в памяти (и по ID Фейсбука, и по ID Инстаграма)
+                    // 1. Находим страницу в памяти
                     const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId);
                     
                     if (!page) {
@@ -318,7 +319,7 @@
                         return;
                     }
 
-                    // 2. Определяем, какую колонку обновлять
+                    // 2. Определяем, какую колонку обновлять и проверяем ID
                     let targetColumn = '';
                     
                     if (String(page.ig_id) === String(pageId)) {
@@ -328,28 +329,22 @@
                     }
 
                     // 3. Вычисляем новый статус
-                    // Берем текущий статус именно из той колонки, которую меняем
                     const currentStatus = String(page[targetColumn] || '').toLowerCase();
                     const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    // 4. МГНОВЕННО обновляем интерфейс (чтобы тумблер переключился)
+                    // 4. МГНОВЕННО обновляем интерфейс
                     page[targetColumn] = newStatus;
 
-                    // 5. Отправляем в базу (строго по UUID, чтобы не было ошибок 204)
+                    // 5. Отправляем в базу (строго по UUID)
                     const { error } = await sb.from('saas_clients')
-                        .update({ [targetColumn]: newStatus }) // Пишем только в нужную колонку
+                        .update({ [targetColumn]: newStatus }) 
                         .eq('id', page.id);
 
                     if (error) {
                         console.error('Ошибка сохранения:', error);
-                        page[targetColumn] = currentStatus; // Возвращаем назад при ошибке
+                        page[targetColumn] = currentStatus; // Откат
                     }
                 },
-
-
-
-
-
 
                 async openChannelsModal() {
                     this.showChannels = true;
@@ -363,27 +358,34 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
-                                // Ищем совпадение в локальной базе для отображения статуса
+                                // Ищем совпадение в локальной базе
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
+                                // --- ЛОГИКА ДЛЯ ФЕЙСБУКА ---
                                 let stFb = 'false';
                                 if (dbFb) stFb = String(dbFb.subscription_status_fb || '').trim().toLowerCase();
-                                const isOn = (stFb === 'active' || stFb === 'trial');
+                                const isFbOn = (stFb === 'active' || stFb === 'trial');
+                                let fbDisplay = isFbOn ? (stFb === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF';
                                 
-                                let displayStatus = isOn ? (stFb === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF';
-                                
-                                // Добавляем FB
+                                // Добавляем FB актив
                                 this.flatAssets.push({
                                     uniqueId: 'fb_' + page.id, id: page.id, name: page.name, platform: 'facebook',
-                                    isOn: isOn, statusDisplay: displayStatus
+                                    isOn: isFbOn, statusDisplay: fbDisplay
                                 });
 
-                                // Добавляем IG (статус берем тот же, так как строка одна)
+                                // --- ЛОГИКА ДЛЯ ИНСТАГРАМА ---
                                 if (page.instagram_business_account) {
                                     const igId = page.instagram_business_account.id;
+                                    
+                                    // Читаем из новой колонки _ig
+                                    let stIg = 'false';
+                                    if (dbFb) stIg = String(dbFb.subscription_status_ig || '').trim().toLowerCase();
+                                    const isIgOn = (stIg === 'active' || stIg === 'trial');
+                                    let igDisplay = isIgOn ? (stIg === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF';
+
                                     this.flatAssets.push({
                                         uniqueId: 'ig_' + igId, id: igId, name: page.name + ' (IG)', platform: 'instagram',
-                                        isOn: isOn, statusDisplay: displayStatus
+                                        isOn: isIgOn, statusDisplay: igDisplay
                                     });
                                 }
                             });
@@ -391,19 +393,15 @@
                     } catch(e) { console.error(e); } finally { this.isLoadingChannels = false; }
                 },
 
-                                                async toggleAssetStatus(asset) {
-                    // 1. Сразу меняем вид в модалке (чтобы переключилось мгновенно)
+                async toggleAssetStatus(asset) {
+                    // 1. Меняем вид в модалке
                     asset.isOn = !asset.isOn;
                     asset.statusDisplay = asset.isOn ? 'ACTIVE' : 'OFF';
 
-                    // 2. Вызываем главную функцию
-                    // ВАЖНО: Мы передаем asset.id "как есть".
-                    // — Если это Facebook, togglePageStatus увидит ID Фейсбука и обновит базу.
-                    // — Если это Instagram, togglePageStatus увидит ID Инсты и сработает в "холостом" режиме (как мы прописали выше).
+                    // 2. Вызываем главную функцию, передавая ID платформы
                     await this.togglePageStatus(asset.id);
                 },
 
-                
                 async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
@@ -431,20 +429,17 @@
                     }
                 },
                 async fetchSaasClients() {
+                    // Звездочка (*) подтянет все новые колонки автоматически
                     const { data } = await sb.from('saas_clients').select('*');
                     if (data) this.saasPages = data;
                 },
                 getClientName(sid) { return this.clientMap[sid]?.name || `User ${sid.substring(0,4)}...`; },
                 getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
-                                async toggleHide(msg) {
-                    // 1. МГНОВЕННО меняем статус и иконку/текст в интерфейсе
+                async toggleHide(msg) {
                     msg.is_hidden = !msg.is_hidden; 
-                    
-                    // 2. Отправляем изменение в базу данных (пользователь этого уже не ждет)
                     await sb.from('chat_memory').update({ is_hidden: msg.is_hidden }).eq('id', msg.id);
                 },
-
                 async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
                 async sendReply() {
                     if (!this.replyText.trim()) return;
@@ -452,7 +447,8 @@
                     await sb.from('chat_memory').insert({ session_id: this.currentSession, message: { type: "ai", content: this.replyText } });
                     this.replyText = ''; this.isSending = false;
                     setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
-                }
+                },
+                getClientType(sid) { return this.clientMap[sid]?.type || 'fb'; }
             }
         }).mount('#app');
     </script>
