@@ -1713,31 +1713,29 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
         <div style="color: #888; margin-bottom: 10px;">Facebook account linked.</div>
         <div style="color: #07C42C; font-weight: bold; font-size: 18px; margin-bottom: 20px;" id="fb-user-name">User</div>
         
-        <!-- Контейнер для списка -->
         <div id="pages-list-container"></div>
 
         <button class="modal-btn" onclick="
-    // 1. Собираем все карточки из контейнера
-    const rows = document.querySelectorAll('#pages-list-container .asset-row');
-    let query = '';
-    
-    rows.forEach(row => {
-        const name = row.querySelector('.asset-name-txt').innerText;
-        const idFull = row.querySelector('.asset-id-txt').innerText; // Напр: 'Page ID: 123'
-        const id = idFull.split(': ')[1]; // Берем только цифры
-        
-        if (row.querySelector('.fb-bg')) {
-            query += `fbN=${encodeURIComponent(name)}&fbI=${id}&`;
-        } else {
-            query += `igN=${encodeURIComponent(name)}&igI=${id}&`;
-        }
-    });
+            // 1. Собираем данные (твой старый код)
+            const rows = document.querySelectorAll('#pages-list-container .asset-row');
+            let query = '';
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.asset-name-txt').innerText;
+                const idFull = row.querySelector('.asset-id-txt').innerText;
+                const id = idFull.split(': ')[1];
+                
+                if (row.querySelector('.fb-bg')) {
+                    query += `fbN=${encodeURIComponent(name)}&fbI=${id}&`;
+                } else {
+                    query += `igN=${encodeURIComponent(name)}&igI=${id}&`;
+                }
+            });
 
-    // 2. Улетаем на success
-    window.location.href = '/dashboard.html?' + query;
-">OPEN DASHBOARD</button>
-
-
+            // 2. БЕРЕМ ТОКЕН ИЗ ГЛОБАЛЬНОЙ ПЕРЕМЕННОЙ И ПЕРЕХОДИМ
+            const token = window.USER_ACCESS_TOKEN || '';
+            window.location.href = 'dashboard.html?' + query + 'token=' + token;
+        ">OPEN DASHBOARD</button>
 
     </div>
 </div>
@@ -1867,6 +1865,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
