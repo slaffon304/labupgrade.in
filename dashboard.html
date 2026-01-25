@@ -307,33 +307,34 @@
                 },
 
                 // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
-                                async togglePageStatus(pageId, pageName) {
+                                                async togglePageStatus(pageId) {
                     if (!pageId) return;
 
-                    // 1. Вычисляем новый статус (если active -> false, иначе -> active)
-                    // Ищем в локальных данных, чтобы понять, какой сейчас статус
+                    // 1. Ищем запись локально
                     const page = this.saasPages.find(s => 
                         String(s.fb_page_id).trim() === String(pageId).trim() || 
                         String(s.ig_id).trim() === String(pageId).trim()
                     );
                     
+                    // 2. Меняем статус (active <-> false)
                     const currentStatus = String(page?.subscription_status || '').toLowerCase();
                     const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    // 2. ПРОСТО ОБНОВЛЯЕМ (UPDATE)
-                    // "Сравниваем содержимое двух колонок и обновляем одну"
+                    // 3. Сразу переключаем в интерфейсе
+                    if (page) page.subscription_status = newStatus;
+
+                    // 4. Отправляем в базу ТОЛЬКО статус. Никаких имен.
                     const { error } = await sb.from('saas_clients')
                         .update({ subscription_status: newStatus }) 
-                        .eq('fb_page_id', pageId); // Сравниваем ID
+                        .eq('fb_page_id', pageId);
 
-                    if (!error) {
-                        // Обновляем локально, чтобы интерфейс переключился
-                        if (page) page.subscription_status = newStatus;
-                        else await this.fetchSaasClients();
-                    } else {
-                        console.error('Ошибка обновления:', error);
+                    if (error) {
+                        console.error('Ошибка:', error);
+                        // Если сбой — возвращаем как было
+                        if (page) page.subscription_status = currentStatus;
                     }
                 },
+
 
 
                 async openChannelsModal() {
