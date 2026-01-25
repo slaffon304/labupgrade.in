@@ -307,33 +307,36 @@
                 },
 
                 // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
-                                                async togglePageStatus(pageId) {
-                    if (!pageId) return;
-
-                    // 1. Ищем запись локально
-                    const page = this.saasPages.find(s => 
-                        String(s.fb_page_id).trim() === String(pageId).trim() || 
-                        String(s.ig_id).trim() === String(pageId).trim()
-                    );
+                                                                async togglePageStatus(pageId) {
+                    // 1. Находим локальную запись, чтобы переключить тумблер визуально
+                    // (Ищем "как есть", без всяких trim)
+                    const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId);
                     
-                    // 2. Меняем статус (active <-> false)
-                    const currentStatus = String(page?.subscription_status || '').toLowerCase();
+                    if (!page) return;
+
+                    // 2. Определяем новый статус
+                    const currentStatus = String(page.subscription_status || '').toLowerCase();
                     const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    // 3. Сразу переключаем в интерфейсе
-                    if (page) page.subscription_status = newStatus;
+                    // 3. Обновляем интерфейс (Оптимистично)
+                    page.subscription_status = newStatus;
 
-                    // 4. Отправляем в базу ТОЛЬКО статус. Никаких имен.
+                    // 4. Отправляем в базу "КАК ЕСТЬ" (Raw)
+                    // Используем page.fb_page_id, так как это основной ключ в базе.
+                    // Если мы нажали на Инстаграм, pageId будет IG ID, но обновлять надо строку с FB ID.
+                    const targetId = page.fb_page_id;
+
                     const { error } = await sb.from('saas_clients')
                         .update({ subscription_status: newStatus }) 
-                        .eq('fb_page_id', pageId);
+                        .eq('fb_page_id', targetId); // <-- Никаких trim(), никаких String(). Чистый ID.
 
                     if (error) {
                         console.error('Ошибка:', error);
-                        // Если сбой — возвращаем как было
-                        if (page) page.subscription_status = currentStatus;
+                        // Если база вернула ошибку — возвращаем тумблер назад
+                        page.subscription_status = currentStatus;
                     }
                 },
+
 
 
 
