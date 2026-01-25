@@ -30,10 +30,15 @@
         .connect-btn { width: 100%; background: #2563eb; color: white; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 15px; text-transform: uppercase; font-size: 12px; cursor: pointer; transition: 0.2s; border: 1px solid #3b82f6; }
         .connect-btn:hover { background: #1d4ed8; }
 
+        /* СТИЛИ ИКОНОК (БРЕНДОВ) */
+        .bg-fb-gradient { background: linear-gradient(45deg, #1877F2, #0054c3); }
+        .bg-ig-gradient { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        /* border-radius: 8px делает их "квадратными со скруглением" как у IG */
+        .brand-icon { display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
- 
     </style>
 </head>
 <body>
@@ -65,7 +70,7 @@
                 <div class="tabs-wrapper">
                     <div @click="filter = 'all'" class="tab-item" :class="{'active': filter === 'all'}">ALL</div>
                     <div @click="filter = 'ig'" class="tab-item" :class="{'active': filter === 'ig'}"><i class="fab fa-instagram mr-1.5 text-lg"></i> INSTAGRAM</div>
-                    <div @click="filter = 'fb'" class="tab-item" :class="{'active': filter === 'fb'}"><i class="fab fa-facebook-f mr-1.5 text-lg"></i> FACEBOOK</div>
+                    <div @click="filter = 'fb'" class="tab-item" :class="{'active': filter === 'fb'}"><i class="fab fa-facebook mr-1.5 text-lg"></i> FACEBOOK</div>
                 </div>
                 
                 <div class="overflow-y-auto flex-1">
@@ -75,23 +80,25 @@
                         
                         <div class="flex justify-between items-center mb-2">
                             <div class="flex items-center gap-2">
-                                <div class="brand-icon shadow-inner text-xs"
-     :class="session.type === 'ig' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
-    <i class="fab" :class="session.type === 'ig' ? 'fa-instagram text-base' : 'fa-facebook text-base'"></i>
-</div>
-
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-inner"
+                                     :class="session.type === 'ig' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
+                                    {{ getInitials(session.clientName) }}
+                                </div>
                                 <span class="font-bold text-sm text-gray-100 truncate w-32">{{ session.clientName }}</span>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-between bg-black/20 p-2 rounded-lg border border-white/5">
                             <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-gray-300 truncate w-24">
-    <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook-f'"></i>
-    {{ session.pageName }}
-</span>
-
-                                <span class="text-[9px] text-gray-500">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <div class="brand-icon w-5 h-5 text-[10px]" :class="session.type === 'ig' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
+                                        <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook'"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-gray-300 truncate w-24">
+                                        {{ session.pageName }}
+                                    </span>
+                                </div>
+                                <span class="text-[9px] text-gray-500 ml-7">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
                             </div>
 
                             <div @click.stop="togglePageStatus(session.pageId, session.pageName)" class="flex items-center gap-2">
@@ -165,11 +172,9 @@
                     <div v-if="flatAssets.length > 0" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                         <div v-for="asset in flatAssets" :key="asset.uniqueId" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
                             <div class="flex items-center gap-4">
-                                <div class="brand-icon w-10 h-10 text-xl shrink-0" 
-     :class="asset.platform === 'instagram' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
-    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook'"></i>
-</div>
-
+                                <div class="brand-icon w-10 h-10 text-xl shrink-0" :class="asset.platform === 'instagram' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
+                                    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook'"></i>
+                                </div>
                                 <div>
                                     <h3 class="font-bold text-sm text-white">{{ asset.name }}</h3>
                                     <p class="text-[10px] text-gray-400">ID: {{ asset.id }}</p>
@@ -232,13 +237,11 @@
 
                         let isPageActive = false;
                         if (pageId) {
-                            // ЖЕСТКОЕ СРАВНЕНИЕ СТРОК
                             const saas = this.saasPages.find(s => 
                                 String(s.fb_page_id).trim() === String(pageId).trim() || 
                                 String(s.ig_id).trim() === String(pageId).trim()
                             );
                             if (saas) {
-                                // ЛОГИКА ACTIVE и TRIAL
                                 const st = String(saas.subscription_status || '').trim().toLowerCase();
                                 isPageActive = (st === 'active' || st === 'trial');
                             }
@@ -291,28 +294,36 @@
                     });
                 },
 
-                                async togglePageStatus(pageId, pageName) {
+                // ИСПРАВЛЕННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ
+                async togglePageStatus(pageId, pageName) {
                     if (!pageId) return;
                     
-                    // 1. Ищем запись в локальных данных
+                    // 1. Ищем, есть ли уже запись в базе (по FB или IG ID)
                     let saasRecord = this.saasPages.find(s => 
                         String(s.fb_page_id).trim() === String(pageId).trim() || 
                         String(s.ig_id).trim() === String(pageId).trim()
                     );
                     
-                    // 2. Определяем текущий статус (активен или нет)
                     let isCurrentlyActive = false;
+                    let targetDbId = pageId; // По умолчанию пробуем писать с тем ID, что пришел
+
                     if (saasRecord) {
+                        // Если запись есть, берем её статус...
                         const st = String(saasRecord.subscription_status || '').toLowerCase();
                         isCurrentlyActive = (st === 'active' || st === 'trial');
+                        // ... И ГЛАВНОЕ: используем правильный ключ для обновления (обычно это fb_page_id)
+                        if (saasRecord.fb_page_id) targetDbId = saasRecord.fb_page_id;
+                    } else {
+                        // Если записи нет (чисто теоретически), но мы знаем, что это IG ID и у нас есть парный FB ID в URL
+                        if (String(pageId) === String(this.adminInfo.igId) && this.adminInfo.fbId) {
+                            targetDbId = this.adminInfo.fbId;
+                        }
                     }
                     
-                    // 3. Инвертируем статус
                     const newStatus = isCurrentlyActive ? 'false' : 'active';
                     
-                    // 4. Отправляем в базу (upsert по fb_page_id)
                     const payload = { 
-                        fb_page_id: pageId, 
+                        fb_page_id: targetDbId, 
                         subscription_status: newStatus,
                         page_name: pageName || 'Connected Page'
                     };
@@ -322,13 +333,11 @@
                         .select();
 
                     if (!error) {
-                        // Обновляем список, чтобы интерфейс перерисовался
                         await this.fetchSaasClients(); 
                     } else {
                         console.error('Update error:', error);
                     }
                 },
-
 
                 async openChannelsModal() {
                     this.showChannels = true;
@@ -342,7 +351,6 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
-                                // ЖЕСТКОЕ СРАВНЕНИЕ В МОДАЛКЕ
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
                                 let stFb = 'false';
@@ -382,17 +390,12 @@
                     } catch(e) { console.error(e); } finally { this.isLoadingChannels = false; }
                 },
 
-                                async toggleAssetStatus(asset) {
-                    // Используем ту же логику. Если это facebook - берем его ID, если instagram - берем parentId (ID страницы FB)
+                async toggleAssetStatus(asset) {
                     const targetId = asset.platform === 'facebook' ? asset.id : asset.parentId;
-                    
-                    // Вызываем главную функцию переключения
                     await this.togglePageStatus(targetId, asset.name);
-                    
-                    // Обновляем список каналов в модальном окне
                     await this.openChannelsModal(); 
                 },
-
+                
                 async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
