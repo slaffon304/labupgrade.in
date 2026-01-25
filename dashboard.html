@@ -33,11 +33,7 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-    /* Новые стили для иконок */
-.bg-fb-gradient { background: linear-gradient(45deg, #1877F2, #0054c3); }
-.bg-ig-gradient { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-.brand-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
-        
+ 
     </style>
 </head>
 <body>
@@ -91,9 +87,10 @@
                         <div class="flex items-center justify-between bg-black/20 p-2 rounded-lg border border-white/5">
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-bold text-gray-300 truncate w-24">
-                                    <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook-f'"></i>
-                                    {{ session.pageName }}
-                                </span>
+    <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook-f'"></i>
+    {{ session.pageName }}
+</span>
+
                                 <span class="text-[9px] text-gray-500">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
                             </div>
 
