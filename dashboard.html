@@ -307,45 +307,46 @@
                 },
 
                 // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
-                      async togglePageStatus(pageId) {
+                                      async togglePageStatus(pageId) {
                     if (!pageId) return;
 
-                    // 1. Ищем, на какую кнопку нажали
-                    const page = this.saasPages.find(s => 
-                        String(s.fb_page_id).trim() === String(pageId).trim() || 
-                        String(s.ig_id).trim() === String(pageId).trim()
-                    );
+                    // 1. Находим страницу в памяти (и по ID Фейсбука, и по ID Инстаграма)
+                    const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId);
                     
-                    if (!page) return;
-
-                    // 2. Логика для ИНСТАГРАМА (работает в холостую)
-                    // Если ID совпадает с ID Инстаграма — просто меняем вид и уходим
-                    if (String(pageId) === String(page.ig_id)) {
-                        const current = String(page.subscription_status || '').toLowerCase();
-                        // Просто переключаем локально, чтобы глазу было приятно
-                        page.subscription_status = (current === 'active' || current === 'trial') ? 'false' : 'active';
-                        console.log('Instagram switched locally (Dummy mode)');
-                        return; // <--- ВАЖНО: Выходим отсюда, не трогая базу
+                    if (!page) {
+                        console.error('Page not found');
+                        return;
                     }
 
-                    // 3. Логика для ФЕЙСБУКА (работает с базой)
-                    // Если мы здесь, значит нажали на Фейсбук
-                    const currentStatus = String(page.subscription_status || '').toLowerCase();
+                    // 2. Определяем, какую колонку обновлять
+                    let targetColumn = '';
+                    
+                    if (String(page.ig_id) === String(pageId)) {
+                        targetColumn = 'subscription_status_ig'; // Нажали на Инсту
+                    } else {
+                        targetColumn = 'subscription_status_fb'; // Нажали на Фейсбук
+                    }
+
+                    // 3. Вычисляем новый статус
+                    // Берем текущий статус именно из той колонки, которую меняем
+                    const currentStatus = String(page[targetColumn] || '').toLowerCase();
                     const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    // Меняем визуально
-                    page.subscription_status = newStatus;
+                    // 4. МГНОВЕННО обновляем интерфейс (чтобы тумблер переключился)
+                    page[targetColumn] = newStatus;
 
-                    // Отправляем в базу
+                    // 5. Отправляем в базу (строго по UUID, чтобы не было ошибок 204)
                     const { error } = await sb.from('saas_clients')
-                        .update({ subscription_status: newStatus }) 
-                        .eq('fb_page_id', pageId); // Используем ID Фейсбука
+                        .update({ [targetColumn]: newStatus }) // Пишем только в нужную колонку
+                        .eq('id', page.id);
 
                     if (error) {
-                        console.error('Ошибка сохранения FB:', error);
-                        page.subscription_status = currentStatus; // Возврат при ошибке
+                        console.error('Ошибка сохранения:', error);
+                        page[targetColumn] = currentStatus; // Возвращаем назад при ошибке
                     }
                 },
+
+
 
 
 
@@ -366,7 +367,7 @@
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
                                 let stFb = 'false';
-                                if (dbFb) stFb = String(dbFb.subscription_status || '').trim().toLowerCase();
+                                if (dbFb) stFb = String(dbFb.subscription_status_fb || '').trim().toLowerCase();
                                 const isOn = (stFb === 'active' || stFb === 'trial');
                                 
                                 let displayStatus = isOn ? (stFb === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF';
