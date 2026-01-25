@@ -33,7 +33,6 @@
         /* СТИЛИ ИКОНОК (БРЕНДОВ) */
         .bg-fb-gradient { background: linear-gradient(45deg, #1877F2, #0054c3); }
         .bg-ig-gradient { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        /* border-radius: 8px делает их "квадратными со скруглением" как у IG */
         .brand-icon { display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px; }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -101,7 +100,7 @@
                                 <span class="text-[9px] text-gray-500 ml-7">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
                             </div>
 
-                            <div @click.stop="togglePageStatus(session.pageId, session.pageName)" class="flex items-center gap-2">
+                            <div @click.stop="togglePageStatus()" class="flex items-center gap-2">
                                 <span class="text-[9px] font-bold" :class="session.isPageActive ? 'text-green-500' : 'text-gray-500'">
                                     {{ session.isPageActive ? 'ON' : 'OFF' }}
                                 </span>
@@ -124,7 +123,11 @@
                     <div class="p-4 bg-gray-800/90 border-b border-gray-700 flex justify-between items-center backdrop-blur-md">
                         <div>
                             <h2 class="font-bold text-white text-lg">{{ getClientName(currentSession) }}</h2>
-                            <span class="text-xs text-gray-400 font-mono">ID: {{ currentSession }}</span>
+                            <div class="mt-1">
+                                <div class="brand-icon w-6 h-6 text-xs" :class="getClientType(currentSession) === 'ig' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
+                                    <i class="fab" :class="getClientType(currentSession) === 'ig' ? 'fa-instagram' : 'fa-facebook'"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="flex-1 p-6 overflow-y-auto space-y-6" ref="chatBox">
@@ -227,6 +230,7 @@
                         let pageName = 'Unknown';
                         let pageId = null;
                         
+                        // ДЛЯ ОТОБРАЖЕНИЯ (ЧТЕНИЯ) используем ID платформ из URL
                         if (type === 'ig') {
                             pageName = this.adminInfo.igName || 'Instagram';
                             pageId = this.adminInfo.igId; 
@@ -235,6 +239,7 @@
                             pageId = this.adminInfo.fbId; 
                         }
 
+                        // ПРОВЕРКА СТАТУСА: Ищем запись по любому из ID (FB или IG)
                         let isPageActive = false;
                         if (pageId) {
                             const saas = this.saasPages.find(s => 
@@ -294,38 +299,35 @@
                     });
                 },
 
-                // ИСПРАВЛЕННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ
-                async togglePageStatus(pageId, pageName) {
-                    if (!pageId) return;
-                    
-                    // 1. Ищем, есть ли уже запись в базе (по FB или IG ID)
-                    let saasRecord = this.saasPages.find(s => 
-                        String(s.fb_page_id).trim() === String(pageId).trim() || 
-                        String(s.ig_id).trim() === String(pageId).trim()
-                    );
-                    
-                    let isCurrentlyActive = false;
-                    let targetDbId = pageId; // По умолчанию пробуем писать с тем ID, что пришел
+                // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
+                async togglePageStatus(ignoredId = null, pageName = null) {
+                    // Мы ИГНОРИРУЕМ переданный ID кнопки и ВСЕГДА берем FB ID из URL (adminInfo.fbId)
+                    // Потому что это ключ вашей строки в базе.
+                    const masterKey = this.adminInfo.fbId; 
 
-                    if (saasRecord) {
-                        // Если запись есть, берем её статус...
-                        const st = String(saasRecord.subscription_status || '').toLowerCase();
-                        isCurrentlyActive = (st === 'active' || st === 'trial');
-                        // ... И ГЛАВНОЕ: используем правильный ключ для обновления (обычно это fb_page_id)
-                        if (saasRecord.fb_page_id) targetDbId = saasRecord.fb_page_id;
-                    } else {
-                        // Если записи нет (чисто теоретически), но мы знаем, что это IG ID и у нас есть парный FB ID в URL
-                        if (String(pageId) === String(this.adminInfo.igId) && this.adminInfo.fbId) {
-                            targetDbId = this.adminInfo.fbId;
-                        }
+                    if (!masterKey) {
+                        alert("Error: Facebook Page ID not found in URL parameters.");
+                        return;
                     }
                     
+                    // 1. Ищем запись
+                    let saasRecord = this.saasPages.find(s => String(s.fb_page_id).trim() === String(masterKey).trim());
+                    
+                    // 2. Определяем статус
+                    let isCurrentlyActive = false;
+                    if (saasRecord) {
+                        const st = String(saasRecord.subscription_status || '').toLowerCase();
+                        isCurrentlyActive = (st === 'active' || st === 'trial');
+                    }
+                    
+                    // 3. Инвертируем
                     const newStatus = isCurrentlyActive ? 'false' : 'active';
                     
+                    // 4. Обновляем по FB ID
                     const payload = { 
-                        fb_page_id: targetDbId, 
+                        fb_page_id: masterKey, 
                         subscription_status: newStatus,
-                        page_name: pageName || 'Connected Page'
+                        page_name: pageName || this.adminInfo.fbName || 'Connected Page'
                     };
                     
                     const { data, error } = await sb.from('saas_clients')
@@ -351,38 +353,27 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
+                                // Ищем совпадение в локальной базе для отображения статуса
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
                                 let stFb = 'false';
                                 if (dbFb) stFb = String(dbFb.subscription_status || '').trim().toLowerCase();
-                                const onFb = (stFb === 'active' || stFb === 'trial');
+                                const isOn = (stFb === 'active' || stFb === 'trial');
                                 
-                                let displayStatus = 'OFF';
-                                if (stFb === 'active') displayStatus = 'ACTIVE';
-                                if (stFb === 'trial') displayStatus = 'TRIAL';
+                                let displayStatus = isOn ? (stFb === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF';
                                 
+                                // Добавляем FB
                                 this.flatAssets.push({
                                     uniqueId: 'fb_' + page.id, id: page.id, name: page.name, platform: 'facebook',
-                                    isOn: onFb, statusDisplay: displayStatus,
-                                    dbId: dbFb ? dbFb.id : null, parentId: null
+                                    isOn: isOn, statusDisplay: displayStatus
                                 });
 
+                                // Добавляем IG (статус берем тот же, так как строка одна)
                                 if (page.instagram_business_account) {
                                     const igId = page.instagram_business_account.id;
-                                    const dbIg = this.saasPages.find(s => String(s.ig_id).trim() === String(igId).trim());
-                                    
-                                    let stIg = 'false';
-                                    if (dbIg) stIg = String(dbIg.subscription_status || '').trim().toLowerCase();
-                                    const onIg = (stIg === 'active' || stIg === 'trial');
-                                    
-                                    let igDisplayStatus = 'OFF';
-                                    if (stIg === 'active') igDisplayStatus = 'ACTIVE';
-                                    if (stIg === 'trial') igDisplayStatus = 'TRIAL';
-
                                     this.flatAssets.push({
                                         uniqueId: 'ig_' + igId, id: igId, name: page.name + ' (IG)', platform: 'instagram',
-                                        isOn: onIg, statusDisplay: igDisplayStatus,
-                                        dbId: dbIg ? dbIg.id : null, parentId: page.id
+                                        isOn: isOn, statusDisplay: displayStatus
                                     });
                                 }
                             });
@@ -391,9 +382,13 @@
                 },
 
                 async toggleAssetStatus(asset) {
-                    const targetId = asset.platform === 'facebook' ? asset.id : asset.parentId;
-                    await this.togglePageStatus(targetId, asset.name);
+                    // Просто вызываем главную функцию. Она сама возьмет правильный FB ID из URL.
+                    await this.togglePageStatus(null, asset.name);
                     await this.openChannelsModal(); 
+                },
+
+                getClientType(sid) {
+                    return this.clientMap[sid]?.type || 'fb';
                 },
                 
                 async fetchMessages() {
