@@ -307,46 +307,34 @@
                 },
 
                 // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
-                async togglePageStatus(ignoredId = null, pageName = null) {
-                    // Мы ИГНОРИРУЕМ переданный ID кнопки и ВСЕГДА берем FB ID из URL (adminInfo.fbId)
-                    // Потому что это ключ вашей строки в базе.
-                    const masterKey = this.adminInfo.fbId; 
+                                async togglePageStatus(pageId, pageName) {
+                    if (!pageId) return;
 
-                    if (!masterKey) {
-                        alert("Error: Facebook Page ID not found in URL parameters.");
-                        return;
-                    }
+                    // 1. Вычисляем новый статус (если active -> false, иначе -> active)
+                    // Ищем в локальных данных, чтобы понять, какой сейчас статус
+                    const page = this.saasPages.find(s => 
+                        String(s.fb_page_id).trim() === String(pageId).trim() || 
+                        String(s.ig_id).trim() === String(pageId).trim()
+                    );
                     
-                    // 1. Ищем запись
-                    let saasRecord = this.saasPages.find(s => String(s.fb_page_id).trim() === String(masterKey).trim());
-                    
-                    // 2. Определяем статус
-                    let isCurrentlyActive = false;
-                    if (saasRecord) {
-                        const st = String(saasRecord.subscription_status || '').toLowerCase();
-                        isCurrentlyActive = (st === 'active' || st === 'trial');
-                    }
-                    
-                    // 3. Инвертируем
-                    const newStatus = isCurrentlyActive ? 'false' : 'active';
-                    
-                    // 4. Обновляем по FB ID
-                    const payload = { 
-                        fb_page_id: masterKey, 
-                        subscription_status: newStatus,
-                        page_name: pageName || this.adminInfo.fbName || 'Connected Page'
-                    };
-                    
-                    const { data, error } = await sb.from('saas_clients')
-                        .upsert(payload, { onConflict: 'fb_page_id' })
-                        .select();
+                    const currentStatus = String(page?.subscription_status || '').toLowerCase();
+                    const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
+
+                    // 2. ПРОСТО ОБНОВЛЯЕМ (UPDATE)
+                    // "Сравниваем содержимое двух колонок и обновляем одну"
+                    const { error } = await sb.from('saas_clients')
+                        .update({ subscription_status: newStatus }) 
+                        .eq('fb_page_id', pageId); // Сравниваем ID
 
                     if (!error) {
-                        await this.fetchSaasClients(); 
+                        // Обновляем локально, чтобы интерфейс переключился
+                        if (page) page.subscription_status = newStatus;
+                        else await this.fetchSaasClients();
                     } else {
-                        console.error('Update error:', error);
+                        console.error('Ошибка обновления:', error);
                     }
                 },
+
 
                 async openChannelsModal() {
                     this.showChannels = true;
@@ -388,15 +376,17 @@
                     } catch(e) { console.error(e); } finally { this.isLoadingChannels = false; }
                 },
 
-                async toggleAssetStatus(asset) {
-                    // Просто вызываем главную функцию. Она сама возьмет правильный FB ID из URL.
-                    await this.togglePageStatus(null, asset.name);
+                                async toggleAssetStatus(asset) {
+                    // Если это Инстаграм, берем ID его родителя (Фейсбука), так как запись в базе одна
+                    const targetId = asset.platform === 'facebook' ? asset.id : asset.parentId;
+                    
+                    // Вызываем простую функцию обновления
+                    await this.togglePageStatus(targetId, asset.name);
+                    
+                    // Обновляем список в модалке
                     await this.openChannelsModal(); 
                 },
 
-                getClientType(sid) {
-                    return this.clientMap[sid]?.type || 'fb';
-                },
                 
                 async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
