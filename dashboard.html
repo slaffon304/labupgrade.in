@@ -317,8 +317,77 @@
                             .eq('id', channel.dbId);
                         error = res.error;
                     } else {
-                        // Если записи нет - создаем
+                         // Если записи нет - создаем
                         const res = await sb.from('saas_clients')
                             .upsert(payload, { onConflict: 'fb_page_id' })
                             .select();
-                        if (res.d
+                        if (res.data && res.data[0]) channel.dbId = res.data[0].id;
+                        error = res.error;
+                    }
+
+                    if (error) {
+                        alert("Database error");
+                        channel.isOn = !willTurnOn; // откатываем при ошибке
+                    }
+                },
+
+                // --- Остальной код ---
+                async fetchMessages() {
+                    const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
+                    if (data) {
+                        this.messages = data.map(row => {
+                            const contentObj = typeof row.message === 'string' ? JSON.parse(row.message) : row.message;
+                            let cleanContent = contentObj.content || "";
+                            
+                            let msgType = 'dm';
+                            // Если роль AI - всегда ставим бейдж
+                            if (contentObj.type === 'ai') msgType = 'auto_reply'; 
+                            
+                            // Чистим JSON для красоты
+                            try {
+                                if (typeof cleanContent === 'string' && cleanContent.trim().startsWith('{')) {
+                                    const parsed = JSON.parse(cleanContent);
+                                    cleanContent = parsed.private_text || parsed.public_text || parsed.output || cleanContent;
+                                }
+                            } catch (e) {}
+
+                            const isNumericId = /^\d{6,}$/.test(cleanContent);
+                            if (contentObj.type === 'human' && isNumericId) msgType = 'comment_ref';
+
+                            return {
+                                id: row.id, session_id: row.session_id, content: cleanContent, role: contentObj.type,
+                                is_hidden: row.is_hidden, is_deleted: row.is_deleted, msg_type: msgType, created_at: row.created_at
+                            };
+                        });
+                    }
+                },
+                async fetchClients() {
+                    const { data } = await sb.from('end_clients').select('name, username, instagram_id, psid');
+                    if (data) {
+                        data.forEach(client => {
+                            const displayName = client.name || client.username || 'Client';
+                            if (client.instagram_id) this.clientMap[client.instagram_id] = { name: displayName, type: 'ig' };
+                            if (client.psid) this.clientMap[client.psid] = { name: displayName, type: 'fb' };
+                        });
+                    }
+                },
+                getClientName(sessionId) { return this.clientMap[sessionId]?.name || `User ${sessionId.substring(0, 5)}...`; },
+                getClientType(sessionId) { return this.clientMap[sessionId]?.type || 'fb'; },
+                getInitials(name) { if (!name || name.startsWith('User ')) return '#'; return name.substring(0, 2).toUpperCase(); },
+                selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
+                async toggleHide(msg) { await sb.from('chat_memory').update({ is_hidden: !msg.is_hidden }).eq('id', msg.id); },
+                async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
+                async sendReply() {
+                    if (!this.replyText.trim()) return;
+                    this.isSending = true;
+                    const messageJson = { type: "ai", content: this.replyText };
+                    await sb.from('chat_memory').insert({ session_id: this.currentSession, message: messageJson });
+                    this.replyText = '';
+                    this.isSending = false;
+                    setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
