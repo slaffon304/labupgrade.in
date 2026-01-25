@@ -10,26 +10,24 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass { background: rgba(30, 41, 59, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
         .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 12px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .msg-human { background-color: #1e293b; border-bottom-left-radius: 2px; }
         .msg-ai { background-color: #2563eb; color: white; border-bottom-right-radius: 2px; margin-left: auto; }
         
-        /* ИСПРАВЛЕНИЕ ТАБОВ: Растягиваем равномерно */
-        .tabs-container { display: flex; width: 100%; background: rgba(15, 23, 42, 0.6); border-bottom: 1px solid #334155; }
-        .filter-btn {
-            flex: 1; /* Равномерная ширина */
-            display: flex; align-items: center; justify-content: center; /* Центрирование */
-            padding: 14px 0; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
-            cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; color: #64748b;
-        }
-        .filter-btn:hover { background: rgba(255,255,255,0.03); color: #cbd5e1; }
-        .filter-active { color: #60a5fa; border-bottom-color: #60a5fa; background: rgba(59, 130, 246, 0.05); }
+        /* Табы */
+        .tabs-wrapper { display: flex; width: 100%; border-bottom: 1px solid #334155; background: rgba(15, 23, 42, 0.5); }
+        .tab-item { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px 0; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; color: #64748b; border-bottom: 2px solid transparent; }
+        .tab-item:hover { color: #cbd5e1; background: rgba(255,255,255,0.02); }
+        .tab-item.active { color: #60a5fa; border-bottom-color: #60a5fa; background: rgba(59, 130, 246, 0.05); }
 
-        /* Модальное окно */
-        .modal-overlay { background: rgba(0,0,0,0.85); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        
-        /* Скролл */
+        /* Переключатель (Toggle) */
+        .toggle-switch { width: 32px; height: 18px; background: #475569; border-radius: 999px; position: relative; cursor: pointer; transition: 0.2s; }
+        .toggle-switch.on { background: #22c55e; }
+        .toggle-dot { width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s; }
+        .toggle-switch.on .toggle-dot { transform: translateX(14px); }
+
+        .modal-overlay { background: rgba(0,0,0,0.9); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -47,14 +45,14 @@
                 <div>
                     <h1 class="text-lg font-bold tracking-tight leading-tight">Lab Upgrade</h1>
                     <p class="text-[10px] text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> System Online
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Admin Console
                     </p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
                 <button @click="openChannelsModal" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-2 shadow-lg shadow-blue-600/20 uppercase tracking-wide">
-                    <i class="fas fa-network-wired"></i> Manage Channels
+                    <i class="fas fa-layer-group"></i> All Channels
                 </button>
             </div>
         </header>
@@ -62,40 +60,49 @@
         <div class="flex flex-1 overflow-hidden">
             <aside class="w-80 glass border-r border-gray-700 flex flex-col z-10">
                 
-                <div class="tabs-container">
-                    <div @click="filter = 'all'" class="filter-btn" :class="{'filter-active': filter === 'all'}">
-                        ALL
-                    </div>
-                    <div @click="filter = 'ig'" class="filter-btn" :class="{'filter-active': filter === 'ig'}">
-                        <i class="fab fa-instagram mr-1.5 text-lg"></i> INSTAGRAM
-                    </div>
-                    <div @click="filter = 'fb'" class="filter-btn" :class="{'filter-active': filter === 'fb'}">
-                        <i class="fab fa-facebook-f mr-1.5 text-lg"></i> FACEBOOK
-                    </div>
+                <div class="tabs-wrapper">
+                    <div @click="filter = 'all'" class="tab-item" :class="{'active': filter === 'all'}">ALL</div>
+                    <div @click="filter = 'ig'" class="tab-item" :class="{'active': filter === 'ig'}"><i class="fab fa-instagram mr-1.5 text-lg"></i> INSTAGRAM</div>
+                    <div @click="filter = 'fb'" class="tab-item" :class="{'active': filter === 'fb'}"><i class="fab fa-facebook-f mr-1.5 text-lg"></i> FACEBOOK</div>
                 </div>
                 
                 <div class="overflow-y-auto flex-1">
-                    <div v-for="sessionId in filteredSessions" :key="sessionId" @click="selectSession(sessionId)" 
+                    <div v-for="session in enrichedSessions" :key="session.session_id" @click="selectSession(session.session_id)" 
                          class="p-4 border-b border-gray-700/50 cursor-pointer hover:bg-gray-800 transition-all duration-200"
-                         :class="{'bg-gray-800 border-l-4 border-l-blue-500': currentSession === sessionId}">
+                         :class="{'bg-gray-800 border-l-4 border-l-blue-500': currentSession === session.session_id}">
                         
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-inner"
-                                 :class="getClientType(sessionId) === 'ig' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
-                                {{ getInitials(getClientName(sessionId)) }}
-                            </div>
-
-                            <div class="overflow-hidden flex-1">
-                                <p class="font-bold text-sm truncate text-gray-100">{{ getClientName(sessionId) }}</p>
-                                <p class="text-xs text-gray-500 truncate mt-0.5 flex items-center gap-1">
-                                    <i class="fab" :class="getClientType(sessionId) === 'ig' ? 'fa-instagram' : 'fa-facebook'"></i>
-                                    {{ getClientType(sessionId) === 'ig' ? 'Instagram' : 'Facebook' }}
-                                </p>
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-inner"
+                                     :class="session.type === 'ig' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
+                                    {{ getInitials(session.clientName) }}
+                                </div>
+                                <span class="font-bold text-sm text-gray-100 truncate w-32">{{ session.clientName }}</span>
                             </div>
                         </div>
+
+                        <div class="flex items-center justify-between bg-black/20 p-2 rounded-lg border border-white/5">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-gray-300 truncate w-24" :title="session.pageName">
+                                    <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook-f'"></i>
+                                    {{ session.pageName || 'Loading...' }}
+                                </span>
+                                <span class="text-[9px] text-gray-500">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
+                            </div>
+
+                            <div @click.stop="togglePageStatus(session.pageId, session.type)" class="flex items-center gap-2">
+                                <span class="text-[9px] font-bold" :class="session.isPageActive ? 'text-green-500' : 'text-gray-500'">
+                                    {{ session.isPageActive ? 'ON' : 'OFF' }}
+                                </span>
+                                <div class="toggle-switch" :class="{'on': session.isPageActive}">
+                                    <div class="toggle-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     
-                    <div v-if="filteredSessions.length === 0" class="p-8 text-center text-gray-500 text-xs">
+                    <div v-if="enrichedSessions.length === 0" class="p-8 text-center text-gray-500 text-xs">
                         No conversations found.
                     </div>
                 </div>
@@ -111,16 +118,14 @@
                     <div class="p-4 bg-gray-800/90 border-b border-gray-700 flex justify-between items-center backdrop-blur-md">
                         <div>
                             <h2 class="font-bold text-white text-lg">{{ getClientName(currentSession) }}</h2>
-                            <span class="text-xs text-gray-400 font-mono">ID: {{ currentSession }}</span>
+                            <span class="text-xs text-gray-400 font-mono">Session ID: {{ currentSession }}</span>
                         </div>
                     </div>
 
                     <div class="flex-1 p-6 overflow-y-auto space-y-6" ref="chatBox">
                         <div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full group">
                             <div class="flex gap-3" :class="msg.role === 'ai' ? 'justify-end' : 'justify-start'">
-                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
-                                    <i class="fas fa-user"></i>
-                                </div>
+                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs"><i class="fas fa-user"></i></div>
                                 <div class="msg-bubble transition-all duration-300" :class="[msg.role === 'ai' ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
                                     
                                     <div v-if="msg.msg_type === 'comment_ref'" class="inline-block px-2 py-0.5 mb-1 rounded text-[9px] font-bold bg-gray-700 text-gray-300 border border-gray-600"><i class="fas fa-hashtag"></i> COMMENT ID</div>
@@ -156,54 +161,40 @@
         </div>
 
         <div v-if="showChannels" class="modal-overlay" @click.self="showChannels = false">
-            <div class="bg-gray-900 border border-gray-700 w-full max-w-lg rounded-xl shadow-2xl p-6 relative">
+            <div class="bg-gray-900 border border-gray-700 w-full max-w-2xl rounded-xl shadow-2xl p-6 relative">
                 <button @click="showChannels = false" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                <h2 class="text-xl font-bold mb-1">All Available Channels</h2>
+                <p class="text-xs text-gray-400 mb-6">List of all assets retrieved from your Facebook Admin Token.</p>
                 
-                <h2 class="text-xl font-bold mb-1">Connected Assets</h2>
-                <p class="text-xs text-gray-400 mb-6">Manage subscription status (Active/Trial/False).</p>
+                <div v-if="isLoadingChannels" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>Syncing...</div>
                 
-                <div v-if="isLoadingChannels" class="text-center py-8 text-gray-500">
-                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>Fetching Pages...
-                </div>
-
-                <div v-else-if="channels.length > 0" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <div v-for="channel in channels" :key="channel.id" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-blue-600 shrink-0">
-                                {{ channel.name ? channel.name[0].toUpperCase() : '#' }}
+                <div v-else-if="channels.length > 0" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                    <div v-for="asset in flatAssets" :key="asset.uniqueId" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
+                                 :class="asset.platform === 'instagram' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
+                                <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook-f'"></i>
                             </div>
+                            
                             <div>
-                                <h3 class="font-bold text-sm text-white">{{ channel.name }}</h3>
-                                <p class="text-[10px] text-gray-500 flex items-center gap-2">
-                                    <span class="text-gray-400 font-mono">ID: {{ channel.id }}</span>
-                                    
-                                    <span v-if="channel.hasIg" class="text-pink-500 font-bold bg-pink-500/10 px-1 rounded flex items-center gap-1">
-                                        <i class="fab fa-instagram"></i> Linked
-                                    </span>
+                                <h3 class="font-bold text-sm text-white">{{ asset.name }}</h3>
+                                <p class="text-[10px] text-gray-500 flex flex-col">
+                                    <span class="text-gray-400">ID: {{ asset.id }}</span>
+                                    <span class="text-gray-600 italic">{{ asset.platform === 'instagram' ? 'Instagram Business Account' : 'Facebook Page' }}</span>
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-3">
-                            <div class="text-right">
-                                <span class="text-[9px] font-bold uppercase block" :class="channel.isOn ? 'text-green-500' : 'text-gray-500'">
-                                    {{ channel.statusDisplay }}
-                                </span>
-                            </div>
-                            
-                            <div @click="toggleChannelStatus(channel)" 
-                                 class="w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-200 border border-transparent"
-                                 :class="channel.isOn ? 'bg-green-500' : 'bg-gray-700 border-gray-600'">
-                                <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-all duration-200 shadow" 
-                                     :class="channel.isOn ? 'translate-x-5' : ''"></div>
+                            <span class="text-[9px] font-bold uppercase w-10 text-right" :class="asset.isOn ? 'text-green-500' : 'text-gray-600'">{{ asset.statusDisplay }}</span>
+                            <div @click="toggleAssetStatus(asset)" class="toggle-switch" :class="{'on': asset.isOn}">
+                                <div class="toggle-dot"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div v-else class="text-center py-8 text-red-400 text-sm">
-                    No pages found.
-                </div>
+                <div v-else class="text-center py-8 text-red-400 text-sm">No connected assets found. Check your permissions.</div>
             </div>
         </div>
 
@@ -211,30 +202,82 @@
 
     <script>
         const { createClient } = supabase;
+
+        // --- КЛЮЧИ ---
         const SUPABASE_URL = 'https://kdymhrvudosudnqidejj.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkeW1ocnZ1ZG9zdWRucWlkZWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDAwNTAsImV4cCI6MjA4MTkxNjA1MH0.lXdwDpeIVwI2le8fqfOAVGMmB_IrVnpxexOs43BU0HU';
+        // -------------
+
         const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
         const { createApp } = Vue;
 
         createApp({
             data() {
                 return {
-                    messages: [], clients: [], clientMap: {}, currentSession: null, replyText: '', isSending: false,
+                    messages: [], clients: [], clientMap: {}, saasPages: [], 
+                    currentSession: null, replyText: '', isSending: false,
                     pageLogoUrl: '', logoError: false,
-                    showChannels: false, channels: [], isLoadingChannels: false, fbToken: null,
-                    filter: 'all'
+                    showChannels: false, flatAssets: [], isLoadingChannels: false, fbToken: null,
+                    filter: 'all',
+                    // Кэш имен страниц: { 'PAGE_ID': 'Lab Upgrade' }
+                    pageNameCache: {}
                 }
             },
             computed: {
                 uniqueSessions() { return [...new Set(this.messages.map(m => m.session_id))]; },
-                filteredSessions() {
-                    const all = this.uniqueSessions;
-                    if (this.filter === 'all') return all;
-                    return all.filter(sessionId => {
-                        const type = this.getClientType(sessionId);
-                        return (this.filter === 'ig' && type === 'ig') || (this.filter === 'fb' && type === 'fb');
+                
+                // Самая важная часть: Сборка данных для Сайдбара
+                enrichedSessions() {
+                    let sessions = this.uniqueSessions.map(sessionId => {
+                        const client = this.clientMap[sessionId];
+                        const type = client ? client.type : 'fb';
+                        const clientName = client ? (client.name || 'User') : 'Unknown';
+                        
+                        // Ищем ID страницы, к которой привязан этот диалог
+                        // В end_clients должен быть client_id (UUID), который ведет на saas_clients
+                        // Но у нас в end_clients есть только psid/ig_id клиента.
+                        // Мы должны найти, к какой странице относится этот psid.
+                        // В твоей схеме `end_clients` ссылается на `saas_clients` через `client_id`.
+                        
+                        let pageName = 'Unknown Page';
+                        let isPageActive = false;
+                        let pageId = null;
+
+                        // Находим end_client запись
+                        const endClientRecord = this.clients.find(c => c.instagram_id === sessionId || c.psid === sessionId);
+                        
+                        if (endClientRecord && endClientRecord.client_id) {
+                            // Находим saas_client запись по UUID
+                            const saasRecord = this.saasPages.find(s => s.id === endClientRecord.client_id);
+                            if (saasRecord) {
+                                // Имя берем из Кэша (от FB API) или из базы, если записали
+                                // Для видео берем из FB API Кэша по ID страницы
+                                const targetId = type === 'ig' ? saasRecord.ig_id : saasRecord.fb_page_id;
+                                pageName = this.pageNameCache[targetId] || 'Loading...';
+                                pageId = targetId;
+                                
+                                const status = saasRecord.subscription_status;
+                                isPageActive = (status === 'active' || status === 'trial');
+                            }
+                        }
+
+                        return {
+                            session_id: sessionId,
+                            clientName,
+                            type,
+                            pageName,
+                            pageId,
+                            isPageActive
+                        };
                     });
+
+                    // Фильтр
+                    if (this.filter !== 'all') {
+                        sessions = sessions.filter(s => s.type === this.filter);
+                    }
+                    return sessions;
                 },
+
                 sessionMessages() {
                     if (!this.currentSession) return [];
                     return this.messages.filter(m => m.session_id === this.currentSession);
@@ -242,148 +285,201 @@
             },
             async mounted() {
                 const urlParams = new URLSearchParams(window.location.search);
-                this.fbToken = urlParams.get('token'); 
+                this.fbToken = urlParams.get('token');
                 const pageId = urlParams.get('fbI') || urlParams.get('igI');
                 if (pageId) this.pageLogoUrl = `https://graph.facebook.com/${pageId}/picture?type=large`;
                 else this.logoError = true;
 
-                await Promise.all([this.fetchMessages(), this.fetchClients()]);
+                // Сначала грузим базу
+                await Promise.all([this.fetchMessages(), this.fetchClients(), this.fetchSaasClients()]);
+                
+                // ПОТОМ сразу грузим имена страниц из FB, чтобы заполнить сайдбар
+                if (this.fbToken) await this.fetchPageNamesFromFb();
+
                 sb.channel('public:chat_memory').on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => this.fetchMessages()).subscribe();
             },
             methods: {
-                // --- ЛОГИКА КАНАЛОВ (FIXED) ---
+                // Загружаем имена страниц один раз при старте для сайдбара
+                async fetchPageNamesFromFb() {
+                    try {
+                        const response = await fetch(`https://graph.facebook.com/me/accounts?fields=name,id,instagram_business_account&access_token=${this.fbToken}`);
+                        const data = await response.json();
+                        if (data.data) {
+                            data.data.forEach(page => {
+                                // Сохраняем имя для FB ID
+                                this.pageNameCache[page.id] = page.name;
+                                // Сохраняем имя для IG ID (оно такое же, как у страницы обычно, или берем логин)
+                                if (page.instagram_business_account) {
+                                    this.pageNameCache[page.instagram_business_account.id] = page.name + " (IG)";
+                                }
+                            });
+                        }
+                    } catch(e) { console.error(e); }
+                },
+
+                async togglePageStatus(pageId, type) {
+                    if (!pageId) return;
+                    // Находим запись в saas_clients
+                    const saasRecord = this.saasPages.find(s => s.fb_page_id === pageId || s.ig_id === pageId);
+                    if (!saasRecord) {
+                        alert("Page record not found in DB");
+                        return;
+                    }
+
+                    // Логика
+                    const isActive = (saasRecord.subscription_status === 'active' || saasRecord.subscription_status === 'trial');
+                    const newStatus = isActive ? 'false' : 'active';
+                    
+                    // Оптимистик апдейт
+                    saasRecord.subscription_status = newStatus;
+
+                    const { error } = await sb.from('saas_clients').update({ subscription_status: newStatus }).eq('id', saasRecord.id);
+                    if (error) {
+                        saasRecord.subscription_status = isActive ? 'active' : 'false'; // rollback
+                        alert("Error updating DB");
+                    }
+                },
+
+                // Открытие модалки с полным списком (Разделяем IG и FB)
                 async openChannelsModal() {
                     this.showChannels = true;
                     this.isLoadingChannels = true;
-                    this.channels = [];
+                    this.flatAssets = [];
 
                     try {
-                        let fbPages = [];
+                        // 1. FB Data
+                        let fbData = [];
                         if (this.fbToken) {
-                            const response = await fetch(`https://graph.facebook.com/me/accounts?access_token=${this.fbToken}`);
-                            const data = await response.json();
-                            if (data.data) fbPages = data.data;
+                            const r = await fetch(`https://graph.facebook.com/me/accounts?fields=name,id,access_token,category,instagram_business_account&access_token=${this.fbToken}`);
+                            const d = await r.json();
+                            if (d.data) fbData = d.data;
                         }
 
-                        // Берем данные из базы
-                        const { data: dbPages } = await sb.from('saas_clients').select('*');
+                        // 2. Map to Flat List
+                        fbData.forEach(page => {
+                            // A. FB PAGE OBJECT
+                            const dbFb = this.saasPages.find(s => String(s.fb_page_id) === String(page.id));
+                            const statusFb = dbFb ? dbFb.subscription_status : 'false';
+                            const isOnFb = (statusFb === 'active' || statusFb === 'trial');
+                            
+                            this.flatAssets.push({
+                                uniqueId: 'fb_' + page.id,
+                                id: page.id,
+                                name: page.name,
+                                platform: 'facebook',
+                                isOn: isOnFb,
+                                statusDisplay: statusFb === 'trial' ? 'TRIAL' : (isOnFb ? 'ACTIVE' : 'OFF'),
+                                dbId: dbFb ? dbFb.id : null,
+                                rawPage: page
+                            });
 
-                        this.channels = fbPages.map(fbPage => {
-                            // Ищем совпадение по fb_page_id
-                            const dbRecord = dbPages ? dbPages.find(p => p.fb_page_id === fbPage.id) : null;
-                            
-                            // Логика статуса: Active или Trial = Включено
-                            const status = dbRecord ? dbRecord.subscription_status : 'false';
-                            const isOn = (status === 'active' || status === 'trial');
-                            
-                            return {
-                                id: fbPage.id,
-                                name: fbPage.name,
-                                hasIg: dbRecord && dbRecord.ig_id, // Проверяем, есть ли привязанная инста в базе
-                                isOn: isOn,
-                                statusDisplay: status === 'trial' ? 'TRIAL' : (isOn ? 'ACTIVE' : 'OFF'),
-                                dbId: dbRecord ? dbRecord.id : null
-                            };
+                            // B. IG OBJECT (Если есть)
+                            if (page.instagram_business_account) {
+                                const igId = page.instagram_business_account.id;
+                                const dbIg = this.saasPages.find(s => String(s.ig_id) === String(igId)); // Ищем по IG ID? Или он привязан к тому же saas_client?
+                                // Обычно saas_client один на связку. Но переключать можно отдельно?
+                                // Если у тебя одна запись на пару FB+IG, то статус общий.
+                                // Если ты хочешь раздельно - нужна логика.
+                                // ПОКА БЕРЕМ ТОТ ЖЕ СТАТУС, что и у FB, если они в одной записи.
+                                // Или ищем запись, где ig_id совпадает.
+                                
+                                const statusIg = dbIg ? dbIg.subscription_status : 'false';
+                                const isOnIg = (statusIg === 'active' || statusIg === 'trial');
+
+                                this.flatAssets.push({
+                                    uniqueId: 'ig_' + igId,
+                                    id: igId,
+                                    name: page.name + " (Inst)", // Или запросить имя инсты отдельным запросом
+                                    platform: 'instagram',
+                                    isOn: isOnIg,
+                                    statusDisplay: statusIg === 'trial' ? 'TRIAL' : (isOnIg ? 'ACTIVE' : 'OFF'),
+                                    dbId: dbIg ? dbIg.id : null, // Это может быть тот же ID, что у FB
+                                    parentId: page.id
+                                });
+                            }
                         });
 
-                    } catch (e) {
-                        console.error("Sync error:", e);
-                    } finally {
-                        this.isLoadingChannels = false;
-                    }
+                    } catch (e) { console.error(e); } 
+                    finally { this.isLoadingChannels = false; }
                 },
 
-                async toggleChannelStatus(channel) {
-                    const willTurnOn = !channel.isOn; // Если было OFF, станет ON
-                    
-                    // Обновляем UI мгновенно
-                    channel.isOn = willTurnOn;
-                    channel.statusDisplay = willTurnOn ? 'ACTIVE' : 'OFF';
-
-                    // Логика обновления: Если включаем -> active. Если выключаем -> false.
-                    // (Trial устанавливается только вручную администратором, здесь ставим active)
+                async toggleAssetStatus(asset) {
+                    // Та же логика, что и в сайдбаре, но для модалки
+                    const willTurnOn = !asset.isOn;
+                    asset.isOn = willTurnOn;
+                    asset.statusDisplay = willTurnOn ? 'ACTIVE' : 'OFF';
                     const newStatus = willTurnOn ? 'active' : 'false';
 
+                    // Update or Insert
                     const payload = {
-                        page_name: channel.name, // Сохраним имя на всякий случай
-                        fb_page_id: channel.id,  // ИСПОЛЬЗУЕМ fb_page_id
+                        fb_page_id: asset.platform === 'facebook' ? asset.id : asset.parentId, // Всегда нужен FB Page ID для привязки
                         subscription_status: newStatus
+                        // Если это IG, можно добавить ig_id в payload, если нужно создать новую запись
                     };
+                    if (asset.platform === 'instagram') payload.ig_id = asset.id;
 
                     let error;
-                    if (channel.dbId) {
-                        const res = await sb.from('saas_clients')
-                            .update({ subscription_status: newStatus })
-                            .eq('id', channel.dbId);
-                        error = res.error;
+                    if (asset.dbId) {
+                         const res = await sb.from('saas_clients').update({ subscription_status: newStatus }).eq('id', asset.dbId);
+                         error = res.error;
                     } else {
-                         // Если записи нет - создаем
-                        const res = await sb.from('saas_clients')
-                            .upsert(payload, { onConflict: 'fb_page_id' })
-                            .select();
-                        if (res.data && res.data[0]) channel.dbId = res.data[0].id;
-                        error = res.error;
+                         const res = await sb.from('saas_clients').upsert(payload, { onConflict: 'fb_page_id' }).select();
+                         if (res.data && res.data[0]) asset.dbId = res.data[0].id;
+                         error = res.error;
                     }
-
-                    if (error) {
-                        alert("Database error");
-                        channel.isOn = !willTurnOn; // откатываем при ошибке
-                    }
+                    if(error) asset.isOn = !willTurnOn;
                 },
 
-                // --- Остальной код ---
+                // --- DATA FETCHING ---
                 async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
                             const contentObj = typeof row.message === 'string' ? JSON.parse(row.message) : row.message;
-                            let cleanContent = contentObj.content || "";
-                            
-                            let msgType = 'dm';
-                            // Если роль AI - всегда ставим бейдж
-                            if (contentObj.type === 'ai') msgType = 'auto_reply'; 
-                            
-                            // Чистим JSON для красоты
+                            let clean = contentObj.content || "";
+                            let type = 'dm';
+                            if (contentObj.type === 'ai') type = 'auto_reply';
                             try {
-                                if (typeof cleanContent === 'string' && cleanContent.trim().startsWith('{')) {
-                                    const parsed = JSON.parse(cleanContent);
-                                    cleanContent = parsed.private_text || parsed.public_text || parsed.output || cleanContent;
+                                if (typeof clean === 'string' && clean.trim().startsWith('{')) {
+                                    const p = JSON.parse(clean);
+                                    clean = p.private_text || p.public_text || p.output || clean;
                                 }
                             } catch (e) {}
-
-                            const isNumericId = /^\d{6,}$/.test(cleanContent);
-                            if (contentObj.type === 'human' && isNumericId) msgType = 'comment_ref';
-
-                            return {
-                                id: row.id, session_id: row.session_id, content: cleanContent, role: contentObj.type,
-                                is_hidden: row.is_hidden, is_deleted: row.is_deleted, msg_type: msgType, created_at: row.created_at
-                            };
+                            if (contentObj.type === 'human' && /^\d{6,}$/.test(clean)) type = 'comment_ref';
+                            return { id: row.id, session_id: row.session_id, content: clean, role: contentObj.type, is_hidden: row.is_hidden, is_deleted: row.is_deleted, msg_type: type, created_at: row.created_at };
                         });
                     }
                 },
                 async fetchClients() {
-                    const { data } = await sb.from('end_clients').select('name, username, instagram_id, psid');
-                    if (data) {
-                        data.forEach(client => {
-                            const displayName = client.name || client.username || 'Client';
-                            if (client.instagram_id) this.clientMap[client.instagram_id] = { name: displayName, type: 'ig' };
-                            if (client.psid) this.clientMap[client.psid] = { name: displayName, type: 'fb' };
-                        });
-                    }
+                    // Грузим end_clients (Связь сессий с клиентами)
+                    // Нам ВАЖНО получить client_id, чтобы найти страницу
+                    const { data } = await sb.from('end_clients').select('name, username, instagram_id, psid, client_id');
+                    if (data) this.clients = data;
+                    
+                    // Маппинг для быстрого доступа
+                    data.forEach(client => {
+                        const name = client.name || client.username || 'Client';
+                        if (client.instagram_id) this.clientMap[client.instagram_id] = { name, type: 'ig' };
+                        if (client.psid) this.clientMap[client.psid] = { name, type: 'fb' };
+                    });
                 },
-                getClientName(sessionId) { return this.clientMap[sessionId]?.name || `User ${sessionId.substring(0, 5)}...`; },
-                getClientType(sessionId) { return this.clientMap[sessionId]?.type || 'fb'; },
-                getInitials(name) { if (!name || name.startsWith('User ')) return '#'; return name.substring(0, 2).toUpperCase(); },
+                async fetchSaasClients() {
+                    // Грузим saas_clients (Страницы и их статусы)
+                    const { data } = await sb.from('saas_clients').select('*');
+                    if (data) this.saasPages = data;
+                },
+
+                // --- Helpers ---
+                getClientName(sid) { return this.clientMap[sid]?.name || `User ${sid.substring(0,4)}...`; },
+                getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
                 async toggleHide(msg) { await sb.from('chat_memory').update({ is_hidden: !msg.is_hidden }).eq('id', msg.id); },
                 async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
                 async sendReply() {
                     if (!this.replyText.trim()) return;
                     this.isSending = true;
-                    const messageJson = { type: "ai", content: this.replyText };
-                    await sb.from('chat_memory').insert({ session_id: this.currentSession, message: messageJson });
-                    this.replyText = '';
-                    this.isSending = false;
+                    await sb.from('chat_memory').insert({ session_id: this.currentSession, message: { type: "ai", content: this.replyText } });
+                    this.replyText = ''; this.isSending = false;
                     setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
                 }
             }
