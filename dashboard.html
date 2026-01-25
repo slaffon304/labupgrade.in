@@ -424,7 +424,14 @@
                 getClientName(sid) { return this.clientMap[sid]?.name || `User ${sid.substring(0,4)}...`; },
                 getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
-                async toggleHide(msg) { await sb.from('chat_memory').update({ is_hidden: !msg.is_hidden }).eq('id', msg.id); },
+                                async toggleHide(msg) {
+                    // 1. МГНОВЕННО меняем статус и иконку/текст в интерфейсе
+                    msg.is_hidden = !msg.is_hidden; 
+                    
+                    // 2. Отправляем изменение в базу данных (пользователь этого уже не ждет)
+                    await sb.from('chat_memory').update({ is_hidden: msg.is_hidden }).eq('id', msg.id);
+                },
+
                 async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
                 async sendReply() {
                     if (!this.replyText.trim()) return;
