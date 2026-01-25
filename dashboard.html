@@ -307,33 +307,43 @@
                 },
 
                 // ГЛАВНАЯ ФУНКЦИЯ: Теперь всегда пишет в базу по FB ID
-                                                                async togglePageStatus(pageId) {
-                    // 1. Находим локальную запись, чтобы переключить тумблер визуально
-                    // (Ищем "как есть", без всяких trim)
-                    const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId);
+                      async togglePageStatus(pageId) {
+                    if (!pageId) return;
+
+                    // 1. Ищем, на какую кнопку нажали
+                    const page = this.saasPages.find(s => 
+                        String(s.fb_page_id).trim() === String(pageId).trim() || 
+                        String(s.ig_id).trim() === String(pageId).trim()
+                    );
                     
                     if (!page) return;
 
-                    // 2. Определяем новый статус
+                    // 2. Логика для ИНСТАГРАМА (работает в холостую)
+                    // Если ID совпадает с ID Инстаграма — просто меняем вид и уходим
+                    if (String(pageId) === String(page.ig_id)) {
+                        const current = String(page.subscription_status || '').toLowerCase();
+                        // Просто переключаем локально, чтобы глазу было приятно
+                        page.subscription_status = (current === 'active' || current === 'trial') ? 'false' : 'active';
+                        console.log('Instagram switched locally (Dummy mode)');
+                        return; // <--- ВАЖНО: Выходим отсюда, не трогая базу
+                    }
+
+                    // 3. Логика для ФЕЙСБУКА (работает с базой)
+                    // Если мы здесь, значит нажали на Фейсбук
                     const currentStatus = String(page.subscription_status || '').toLowerCase();
                     const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    // 3. Обновляем интерфейс (Оптимистично)
+                    // Меняем визуально
                     page.subscription_status = newStatus;
 
-                    // 4. Отправляем в базу "КАК ЕСТЬ" (Raw)
-                    // Используем page.fb_page_id, так как это основной ключ в базе.
-                    // Если мы нажали на Инстаграм, pageId будет IG ID, но обновлять надо строку с FB ID.
-                    const targetId = page.fb_page_id;
-
+                    // Отправляем в базу
                     const { error } = await sb.from('saas_clients')
                         .update({ subscription_status: newStatus }) 
-                        .eq('fb_page_id', targetId); // <-- Никаких trim(), никаких String(). Чистый ID.
+                        .eq('fb_page_id', pageId); // Используем ID Фейсбука
 
                     if (error) {
-                        console.error('Ошибка:', error);
-                        // Если база вернула ошибку — возвращаем тумблер назад
-                        page.subscription_status = currentStatus;
+                        console.error('Ошибка сохранения FB:', error);
+                        page.subscription_status = currentStatus; // Возврат при ошибке
                     }
                 },
 
@@ -380,15 +390,16 @@
                     } catch(e) { console.error(e); } finally { this.isLoadingChannels = false; }
                 },
 
-                                async toggleAssetStatus(asset) {
-                    // Если это Инстаграм, берем ID его родителя (Фейсбука), так как запись в базе одна
-                    const targetId = asset.platform === 'facebook' ? asset.id : asset.parentId;
-                    
-                    // Вызываем простую функцию обновления
-                    await this.togglePageStatus(targetId, asset.name);
-                    
-                    // Обновляем список в модалке
-                    await this.openChannelsModal(); 
+                                                async toggleAssetStatus(asset) {
+                    // 1. Сразу меняем вид в модалке (чтобы переключилось мгновенно)
+                    asset.isOn = !asset.isOn;
+                    asset.statusDisplay = asset.isOn ? 'ACTIVE' : 'OFF';
+
+                    // 2. Вызываем главную функцию
+                    // ВАЖНО: Мы передаем asset.id "как есть".
+                    // — Если это Facebook, togglePageStatus увидит ID Фейсбука и обновит базу.
+                    // — Если это Instagram, togglePageStatus увидит ID Инсты и сработает в "холостом" режиме (как мы прописали выше).
+                    await this.togglePageStatus(asset.id);
                 },
 
                 
