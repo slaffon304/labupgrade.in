@@ -26,7 +26,7 @@
 
         .modal-overlay { background: rgba(0,0,0,0.9); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         
-        /* КНОПКА ПЕРЕПОДКЛЮЧЕНИЯ */
+        /* КНОПКА ПОДКЛЮЧЕНИЯ */
         .connect-btn { width: 100%; background: #2563eb; color: white; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 15px; text-transform: uppercase; font-size: 12px; cursor: pointer; transition: 0.2s; border: 1px solid #3b82f6; }
         .connect-btn:hover { background: #1d4ed8; }
 
@@ -179,7 +179,7 @@
                     <div v-else class="text-center py-4 text-gray-400 text-sm">No connected pages found.</div>
 
                     <button @click="connectNewPage" class="connect-btn">
-                        <i class="fas fa-plus-circle mr-2"></i> Connect Missing Page
+                        <i class="fas fa-plus-circle mr-2"></i> Connect New Page
                     </button>
                 </div>
             </div>
@@ -227,14 +227,14 @@
 
                         let isPageActive = false;
                         if (pageId) {
-                            // ИСПРАВЛЕНИЕ: ЖЕСТКОЕ СРАВНЕНИЕ (String + Trim)
-                            // Это гарантирует, что переключатель в сайдбаре будет ON, если страница есть в базе
+                            // ИЩЕМ ЗАПИСЬ
                             const saas = this.saasPages.find(s => 
                                 String(s.fb_page_id).trim() === String(pageId).trim() || 
                                 String(s.ig_id).trim() === String(pageId).trim()
                             );
                             if (saas) {
-                                const st = saas.subscription_status;
+                                // ЛОГИКА ACTIVE и TRIAL
+                                const st = String(saas.subscription_status || '').trim().toLowerCase();
                                 isPageActive = (st === 'active' || st === 'trial');
                             }
                         }
@@ -288,7 +288,7 @@
 
                 async togglePageStatus(pageId, pageName) {
                     if (!pageId) return;
-                    // ИСПРАВЛЕНИЕ: ЖЕСТКОЕ СРАВНЕНИЕ ТУТ ТОЖЕ
+                    
                     let saasRecord = this.saasPages.find(s => 
                         String(s.fb_page_id).trim() === String(pageId).trim() || 
                         String(s.ig_id).trim() === String(pageId).trim()
@@ -299,8 +299,12 @@
                         const { data, error } = await sb.from('saas_clients').insert(payload).select();
                         if (!error && data) this.saasPages.push(data[0]);
                     } else {
-                        const isActive = (saasRecord.subscription_status === 'active' || saasRecord.subscription_status === 'trial');
+                        // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ
+                        const st = String(saasRecord.subscription_status || '').trim().toLowerCase();
+                        // Если active или trial - считаем включенным, значит выключаем
+                        const isActive = (st === 'active' || st === 'trial');
                         const newStatus = isActive ? 'false' : 'active';
+                        
                         saasRecord.subscription_status = newStatus;
                         await sb.from('saas_clients').update({ subscription_status: newStatus }).eq('id', saasRecord.id);
                     }
@@ -318,25 +322,37 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
-                                // ИСПРАВЛЕНИЕ: ЖЕСТКОЕ СРАВНЕНИЕ (String + Trim) в Модалке
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
-                                const stFb = dbFb ? dbFb.subscription_status : 'false';
+                                
+                                let stFb = 'false';
+                                if (dbFb) stFb = String(dbFb.subscription_status || '').trim().toLowerCase();
                                 const onFb = (stFb === 'active' || stFb === 'trial');
+                                
+                                let displayStatus = 'OFF';
+                                if (stFb === 'active') displayStatus = 'ACTIVE';
+                                if (stFb === 'trial') displayStatus = 'TRIAL';
                                 
                                 this.flatAssets.push({
                                     uniqueId: 'fb_' + page.id, id: page.id, name: page.name, platform: 'facebook',
-                                    isOn: onFb, statusDisplay: stFb === 'trial' ? 'TRIAL' : (onFb ? 'ACTIVE' : 'OFF'),
+                                    isOn: onFb, statusDisplay: displayStatus,
                                     dbId: dbFb ? dbFb.id : null, parentId: null
                                 });
 
                                 if (page.instagram_business_account) {
                                     const igId = page.instagram_business_account.id;
                                     const dbIg = this.saasPages.find(s => String(s.ig_id).trim() === String(igId).trim());
-                                    const stIg = dbIg ? dbIg.subscription_status : 'false';
+                                    
+                                    let stIg = 'false';
+                                    if (dbIg) stIg = String(dbIg.subscription_status || '').trim().toLowerCase();
                                     const onIg = (stIg === 'active' || stIg === 'trial');
+                                    
+                                    let igDisplayStatus = 'OFF';
+                                    if (stIg === 'active') igDisplayStatus = 'ACTIVE';
+                                    if (stIg === 'trial') igDisplayStatus = 'TRIAL';
+
                                     this.flatAssets.push({
                                         uniqueId: 'ig_' + igId, id: igId, name: page.name + ' (IG)', platform: 'instagram',
-                                        isOn: onIg, statusDisplay: stIg === 'trial' ? 'TRIAL' : (onIg ? 'ACTIVE' : 'OFF'),
+                                        isOn: onIg, statusDisplay: igDisplayStatus,
                                         dbId: dbIg ? dbIg.id : null, parentId: page.id
                                     });
                                 }
@@ -348,7 +364,11 @@
                 async toggleAssetStatus(asset) {
                     const willTurnOn = !asset.isOn;
                     asset.isOn = willTurnOn;
-                    asset.statusDisplay = willTurnOn ? 'ACTIVE' : 'OFF';
+                    
+                    // Обновляем UI сразу
+                    if (willTurnOn) asset.statusDisplay = 'ACTIVE'; 
+                    else asset.statusDisplay = 'OFF';
+                    
                     const newStatus = willTurnOn ? 'active' : 'false';
                     const payload = { fb_page_id: asset.platform === 'facebook' ? asset.id : asset.parentId, subscription_status: newStatus };
                     if (asset.platform === 'instagram') payload.ig_id = asset.id;
