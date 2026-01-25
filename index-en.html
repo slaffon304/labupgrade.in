@@ -1744,6 +1744,9 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 <script>
+    // Глобальная переменная для хранения токена
+    window.USER_ACCESS_TOKEN = null;
+
     const CONFIG = {
         appId: '1194771652741657',
         functionUrl: 'https://kdymhrvudosudnqidejj.supabase.co/functions/v1/hyper-task',
@@ -1775,7 +1778,10 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
             if (response.status === 'connected') {
                 if(btn) btn.innerHTML = '<span>Connecting...</span>';
 
+                // ВОТ ЭТО ГЛАВНОЕ: Сохраняем токен глобально, чтобы кнопка его увидела
                 const userToken = response.authResponse.accessToken;
+                window.USER_ACCESS_TOKEN = userToken;
+
                 const myClientId = getOrCreateClientId();
 
                 fetch(CONFIG.functionUrl, {
@@ -1865,6 +1871,7 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
 
 
 </html>
+
 
 
 
