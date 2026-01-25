@@ -283,7 +283,7 @@
                         appId      : '1194771652741657',
                         cookie     : true,
                         xfbml      : true,
-                        version    : 'v22.0'
+                        version    : 'v24.0'
                     });
                 };
 
@@ -440,17 +440,60 @@
                     msg.is_hidden = !msg.is_hidden; 
                     await sb.from('chat_memory').update({ is_hidden: msg.is_hidden }).eq('id', msg.id);
                 },
-                async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
+                                async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
+
                 async sendReply() {
                     if (!this.replyText.trim()) return;
                     this.isSending = true;
-                    await sb.from('chat_memory').insert({ session_id: this.currentSession, message: { type: "ai", content: this.replyText } });
-                    this.replyText = ''; this.isSending = false;
+
+                    // 1. Ищем данные текущей сессии, чтобы узнать ID страницы
+                    const sessionData = this.enrichedSessions.find(s => s.session_id === this.currentSession);
+                    
+                    if (sessionData && sessionData.pageId) {
+                        // 2. Ищем эту страницу в загруженном списке saasPages
+                        const pageRow = this.saasPages.find(p => String(p.fb_page_id) === String(sessionData.pageId));
+
+                        // 3. Берем токен из базы. 
+                        // ВНИМАНИЕ: Проверь, что колонка в Supabase называется 'page_access_token'
+                        const pageToken = pageRow ? pageRowfb_api_token : null; 
+
+                        if (pageToken) {
+                            try {
+                                // 4. ОТПРАВЛЯЕМ POST ЗАПРОС (Как HTTP Request в n8n)
+                                await fetch(`https://graph.facebook.com/v24.0/me/messages?access_token=${pageToken}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        recipient: { id: this.currentSession }, // ID пользователя
+                                        message: { text: this.replyText }
+                                    })
+                                });
+                            } catch (apiError) {
+                                console.error("Ошибка API:", apiError);
+                                alert("Ошибка отправки сообщения в Facebook/Instagram. Проверьте токен.");
+                            }
+                        } else {
+                            console.error("Токен не найден для страницы:", sessionData.pageId);
+                            // Можно раскомментировать alert ниже для отладки
+                            // alert("Токен страницы не найден в базе!"); 
+                        }
+                    }
+
+                    // 5. Сохраняем в базу (тип human, чтобы отличалось от бота)
+                    await sb.from('chat_memory').insert({ 
+                        session_id: this.currentSession, 
+                        message: { type: "human", content: this.replyText } 
+                    });
+
+                    this.replyText = ''; 
+                    this.isSending = false;
                     setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
                 },
+
                 getClientType(sid) { return this.clientMap[sid]?.type || 'fb'; }
             }
         }).mount('#app');
     </script>
+
 </body>
 </html>
