@@ -25,6 +25,11 @@
         .toggle-switch.on .toggle-dot { transform: translateX(14px); }
 
         .modal-overlay { background: rgba(0,0,0,0.9); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        
+        /* КНОПКА ПЕРЕПОДКЛЮЧЕНИЯ */
+        .connect-btn { width: 100%; background: #2563eb; color: white; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 15px; text-transform: uppercase; font-size: 12px; cursor: pointer; transition: 0.2s; border: 1px solid #3b82f6; }
+        .connect-btn:hover { background: #1d4ed8; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -81,7 +86,8 @@
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-bold text-gray-300 truncate w-24">
                                     <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook-f'"></i>
-                                    {{ session.pageName }} </span>
+                                    {{ session.pageName }}
+                                </span>
                                 <span class="text-[9px] text-gray-500">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
                             </div>
 
@@ -149,28 +155,38 @@
             <div class="bg-gray-900 border border-gray-700 w-full max-w-2xl rounded-xl shadow-2xl p-6 relative">
                 <button @click="showChannels = false" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
                 <h2 class="text-xl font-bold mb-1">Channels</h2>
-                <div v-if="isLoadingChannels" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>Fetching with Admin Token...</div>
-                <div v-else-if="flatAssets.length > 0" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-                    <div v-for="asset in flatAssets" :key="asset.uniqueId" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0" :class="asset.platform === 'instagram' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
-                                <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook-f'"></i>
+                
+                <div v-if="isLoadingChannels" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>Syncing...</div>
+                
+                <div v-else class="flex flex-col gap-3">
+                    <div v-if="flatAssets.length > 0" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
+                        <div v-for="asset in flatAssets" :key="asset.uniqueId" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0" :class="asset.platform === 'instagram' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
+                                    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook-f'"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-white">{{ asset.name }}</h3>
+                                    <p class="text-[10px] text-gray-400">ID: {{ asset.id }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="font-bold text-sm text-white">{{ asset.name }}</h3>
-                                <p class="text-[10px] text-gray-400">ID: {{ asset.id }}</p>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[9px] font-bold uppercase w-10 text-right" :class="asset.isOn ? 'text-green-500' : 'text-gray-600'">{{ asset.statusDisplay }}</span>
+                                <div @click="toggleAssetStatus(asset)" class="toggle-switch" :class="{'on': asset.isOn}"><div class="toggle-dot"></div></div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="text-[9px] font-bold uppercase w-10 text-right" :class="asset.isOn ? 'text-green-500' : 'text-gray-600'">{{ asset.statusDisplay }}</span>
-                            <div @click="toggleAssetStatus(asset)" class="toggle-switch" :class="{'on': asset.isOn}"><div class="toggle-dot"></div></div>
                         </div>
                     </div>
+                    <div v-else class="text-center py-4 text-gray-400 text-sm">No connected pages found.</div>
+
+                    <button @click="connectNewPage" class="connect-btn">
+                        <i class="fas fa-plus-circle mr-2"></i> Connect Missing Page
+                    </button>
                 </div>
-                <div v-else class="text-center py-8 text-red-400 text-sm">Token valid but no pages found via API.</div>
             </div>
         </div>
     </div>
+    
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
     <script>
         const { createClient } = supabase;
@@ -187,7 +203,6 @@
                     pageLogoUrl: '', logoError: false,
                     showChannels: false, flatAssets: [], isLoadingChannels: false,
                     filter: 'all',
-                    // ДАННЫЕ ИЗ ССЫЛКИ
                     adminInfo: { fbName: '', fbId: '', igName: '', igId: '', token: '' }
                 }
             },
@@ -199,7 +214,6 @@
                         const type = client ? client.type : 'fb';
                         const clientName = client ? (client.name || 'User') : 'Unknown';
                         
-                        // ЛОГИКА САЙДБАРА: Берем из URL параметры!
                         let pageName = 'Unknown';
                         let pageId = null;
                         
@@ -211,10 +225,14 @@
                             pageId = this.adminInfo.fbId; 
                         }
 
-                        // Проверяем статус в базе
                         let isPageActive = false;
                         if (pageId) {
-                            const saas = this.saasPages.find(s => String(s.fb_page_id) === String(pageId) || String(s.ig_id) === String(pageId));
+                            // ИСПРАВЛЕНИЕ: ЖЕСТКОЕ СРАВНЕНИЕ (String + Trim)
+                            // Это гарантирует, что переключатель в сайдбаре будет ON, если страница есть в базе
+                            const saas = this.saasPages.find(s => 
+                                String(s.fb_page_id).trim() === String(pageId).trim() || 
+                                String(s.ig_id).trim() === String(pageId).trim()
+                            );
                             if (saas) {
                                 const st = saas.subscription_status;
                                 isPageActive = (st === 'active' || st === 'trial');
@@ -232,37 +250,52 @@
                 }
             },
             async mounted() {
-                // 1. ЧИТАЕМ ПАРАМЕТРЫ ИЗ URL
                 const params = new URLSearchParams(window.location.search);
                 this.adminInfo.fbName = params.get('fbN');
                 this.adminInfo.fbId = params.get('fbI');
                 this.adminInfo.igName = params.get('igN');
                 this.adminInfo.igId = params.get('igI');
-                this.adminInfo.token = params.get('token'); // АДМИН ТОКЕН
+                this.adminInfo.token = params.get('token');
 
-                // Логотип
+                window.fbAsyncInit = function() {
+                    FB.init({
+                        appId      : '1194771652741657',
+                        cookie     : true,
+                        xfbml      : true,
+                        version    : 'v22.0'
+                    });
+                };
+
                 const pageId = params.get('fbI') || params.get('igI');
                 if (pageId) this.pageLogoUrl = `https://graph.facebook.com/${pageId}/picture?type=large`;
                 else this.logoError = true;
 
-                // 2. Грузим данные из БД
                 await Promise.all([this.fetchMessages(), this.fetchClients(), this.fetchSaasClients()]);
                 sb.channel('public:chat_memory').on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => this.fetchMessages()).subscribe();
             },
             methods: {
-                // TOGGLE В САЙДБАРЕ
+                connectNewPage() {
+                    FB.login((response) => {
+                        if (response.authResponse) {
+                            this.adminInfo.token = response.authResponse.accessToken;
+                            this.openChannelsModal();
+                        }
+                    }, {
+                        scope: 'pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,instagram_basic,instagram_manage_messages,instagram_manage_comments,pages_manage_engagement,pages_read_user_content',
+                        auth_type: 'rerequest'
+                    });
+                },
+
                 async togglePageStatus(pageId, pageName) {
                     if (!pageId) return;
-                    // Ищем запись в базе
-                    let saasRecord = this.saasPages.find(s => String(s.fb_page_id) === String(pageId) || String(s.ig_id) === String(pageId));
+                    // ИСПРАВЛЕНИЕ: ЖЕСТКОЕ СРАВНЕНИЕ ТУТ ТОЖЕ
+                    let saasRecord = this.saasPages.find(s => 
+                        String(s.fb_page_id).trim() === String(pageId).trim() || 
+                        String(s.ig_id).trim() === String(pageId).trim()
+                    );
                     
                     if (!saasRecord) {
-                        // Нет записи? Создаем. (Используем ID из URL как FB Page ID, если это FB)
-                        const payload = { 
-                            fb_page_id: pageId, 
-                            page_name: pageName || 'New Page',
-                            subscription_status: 'active' 
-                        };
+                        const payload = { fb_page_id: pageId, page_name: pageName || 'New', subscription_status: 'active' };
                         const { data, error } = await sb.from('saas_clients').insert(payload).select();
                         if (!error && data) this.saasPages.push(data[0]);
                     } else {
@@ -273,7 +306,6 @@
                     }
                 },
 
-                // МОДАЛКА: ТЯНЕМ СПИСОК ПО ТОКЕНУ ИЗ URL
                 async openChannelsModal() {
                     this.showChannels = true;
                     this.isLoadingChannels = true;
@@ -281,14 +313,13 @@
                     try {
                         if (!this.adminInfo.token) throw new Error("No token in URL");
                         
-                        // Используем токен из ссылки для запроса к Facebook
                         const r = await fetch(`https://graph.facebook.com/me/accounts?fields=name,id,instagram_business_account&access_token=${this.adminInfo.token}`);
                         const d = await r.json();
                         
                         if (d.data) {
                             d.data.forEach(page => {
-                                // FB
-                                const dbFb = this.saasPages.find(s => String(s.fb_page_id) === String(page.id));
+                                // ИСПРАВЛЕНИЕ: ЖЕСТКОЕ СРАВНЕНИЕ (String + Trim) в Модалке
+                                const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 const stFb = dbFb ? dbFb.subscription_status : 'false';
                                 const onFb = (stFb === 'active' || stFb === 'trial');
                                 
@@ -298,10 +329,9 @@
                                     dbId: dbFb ? dbFb.id : null, parentId: null
                                 });
 
-                                // IG
                                 if (page.instagram_business_account) {
                                     const igId = page.instagram_business_account.id;
-                                    const dbIg = this.saasPages.find(s => String(s.ig_id) === String(igId));
+                                    const dbIg = this.saasPages.find(s => String(s.ig_id).trim() === String(igId).trim());
                                     const stIg = dbIg ? dbIg.subscription_status : 'false';
                                     const onIg = (stIg === 'active' || stIg === 'trial');
                                     this.flatAssets.push({
@@ -337,7 +367,8 @@
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
-                            const cObj = typeof row.message === 'string' ? JSON.parse(row.message) : row.message;
+                            let cObj = row.message;
+                            if (typeof cObj === 'string') { try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } }
                             let cl = cObj.content || "";
                             let t = 'dm';
                             if (cObj.type === 'ai') t = 'auto_reply';
