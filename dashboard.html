@@ -163,7 +163,7 @@
                         <div v-for="asset in flatAssets" :key="asset.uniqueId" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0" :class="asset.platform === 'instagram' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
-                                    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook-f'"></i>
+                                    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook'"></i>
                                 </div>
                                 <div>
                                     <h3 class="font-bold text-sm text-white">{{ asset.name }}</h3>
@@ -227,7 +227,7 @@
 
                         let isPageActive = false;
                         if (pageId) {
-                            // ИЩЕМ ЗАПИСЬ
+                            // ЖЕСТКОЕ СРАВНЕНИЕ СТРОК
                             const saas = this.saasPages.find(s => 
                                 String(s.fb_page_id).trim() === String(pageId).trim() || 
                                 String(s.ig_id).trim() === String(pageId).trim()
@@ -289,24 +289,34 @@
                 async togglePageStatus(pageId, pageName) {
                     if (!pageId) return;
                     
+                    // ЖЕСТКОЕ СРАВНЕНИЕ
                     let saasRecord = this.saasPages.find(s => 
                         String(s.fb_page_id).trim() === String(pageId).trim() || 
                         String(s.ig_id).trim() === String(pageId).trim()
                     );
                     
-                    if (!saasRecord) {
-                        const payload = { fb_page_id: pageId, page_name: pageName || 'New', subscription_status: 'active' };
-                        const { data, error } = await sb.from('saas_clients').insert(payload).select();
-                        if (!error && data) this.saasPages.push(data[0]);
+                    // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ (active/trial -> false, иначе -> active)
+                    let newStatus = 'active';
+                    if (saasRecord) {
+                         const st = String(saasRecord.subscription_status || '').trim().toLowerCase();
+                         if (st === 'active' || st === 'trial') newStatus = 'false';
+                    }
+                    
+                    const payload = { fb_page_id: pageId, page_name: pageName || 'New', subscription_status: newStatus };
+                    
+                    // UPSERT (ВАЖНО!)
+                    const { data, error } = await sb.from('saas_clients')
+                        .upsert(payload, { onConflict: 'fb_page_id' })
+                        .select();
+
+                    if (!error && data) {
+                        if (saasRecord) {
+                            saasRecord.subscription_status = newStatus;
+                        } else {
+                            this.saasPages.push(data[0]);
+                        }
                     } else {
-                        // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ
-                        const st = String(saasRecord.subscription_status || '').trim().toLowerCase();
-                        // Если active или trial - считаем включенным, значит выключаем
-                        const isActive = (st === 'active' || st === 'trial');
-                        const newStatus = isActive ? 'false' : 'active';
-                        
-                        saasRecord.subscription_status = newStatus;
-                        await sb.from('saas_clients').update({ subscription_status: newStatus }).eq('id', saasRecord.id);
+                        console.error('Upsert error:', error);
                     }
                 },
 
@@ -322,6 +332,7 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
+                                // ЖЕСТКОЕ СРАВНЕНИЕ В МОДАЛКЕ
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
                                 let stFb = 'false';
@@ -365,7 +376,6 @@
                     const willTurnOn = !asset.isOn;
                     asset.isOn = willTurnOn;
                     
-                    // Обновляем UI сразу
                     if (willTurnOn) asset.statusDisplay = 'ACTIVE'; 
                     else asset.statusDisplay = 'OFF';
                     
@@ -373,15 +383,9 @@
                     const payload = { fb_page_id: asset.platform === 'facebook' ? asset.id : asset.parentId, subscription_status: newStatus };
                     if (asset.platform === 'instagram') payload.ig_id = asset.id;
                     
-                    let error;
-                    if (asset.dbId) {
-                         const res = await sb.from('saas_clients').update({ subscription_status: newStatus }).eq('id', asset.dbId);
-                         error = res.error;
-                    } else {
-                         const res = await sb.from('saas_clients').upsert(payload, { onConflict: 'fb_page_id' }).select();
-                         if (res.data && res.data[0]) asset.dbId = res.data[0].id;
-                         error = res.error;
-                    }
+                    // UPSERT В МОДАЛКЕ
+                    const res = await sb.from('saas_clients').upsert(payload, { onConflict: 'fb_page_id' }).select();
+                    if (res.data && res.data[0]) asset.dbId = res.data[0].id;
                 },
                 async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
