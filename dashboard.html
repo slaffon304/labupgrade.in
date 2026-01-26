@@ -145,7 +145,7 @@
         <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
             <i class="fas fa-user"></i>
         </div>
-        <div class="msg-bubble" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
+        <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
 
             
             <div class="flex items-center gap-2 mb-1.5">
@@ -158,14 +158,22 @@
             </div>
 
             <div v-if="!msg.is_deleted">
-                <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
+                <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']" style="min-width: 60px;">
 
-    <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="4"></textarea>
-    <div class="flex justify-end gap-2 mt-2">
-        <button @click="editingMsgId = null" class="text-[10px] text-gray-400">Cancel</button>
-        <button @click="saveEdit(msg)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded">Save</button>
+    <div v-if="editingMsgId === msg.id" class="w-full flex flex-col" style="min-width: 280px;">
+        <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="4"></textarea>
+        <div class="flex justify-end gap-2 mt-2">
+            <button @click="editingMsgId = null" class="text-[10px] text-gray-400">Cancel</button>
+            <button @click="saveEdit(msg)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded">Save</button>
+        </div>
     </div>
+
+    <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">
+        {{ msg.content }}
+    </div>
+
 </div>
+
 <div v-else class="text-sm whitespace-pre-wrap leading-relaxed w-full">{{ msg.content }}</div>
 
             </div>
