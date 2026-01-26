@@ -140,9 +140,10 @@
                                 
                                 <div v-if="msg.msg_type === 'comment_ref'" class="inline-block px-2 py-0.5 mb-1 rounded text-[9px] font-bold bg-gray-700 text-gray-300 border border-gray-600"><i class="fas fa-hashtag"></i> COMMENT ID</div>
                                 
-                                <div v-else-if="msg.role === 'ai'" class="inline-block px-2 py-0.5 mb-1 rounded text-[9px] font-bold bg-green-900 text-green-300"><i class="fas fa-robot"></i> AUTO-REPLY</div>
+                                <div v-else-if="msg.role === 'ai' && !msg.is_admin" class="inline-block px-2 py-0.5 mb-1 rounded text-[9px] font-bold bg-green-900 text-green-300"><i class="fas fa-robot"></i> AUTO-REPLY</div>
 
-                                    <div v-else-if="msg.role === 'ai'" class="inline-block px-2 py-0.5 mb-1 rounded text-[9px] font-bold bg-green-900 text-green-300"><i class="fas fa-robot"></i> AUTO-REPLY</div>
+                                    <div v-else-if="msg.role === 'ai' && !msg.is_admin" class="inline-block px-2 py-0.5 mb-1 rounded text-[9px] font-bold bg-green-900 text-green-300"><i class="fas fa-robot"></i> AUTO-REPLY</div>
+
                                     <div v-if="!msg.is_deleted">
                                         <div v-if="msg.msg_type === 'comment_ref'" class="font-mono text-xs bg-black/20 p-1 rounded text-gray-400 break-all">Ref: {{ msg.content }}</div>
                                         <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
@@ -408,21 +409,27 @@
                     await this.togglePageStatus(asset.id);
                 },
 
-                async fetchMessages() {
+                                async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
                             let cObj = row.message;
                             if (typeof cObj === 'string') { try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } }
-                            let cl = cObj.content || "";
-                            let t = 'dm';
-                            if (cObj.type === 'ai') t = 'auto_reply';
-                            try { if (typeof cl === 'string' && cl.trim().startsWith('{')) { const p = JSON.parse(cl); cl = p.private_text || p.public_text || p.output || cl; } } catch (e) {}
-                            if (cObj.type === 'human' && /^\d{6,}$/.test(cl)) t = 'comment_ref';
-                            return { id: row.id, session_id: row.session_id, content: cl, role: cObj.type, is_hidden: row.is_hidden, is_deleted: row.is_deleted, msg_type: t };
+                            
+                            return { 
+                                id: row.id, 
+                                session_id: row.session_id, 
+                                content: cObj.content || "", 
+                                role: cObj.type, 
+                                is_admin: cObj.is_admin || false, // <--- ВАЖНО: теперь дашборд видит метку
+                                is_hidden: row.is_hidden, 
+                                is_deleted: row.is_deleted, 
+                                msg_type: (cObj.type === 'ai' && !cObj.is_admin) ? 'auto_reply' : 'dm' 
+                            };
                         });
                     }
                 },
+
                 async fetchClients() {
                     const { data } = await sb.from('end_clients').select('*');
                     if (data) {
@@ -487,7 +494,9 @@
                         // 5. Сохраняем в базу (как admin)
                         const { error } = await sb.from('chat_memory').insert({ 
                             session_id: this.currentSession, 
-                            message: { type: "admin", content: this.replyText } 
+                            // Пишем "ai", чтобы n8n работал, но ставим метку is_admin для дашборда
+                            message: { type: "ai", is_admin: true, content: this.replyText }
+ 
                         });
 
                         if (error) throw new Error("Supabase Error: " + error.message);
