@@ -460,35 +460,45 @@
     this.replyContext = msg.instagram_comment_id;
     this.replyText = `@User `; 
 },
-                async toggleHide(msg) {
-    const token = this.getPageToken(this.currentSession);
-    if (msg.instagram_comment_id && token) {
-        const next = !msg.is_hidden;
-        try {
-            const url = `https://graph.facebook.com/v22.0/${msg.instagram_comment_id}?is_hidden=${next}&access_token=${token}`;
-            const res = await fetch(url, { method: 'POST' });
-            const d = await res.json();
-            if (d.success) await sb.from('chat_memory').update({ is_hidden: next }).eq('id', msg.id);
-        } catch(e) { console.error(e); }
-    } else {
-        await sb.from('chat_memory').update({ is_hidden: !msg.is_hidden }).eq('id', msg.id);
-    }
-},
+                                async toggleHide(msg) {
+                    const token = this.getPageToken(this.currentSession);
+                    if (!token || !msg.instagram_comment_id) {
+                        msg.is_hidden = !msg.is_hidden; 
+                        await sb.from('chat_memory').update({ is_hidden: msg.is_hidden }).eq('id', msg.id);
+                        return;
+                    }
 
-async deleteMsg(msg) {
-    if(!confirm('Delete?')) return;
-    const token = this.getPageToken(this.currentSession);
-    if (msg.instagram_comment_id && token) {
-        try {
-            const url = `https://graph.facebook.com/v22.0/${msg.instagram_comment_id}?access_token=${token}`;
-            const res = await fetch(url, { method: 'DELETE' });
-            const d = await res.json();
-            if (d.success || d.id) await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
-        } catch(e) { console.error(e); }
-    } else {
-        await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
-    }
-},
+                    const type = this.getClientType(this.currentSession);
+                    const nextStatus = !msg.is_hidden;
+                    try {
+                        // Для Инсты параметр 'hide', для ФБ 'is_hidden'
+                        const param = (type === 'ig') ? `hide=${nextStatus}` : `is_hidden=${nextStatus}`;
+                        const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?${param}&access_token=${token}`;
+                        const res = await fetch(url, { method: 'POST' });
+                        const d = await res.json();
+                        
+                        if (d.success) {
+                            msg.is_hidden = nextStatus;
+                            await sb.from('chat_memory').update({ is_hidden: nextStatus }).eq('id', msg.id);
+                        } else throw new Error(d.error?.message);
+                    } catch(e) { alert("Ошибка Meta API: " + e.message); }
+                },
+
+                async deleteMsg(msg) {
+                    if(!confirm('Удалить комментарий из соцсети?')) return;
+                    const token = this.getPageToken(this.currentSession);
+                    try {
+                        if (msg.instagram_comment_id && token) {
+                            const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?access_token=${token}`;
+                            const res = await fetch(url, { method: 'DELETE' });
+                            const d = await res.json();
+                            if (!d.success && !d.id) throw new Error(d.error?.message);
+                        }
+                        await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
+                        msg.is_deleted = true;
+                    } catch(e) { alert("Ошибка удаления: " + e.message); }
+                },
+
 
 getPageToken(sid) {
     const sess = this.enrichedSessions.find(s => s.session_id === sid);
@@ -522,60 +532,83 @@ getPageToken(sid) {
                 },
                                 async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
 
-                                     async sendReply() {
+                async sendReply() {
                     if (!this.replyText.trim() || this.isSending) return;
                     this.isSending = true;
 
                     try {
                         const token = this.getPageToken(this.currentSession);
-                        if (!token) throw new Error("Токен доступа не найден. Переподключите страницу.");
+                        const pageId = this.getPageId(this.currentSession);
+                        
+                        if (!token || !pageId) throw new Error("ID страницы или Токен не найдены. Проверьте подключение.");
 
                         let fbRes;
                         if (this.replyContext) {
-                            // ОТВЕТ НА КОММЕНТАРИЙ (Meta API v22.0)
-                            const url = `https://graph.facebook.com/v22.0/${this.replyContext}/replies?message=${encodeURIComponent(this.replyText)}&access_token=${token}`;
-                            fbRes = await fetch(url, { method: 'POST' });
-                        } else {
-                            // ОБЫЧНОЕ ЛИЧНОЕ СООБЩЕНИЕ (Твой старый метод)
-                            fbRes = await fetch(`https://graph.facebook.com/v22.0/me/messages?access_token=${token}`, {
+                            // МЕТОД PRIVATE REPLY (как в твоем n8n)
+                            fbRes = await fetch(`https://graph.facebook.com/v24.0/${pageId}/messages?access_token=${token}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ recipient: { id: this.currentSession }, message: { text: this.replyText } })
+                                body: JSON.stringify({
+                                    recipient: { comment_id: this.replyContext },
+                                    message: { text: this.replyText }
+                                })
+                            });
+                        } else {
+                            // ОБЫЧНОЕ ЛИЧНОЕ СООБЩЕНИЕ (Direct/Messenger)
+                            fbRes = await fetch(`https://graph.facebook.com/v24.0/me/messages?access_token=${token}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    recipient: { id: this.currentSession },
+                                    message: { text: this.replyText }
+                                })
                             });
                         }
 
                         const fbData = await fbRes.json();
                         if (fbData.error) throw new Error("Meta API Error: " + fbData.error.message);
 
-                        // Сохраняем в твою базу Supabase
+                        // Сохранение в твою базу Supabase для истории
                         await sb.from('chat_memory').insert({ 
                             session_id: this.currentSession, 
                             message: { type: "ai", is_admin: true, content: this.replyText } 
                         });
 
                         this.replyText = ''; 
-                        this.replyContext = null; // Обязательно сбрасываем режим ответа
+                        this.replyContext = null; // Сбрасываем режим ответа на коммент
 
                     } catch (e) {
                         console.error(e);
                         alert("ОШИБКА: " + e.message); 
                     } finally {
                         this.isSending = false; 
-                        // Твоя оригинальная прокрутка чата
-                        setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
+                        this.scrollToBottom();
                     }
                 },
-                  getPageToken(sid) {
+
+                getPageToken(sid) {
                     const sess = this.enrichedSessions.find(s => s.session_id === sid);
                     const page = this.saasPages.find(p => 
-                        String(p.fb_page_id) === String(sess?.pageId) || 
-                        String(p.ig_id) === String(sess?.pageId)
+                        String(p.fb_page_id).trim() === String(sess?.pageId).trim() || 
+                        String(p.ig_id).trim() === String(sess?.pageId).trim()
                     );
                     return page ? (page.fb_api_token || page.page_access_token) : null;
                 },
-                
 
-                getClientType(sid) { return this.clientMap[sid]?.type || 'fb'; }
+                getPageId(sid) {
+                    const sess = this.enrichedSessions.find(s => s.session_id === sid);
+                    return sess ? sess.pageId : null;
+                },
+
+                scrollToBottom() {
+                    setTimeout(() => { 
+                        if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; 
+                    }, 100);
+                },
+
+                getClientType(sid) { 
+                    return this.clientMap[sid]?.type || 'fb'; 
+                }
             }
         }).mount('#app');
     </script>
