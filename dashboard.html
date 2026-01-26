@@ -243,6 +243,11 @@
                     showChannels: false, flatAssets: [], isLoadingChannels: false,
                     filter: 'all',
                     replyContext: null,
+                    activeInlineReplyId: null, // ID сообщения для вложенного ответа
+                    inlineReplyText: '',       // Текст во вложенном поле
+                    editingMsgId: null,        // ID сообщения, которое правим
+                    editingText: '',           // Текст в режиме редактирования
+                    
                     adminInfo: { fbName: '', fbId: '', igName: '', igId: '', token: '' }
                 }
             },
