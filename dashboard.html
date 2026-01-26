@@ -145,7 +145,7 @@
         <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
             <i class="fas fa-user"></i>
         </div>
-        <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
+        <div class="msg-bubble" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
 
             
             <div class="flex items-center gap-2 mb-1.5">
