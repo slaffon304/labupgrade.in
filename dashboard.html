@@ -154,16 +154,21 @@
                                         <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
                                     </div>
                                     <div v-else class="text-xs italic text-gray-400 flex items-center gap-2"><i class="fas fa-trash-alt text-red-500"></i> Deleted</div>
-                                    <div v-if="msg.role === 'human' && !msg.is_deleted" class="mt-2 pt-2 border-t border-gray-500/30 flex items-center gap-4 text-[10px] text-white/70">
-                                        <button @click.stop="toggleHide(msg)" class="hover:text-white flex items-center gap-1 cursor-pointer transition-colors px-1 py-0.5 rounded hover:bg-white/10">
-                                            <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
-                                            <span>{{ msg.is_hidden ? 'Unhide' : 'Hide' }}</span>
-                                        </button>
-                                        
-                                        <button @click.stop="deleteMsg(msg)" class="hover:text-red-400 flex items-center gap-1 cursor-pointer transition-colors px-1 py-0.5 rounded hover:bg-white/10">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </div>
+                                    <div v-if="!msg.is_deleted && msg.instagram_comment_id" class="mt-2 pt-2 border-t border-gray-500/30 flex items-center gap-4 text-[10px] text-white/70">
+    <button @click="prepareReply(msg)" class="hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors px-1 py-0.5 rounded hover:bg-white/10">
+        <i class="fas fa-reply"></i> <span>Reply</span>
+    </button>
+
+    <button @click.stop="toggleHide(msg)" class="hover:text-white flex items-center gap-1 cursor-pointer transition-colors px-1 py-0.5 rounded hover:bg-white/10">
+        <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
+        <span>{{ msg.is_hidden ? 'Unhide' : 'Hide' }}</span>
+    </button>
+    
+    <button @click.stop="deleteMsg(msg)" class="hover:text-red-400 flex items-center gap-1 cursor-pointer transition-colors px-1 py-0.5 rounded hover:bg-white/10">
+        <i class="fas fa-trash"></i> Delete
+    </button>
+</div>
+
                                 </div>
                             </div>
                         </div>
@@ -452,6 +457,13 @@
     this.replyContext = msg.instagram_comment_id;
     this.replyText = `@User `; 
 },
+                async toggleHide(msg) {
+    console.log("Нажато Скрыть для:", msg.id);
+},
+async deleteMsg(msg) {
+    console.log("Нажато Удалить для:", msg.id);
+},
+                
                 
 
 
