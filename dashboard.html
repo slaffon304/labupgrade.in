@@ -123,6 +123,11 @@
                     <div class="p-4 bg-gray-800/90 border-b border-gray-700 flex justify-between items-center backdrop-blur-md">
                         <div>
                             <h2 class="font-bold text-white text-lg">{{ getClientName(currentSession) }}</h2>
+                             <div v-if="replyContext" class="ml-4 inline-flex items-center gap-2 bg-blue-600/30 px-3 py-1 rounded-full border border-blue-500/50">
+    <span class="text-[10px] font-bold text-blue-400 uppercase">Replying to Comment</span>
+    <button @click="replyContext = null; replyText = ''" class="text-blue-400 hover:text-white"><i class="fas fa-times-circle"></i></button>
+                             </div>
+                            
                             <div class="mt-1">
                                 <div class="brand-icon w-6 h-6 text-xs" :class="getClientType(currentSession) === 'ig' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
                                     <i class="fab" :class="getClientType(currentSession) === 'ig' ? 'fa-instagram' : 'fa-facebook'"></i>
@@ -229,6 +234,7 @@
                     pageLogoUrl: '', logoError: false,
                     showChannels: false, flatAssets: [], isLoadingChannels: false,
                     filter: 'all',
+                    replyContext: null,
                     adminInfo: { fbName: '', fbId: '', igName: '', igId: '', token: '' }
                 }
             },
@@ -442,6 +448,11 @@
                         });
                     }
                 },
+                prepareReply(msg) {
+    this.replyContext = msg.instagram_comment_id;
+    this.replyText = `@User `; 
+},
+                
 
 
                 async fetchClients() {
