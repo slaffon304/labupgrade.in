@@ -562,7 +562,15 @@ getPageToken(sid) {
                         setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
                     }
                 },
-
+                  getPageToken(sid) {
+                    const sess = this.enrichedSessions.find(s => s.session_id === sid);
+                    const page = this.saasPages.find(p => 
+                        String(p.fb_page_id) === String(sess?.pageId) || 
+                        String(p.ig_id) === String(sess?.pageId)
+                    );
+                    return page ? (page.fb_api_token || page.page_access_token) : null;
+                },
+                
 
                 getClientType(sid) { return this.clientMap[sid]?.type || 'fb'; }
             }
