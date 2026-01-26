@@ -409,26 +409,40 @@
                     await this.togglePageStatus(asset.id);
                 },
 
-                                async fetchMessages() {
+                     async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
                             let cObj = row.message;
                             if (typeof cObj === 'string') { try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } }
                             
+                            let rawContent = cObj.content || "";
+                            let finalContent = rawContent;
+                            let commentId = null;
+
+                            // ТОЧЕЧНОЕ ДОБАВЛЕНИЕ: Выкусываем ID из n8n (HIDDEN_ID:123|||Текст)
+                            if (rawContent.startsWith('HIDDEN_ID:') && rawContent.includes('|||')) {
+                                const parts = rawContent.split('|||');
+                                commentId = parts[0].replace('HIDDEN_ID:', '').trim();
+                                // Собираем текст обратно, если вдруг внутри сообщения тоже были символы |||
+                                finalContent = parts.slice(1).join('|||');
+                            }
+                            
                             return { 
                                 id: row.id, 
                                 session_id: row.session_id, 
-                                content: cObj.content || "", 
+                                content: finalContent, // В чате будет только текст
                                 role: cObj.type, 
-                                is_admin: cObj.is_admin || false, // <--- ВАЖНО: теперь дашборд видит метку
+                                is_admin: cObj.is_admin || false, 
                                 is_hidden: row.is_hidden, 
                                 is_deleted: row.is_deleted, 
-                                msg_type: (cObj.type === 'ai' && !cObj.is_admin) ? 'auto_reply' : 'dm' 
+                                msg_type: (cObj.type === 'ai' && !cObj.is_admin) ? 'auto_reply' : ( (cObj.type === 'human' && /^\d{6,}$/.test(finalContent)) ? 'comment_ref' : 'dm' ),
+                                instagram_comment_id: commentId // Сохраняем ID для будущих кнопок
                             };
                         });
                     }
                 },
+
 
                 async fetchClients() {
                     const { data } = await sb.from('end_clients').select('*');
