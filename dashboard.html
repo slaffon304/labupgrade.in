@@ -448,7 +448,7 @@
                 },
                                 async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
 
-                                async sendReply() {
+                     async sendReply() {
                     if (!this.replyText.trim()) return;
                     this.isSending = true;
 
@@ -457,16 +457,18 @@
                         const sessionData = this.enrichedSessions.find(s => s.session_id === this.currentSession);
                         
                         if (sessionData && sessionData.pageId) {
-                            // 2. Ищем страницу в списке
-                            const pageRow = this.saasPages.find(p => String(p.fb_page_id) === String(sessionData.pageId));
+                            // 2. ИЩЕМ СТРАНИЦУ (ИСПРАВЛЕНО: ищем и по FB ID, и по IG ID)
+                            const pageRow = this.saasPages.find(p => 
+                                String(p.fb_page_id) === String(sessionData.pageId) || 
+                                String(p.ig_id) === String(sessionData.pageId)
+                            );
 
-                            // 3. Берем токен. 
-                            // ИСПРАВИЛ ОПЕЧАТКУ: добавил точку (pageRow.fb_api_token) и проверку на запасное имя
+                            // 3. Берем токен (проверяем оба варианта названия колонки)
                             const pageToken = pageRow ? (pageRow.fb_api_token || pageRow.page_access_token) : null; 
 
-                            if (!pageToken) throw new Error("Токен не найден! Проверьте колонку fb_api_token в базе.");
+                            if (!pageToken) throw new Error("Токен не найден! Проверьте базу данных.");
 
-                            // 4. ОТПРАВЛЯЕМ POST ЗАПРОС
+                            // 4. Отправляем в Facebook API
                             const fbRes = await fetch(`https://graph.facebook.com/v24.0/me/messages?access_token=${pageToken}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -476,10 +478,9 @@
                                 })
                             });
 
-                            // Проверяем ответ от Фейсбука
                             const fbData = await fbRes.json();
                             if (fbData.error) {
-                                throw new Error("FB Error: " + fbData.error.message);
+                                throw new Error("FB API Error: " + fbData.error.message);
                             }
                         }
 
@@ -489,23 +490,22 @@
                             message: { type: "admin", content: this.replyText } 
                         });
 
-                        if (error) throw new Error("DB Error: " + error.message);
+                        if (error) throw new Error("Supabase Error: " + error.message);
 
-                        this.replyText = ''; // Очищаем поле только при успехе
+                        this.replyText = ''; 
 
                     } catch (e) {
                         console.error(e);
-                        alert("ОШИБКА: " + e.message); // Покажет ошибку на экране
+                        alert("ОШИБКА: " + e.message); 
                     } finally {
-                        this.isSending = false; // Выключит кружок в любом случае
+                        this.isSending = false; 
                         setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100);
                     }
-                }, // <--- Запятая нужна, так как дальше идет еще одна функция
+                },
 
                 getClientType(sid) { return this.clientMap[sid]?.type || 'fb'; }
             }
         }).mount('#app');
     </script>
-
 </body>
 </html>
