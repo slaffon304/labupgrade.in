@@ -637,22 +637,32 @@ getPageToken(sid) {
 
                 // Умная кнопка Reply
                         // 1. Обработка нажатия на Reply (чтобы окно открывалось везде)
-        handleReplyClick(msg) {
-            // Проверяем наличие ID комментария (общее поле для FB и IG)
-            const hasCommentId = msg.instagram_comment_id || (msg.message && msg.message.instagram_comment_id);
-            
-            if (hasCommentId) {
-                // Если это коммент — переключаем видимость окна ответа именно для этого сообщения
+                handleReplyClick(msg) {
+            // Самая мощная проверка ID комментария (ищем в корне, в message и в мета-данных)
+            const commentId = msg.instagram_comment_id || 
+                             (msg.message && msg.message.instagram_comment_id) || 
+                             (msg.message && msg.message.id && msg.instagram_comment_id);
+
+            // Если нашли хоть какой-то намек на ID комментария
+            if (commentId) {
+                // Открываем окно ответа прямо под сообщением
                 this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
                 this.inlineReplyText = '';
+                
+                // Чтобы нижнее поле не мешало, сбрасываем контекст там
+                this.replyContext = null;
             } else {
-                // Если это Директ/Мессенджер — фокус в нижнее общее поле
+                // Если это реально Директ (личка), идем вниз
                 this.replyContext = null; 
                 this.replyText = `@User `;
-                const area = document.querySelector('textarea');
-                if (area) area.focus();
+                // Фокусируемся на нижнем поле
+                this.$nextTick(() => {
+                    const area = document.querySelector('main footer textarea');
+                    if (area) area.focus();
+                });
             }
         },
+
 
         // 2. Редактирование и СИНХРОНИЗАЦИЯ с Meta
         async saveEdit(msg) {
