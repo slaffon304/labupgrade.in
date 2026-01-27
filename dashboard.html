@@ -160,13 +160,8 @@
             <div v-if="!msg.is_deleted">
                 <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
                     
-    <div v-if="editingMsgId === msg.id" class="w-full flex flex-col">
-    <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500" rows="6" style="min-height: 150px;"></textarea>
-    <div class="flex justify-end gap-3 mt-3">
-        <button @click="editingMsgId = null" class="text-xs text-gray-400 hover:text-white px-2 py-1">Cancel</button>
-        <button @click="saveEdit(msg)" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-1.5 rounded shadow-lg">Save Changes</button>
-    </div>
-</div>
+    <div v-if="editingMsgId === msg.id" class="min-w-[380px] w-full">
+
 
 
 
