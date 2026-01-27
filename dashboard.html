@@ -139,39 +139,8 @@
                         </div>
                     </div>
                     <div class="flex-1 p-6 overflow-y-auto space-y-6" ref="chatBox">
-                        <div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full group mb-4">
-    <div class="flex gap-3" :class="(msg.role === 'ai' || msg.role === 'admin') ? 'justify-end' : 'justify-start'">
-        
-        <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
-            <i class="fas fa-user"></i>
-        </div>
-        <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
+                        <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
 
-            
-            <div class="flex items-center gap-2 mb-1.5">
-                <div v-if="msg.instagram_comment_id" class="bg-blue-600 text-[9px] px-1.5 py-0.5 rounded font-bold text-white uppercase">
-                    <i class="fas fa-hashtag"></i> COMMENT
-                </div>
-                <div class="text-[9px] font-bold opacity-50 uppercase">
-                    {{ msg.role === 'ai' ? 'AI Bot' : (msg.role === 'admin' ? 'Admin' : 'User') }}
-                </div>
-            </div>
-
-            <div v-if="!msg.is_deleted">
-                <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
-
-    <div v-if="editingMsgId === msg.id" class="min-w-[480px] w-full">
-
-
-
-
-
-<div v-else class="text-sm whitespace-pre-wrap leading-relaxed w-full">{{ msg.content }}</div>
-
-            </div>
-            <div v-else class="text-xs italic text-gray-400 flex items-center gap-2">
-                <i class="fas fa-trash-alt text-red-500"></i> Deleted
-            </div>
 
             <div v-if="!msg.is_deleted" class="mt-2 pt-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-white/60">
                 <button @click="handleReplyClick(msg)" class="hover:text-blue-300 flex items-center gap-1">
