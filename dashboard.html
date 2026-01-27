@@ -158,6 +158,8 @@
             </div>
 
             <div v-if="!msg.is_deleted">
+                <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
+                    
     <div v-if="editingMsgId === msg.id" class="w-full flex flex-col py-1" style="min-width: 280px;">
         <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="4"></textarea>
         <div class="flex justify-end gap-2 mt-2">
