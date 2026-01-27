@@ -636,72 +636,86 @@ getPageToken(sid) {
                 },
 
                 // Умная кнопка Reply
-                handleReplyClick(msg) {
-    if (msg.instagram_comment_id) {
-        this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
-        this.inlineReplyText = '';
-    } else {
-        this.replyContext = null; 
-        this.replyText = `@User `;
-    }
-},
-
-
-                // Сохранение правок бота в базу
-                                async saveEdit(msg) {
-    const token = this.getPageToken(this.currentSession);
-    if (!token) return alert("No token");
-
-    // СИНХРОНИЗАЦИЯ С META (v24.0)
-    if (msg.instagram_comment_id) {
-        const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
-        fetch(url, { method: 'POST' })
-            .then(r => r.json())
-            .then(data => { if(data.error) console.error("Meta Sync Error:", data.error); });
-    }
-
-    // СОХРАНЕНИЕ В SUPABASE (Обновляем в объекте message колонку content)
-    const newMsgObj = { ...msg.message, content: this.editingText };
-    sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id).then(({error}) => {
-        if (!error) {
-            msg.content = this.editingText;
-            msg.message = newMsgObj; // Обновляем сам объект в памяти
-            this.editingMsgId = null;
-        }
-    });
-},
-
-
-                async sendInlineReply(msg) {
-    const token = this.getPageToken(this.currentSession);
-    const type = this.getClientType(this.currentSession); 
-    
-    // Прямой выбор эндпоинта по платформе (guess-free)
-    const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
-    const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}/${endpoint}?message=${encodeURIComponent(this.inlineReplyText)}&access_token=${token}`;
-
-    try {
-        const res = await fetch(url, { method: 'POST' });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
-
-        await sb.from('chat_memory').insert({
-            session_id: this.currentSession,
-            message: { 
-                role: "ai", 
-                is_admin: true, 
-                content: this.inlineReplyText,
-                instagram_comment_id: data.id 
+                        // 1. Обработка нажатия на Reply (чтобы окно открывалось везде)
+        handleReplyClick(msg) {
+            // Проверяем наличие ID комментария (общее поле для FB и IG)
+            const hasCommentId = msg.instagram_comment_id || (msg.message && msg.message.instagram_comment_id);
+            
+            if (hasCommentId) {
+                // Если это коммент — переключаем видимость окна ответа именно для этого сообщения
+                this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
+                this.inlineReplyText = '';
+            } else {
+                // Если это Директ/Мессенджер — фокус в нижнее общее поле
+                this.replyContext = null; 
+                this.replyText = `@User `;
+                const area = document.querySelector('textarea');
+                if (area) area.focus();
             }
-        });
+        },
 
-        this.activeInlineReplyId = null;
-        this.inlineReplyText = '';
-        this.fetchMessages(); 
-    } catch (e) { alert("Meta API Error: " + e.message); }
-}
+        // 2. Редактирование и СИНХРОНИЗАЦИЯ с Meta
+        async saveEdit(msg) {
+            const token = this.getPageToken(this.currentSession);
+            if (!token) return alert("No token found for this page");
 
-                },
+            try {
+                // СИНХРОН С META (v24.0)
+                if (msg.instagram_comment_id) {
+                    const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
+                    const metaRes = await fetch(url, { method: 'POST' });
+                    const metaData = await metaRes.json();
+                    if (metaData.error) console.error("Meta API Error:", metaData.error.message);
+                }
+
+                // ОБНОВЛЕНИЕ В SUPABASE (сохраняем структуру, чтобы бот не уезжал влево)
+                const newMsgObj = { ...msg.message, content: this.editingText, role: 'ai', is_admin: true };
+                const { error } = await sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id);
+                
+                if (!error) {
+                    msg.content = this.editingText;
+                    msg.role = 'ai'; // Принудительно оставляем роль, чтобы не «улетел» влево
+                    this.editingMsgId = null;
+                }
+            } catch (e) {
+                alert("Save failed: " + e.message);
+            }
+        },
+
+        // 3. Отправка ответа в комментарии (Разные ссылки для FB и IG)
+        async sendInlineReply(msg) {
+            if (!this.inlineReplyText.trim()) return;
+            const token = this.getPageToken(this.currentSession);
+            const type = this.getClientType(this.currentSession); // 'ig' или 'fb'
+            
+            // ВАЖНО: У Инстаграма эндпоинт 'replies', у Фейсбука 'comments'
+            const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
+            const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}/${endpoint}?message=${encodeURIComponent(this.inlineReplyText)}&access_token=${token}`;
+
+            try {
+                const res = await fetch(url, { method: 'POST' });
+                const data = await res.json();
+
+                if (data.error) throw new Error(data.error.message);
+
+                // Сохраняем в базу Lab Upgrade
+                await sb.from('chat_memory').insert({
+                    session_id: this.currentSession,
+                    message: { 
+                        role: "ai", 
+                        is_admin: true, 
+                        content: this.inlineReplyText,
+                        instagram_comment_id: data.id 
+                    }
+                });
+
+                this.activeInlineReplyId = null;
+                this.inlineReplyText = '';
+                this.fetchMessages(); // Обновляем чат
+            } catch (e) {
+                alert("Meta Send Error: " + e.message);
+            }
+        },
 
                 getClientType(sid) { 
                     return this.clientMap[sid]?.type || 'fb'; 
