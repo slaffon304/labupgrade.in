@@ -158,7 +158,7 @@
             </div>
 
             <div v-if="!msg.is_deleted">
-                <div class="msg-bubble" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '']">
+                <div class="msg-bubble transition-all duration-300" :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', msg.is_hidden ? 'opacity-50 grayscale' : '', editingMsgId === msg.id ? 'w-full' : '']">
 
     <div v-if="editingMsgId === msg.id" class="min-w-[480px] w-full">
 
