@@ -638,30 +638,29 @@ getPageToken(sid) {
                 // Умная кнопка Reply
                         // 1. Обработка нажатия на Reply (чтобы окно открывалось везде)
                 handleReplyClick(msg) {
-            // Самая мощная проверка ID комментария (ищем в корне, в message и в мета-данных)
-            const commentId = msg.instagram_comment_id || 
-                             (msg.message && msg.message.instagram_comment_id) || 
-                             (msg.message && msg.message.id && msg.instagram_comment_id);
+    // 1. ДИАГНОСТИКА: Нажми Reply и посмотри в Eruda
+    console.log("СТРУКТУРА СООБЩЕНИЯ:", JSON.parse(JSON.stringify(msg)));
 
-            // Если нашли хоть какой-то намек на ID комментария
-            if (commentId) {
-                // Открываем окно ответа прямо под сообщением
-                this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
-                this.inlineReplyText = '';
-                
-                // Чтобы нижнее поле не мешало, сбрасываем контекст там
-                this.replyContext = null;
-            } else {
-                // Если это реально Директ (личка), идем вниз
-                this.replyContext = null; 
-                this.replyText = `@User `;
-                // Фокусируемся на нижнем поле
-                this.$nextTick(() => {
-                    const area = document.querySelector('main footer textarea');
-                    if (area) area.focus();
-                });
-            }
-        },
+    // 2. ЖЕСТКАЯ ПРОВЕРКА: Если в сообщении есть хоть какой-то ID, содержащий нижнее подчеркивание (типично для IG комментов)
+    // или если платформа - Instagram, пробуем открыть окно в любом случае.
+    const isInstagram = this.getClientType(this.currentSession) === 'ig';
+    const hasAnyCommentId = msg.instagram_comment_id || 
+                            (msg.message && msg.message.instagram_comment_id) ||
+                            (msg.id && msg.id.includes('_'));
+
+    if (hasAnyCommentId || isInstagram) {
+        // Если это хоть капельку похоже на коммент или это инста - открываем окно
+        this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
+        this.inlineReplyText = '';
+    } else {
+        // Если совсем ничего не нашли - идем в личку
+        this.replyContext = null; 
+        this.replyText = `@User `;
+        const area = document.querySelector('textarea');
+        if (area) area.focus();
+    }
+}
+
 
 
         // 2. Редактирование и СИНХРОНИЗАЦИЯ с Meta
