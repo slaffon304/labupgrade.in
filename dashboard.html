@@ -140,50 +140,56 @@
                     </div>
                     <div class="flex-1 p-6 overflow-y-auto space-y-6" ref="chatBox">
                         
-                        <div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full mb-4">
-                            <div class="flex gap-3" :class="(msg.role === 'ai' || msg.role === 'admin') ? 'justify-end' : 'justify-start'">
-                                
-                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                
-                                <div class="msg-bubble transition-all duration-300" 
-                                     :class="[(msg.role === 'ai' || msg.role === 'admin') ? 'msg-ai' : 'msg-human', editingMsgId === msg.id ? 'w-full' : '']"
-                                     style="min-width: 80px; max-width: 90%;">
+                        <<div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full mb-4 px-2">
+    <div class="flex gap-3" :class="(msg.role === 'ai' || msg.role === 'admin' || msg.is_admin) ? 'justify-end' : 'justify-start'">
+        
+        <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
+            <i class="fas fa-user"></i>
+        </div>
+        
+        <div class="msg-bubble transition-all duration-300" 
+             :class="[(msg.role === 'ai' || msg.role === 'admin' || msg.is_admin) ? 'msg-ai' : 'msg-human', editingMsgId === msg.id ? 'w-full' : '']" 
+             style="min-width: 100px; max-width: 90%;">
+            
+            <div v-if="!msg.is_deleted">
+                <div v-if="msg.instagram_comment_id" class="mb-1">
+                    <span class="bg-blue-600 text-[9px] px-1.5 py-0.5 rounded font-bold text-white uppercase tracking-wider">
+                        <i class="fas fa-hashtag"></i> Comment
+                    </span>
+                </div>
 
-                                    <div v-if="!msg.is_deleted">
-                                        <div v-if="editingMsgId === msg.id" class="w-full flex flex-col py-1" style="min-width: 280px;">
-                                            <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="5"></textarea>
-                                            <div class="flex justify-end gap-2 mt-2">
-                                                <button @click="editingMsgId = null" class="text-[10px] text-gray-400 px-2">Cancel</button>
-                                                <button @click="saveEdit(msg)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded font-bold uppercase">Save</button>
-                                            </div>
-                                        </div>
+                <div v-if="editingMsgId === msg.id" style="width: 100%; min-width: 280px;">
+                    <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="5"></textarea>
+                    <div class="flex justify-end gap-2 mt-2">
+                        <button @click="editingMsgId = null" class="text-[10px] text-gray-400 px-2 uppercase tracking-tighter">Cancel</button>
+                        <button @click="saveEdit(msg)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded font-bold uppercase">Save</button>
+                    </div>
+                </div>
+                
+                <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">
+                    {{ msg.content }}
+                </div>
 
-                                        <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">
-                                            {{ msg.content }}
-                                        </div>
+                <div v-if="editingMsgId !== msg.id" class="mt-2 pt-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-white/50">
+                    <button @click="handleReplyClick(msg)"><i class="fas fa-reply"></i> Reply</button>
+                    <button v-if="msg.role === 'ai' || msg.role === 'admin'" @click="startEdit(msg)"><i class="fas fa-edit"></i> Edit</button>
+                    <button v-if="msg.instagram_comment_id" @click="toggleHide(msg)"><i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> Hide</button>
+                    <button @click="deleteMsg(msg)" class="hover:text-red-400"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            </div>
+            <div v-else class="text-xs italic text-gray-400 py-1">Deleted</div>
 
-                                        <div v-if="editingMsgId !== msg.id" class="mt-2 pt-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-white/50">
-                                            <button @click="handleReplyClick(msg)"><i class="fas fa-reply"></i> Reply</button>
-                                            <button v-if="msg.role === 'ai'" @click="startEdit(msg)"><i class="fas fa-edit"></i> Edit</button>
-                                            <button v-if="msg.instagram_comment_id" @click="toggleHide(msg)"><i class="fas fa-eye-slash"></i> Hide</button>
-                                            <button @click="deleteMsg(msg)" class="hover:text-red-400"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </div>
+            <div v-if="activeInlineReplyId === msg.id && editingMsgId !== msg.id" class="mt-3 p-2 bg-black/30 rounded-lg border border-white/10">
+                <textarea v-model="inlineReplyText" placeholder="Write a reply..." class="w-full bg-transparent border-none text-xs text-white focus:outline-none" rows="2"></textarea>
+                <div class="flex justify-end gap-2 mt-1">
+                    <button @click="activeInlineReplyId = null" class="text-[10px] text-gray-500">Cancel</button>
+                    <button @click="sendInlineReply(msg)" class="text-blue-400 text-[10px] font-bold uppercase">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                    <div v-else class="text-xs italic text-gray-400 py-1">Deleted</div>
-
-                                    <div v-if="activeInlineReplyId === msg.id && editingMsgId !== msg.id" class="mt-3 p-2 bg-black/30 rounded-lg border border-white/10">
-                                        <textarea v-model="inlineReplyText" placeholder="Write a reply..." class="w-full bg-transparent border-none text-xs text-white focus:outline-none" rows="2"></textarea>
-                                        <div class="flex justify-end gap-2 mt-1">
-                                            <button @click="activeInlineReplyId = null" class="text-[10px] text-gray-500">Cancel</button>
-                                            <button @click="sendInlineReply(msg)" class="text-blue-400 text-[10px] font-bold uppercase">Send</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="p-4 glass border-t border-gray-700">
@@ -631,81 +637,70 @@ getPageToken(sid) {
 
                 // Умная кнопка Reply
                 handleReplyClick(msg) {
-                    if (msg.instagram_comment_id) {
-                        // Если это комментарий — открываем поле прямо под ним (Inline)
-                        this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
-                        this.inlineReplyText = '';
-                    } else {
-                        // Если это личка — фокусим нижнее общее поле
-                        this.replyContext = null; 
-                        this.replyText = `@User `;
-                        // Пытаемся поставить курсор в поле ввода
-                        this.$nextTick(() => {
-                            const input = document.querySelector('textarea[placeholder^="Написать"]');
-                            if(input) input.focus();
-                        });
-                    }
-                },
+    if (msg.instagram_comment_id) {
+        this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
+        this.inlineReplyText = '';
+    } else {
+        this.replyContext = null; 
+        this.replyText = `@User `;
+    }
+},
+
 
                 // Сохранение правок бота в базу
                                 async saveEdit(msg) {
-                    const token = this.getPageToken(this.currentSession);
-                    if (!token) return alert("Токен не найден");
+    const token = this.getPageToken(this.currentSession);
+    if (!token) return alert("No token");
 
-                    try {
-                        // 1. Если это комментарий, правим его в Meta (v24.0)
-                        if (msg.instagram_comment_id) {
-                            const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
-                            const res = await fetch(url, { method: 'POST' });
-                            const data = await res.json();
-                            if (data.error) throw new Error(data.error.message);
-                        }
+    // СИНХРОНИЗАЦИЯ С META (v24.0)
+    if (msg.instagram_comment_id) {
+        const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
+        fetch(url, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => { if(data.error) console.error("Meta Sync Error:", data.error); });
+    }
 
-                        // 2. Обновляем в нашей базе Supabase
-                        const updatedMessage = { ...msg.message, content: this.editingText };
-                        const { error } = await sb.from('chat_memory').update({ message: updatedMessage }).eq('id', msg.id);
-                        if (error) throw error;
-                        
-                        msg.content = this.editingText;
-                        this.editingMsgId = null;
-                    } catch (e) {
-                        alert("Ошибка сохранения: " + e.message);
-                    }
-                },
+    // СОХРАНЕНИЕ В SUPABASE (Обновляем в объекте message колонку content)
+    const newMsgObj = { ...msg.message, content: this.editingText };
+    sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id).then(({error}) => {
+        if (!error) {
+            msg.content = this.editingText;
+            msg.message = newMsgObj; // Обновляем сам объект в памяти
+            this.editingMsgId = null;
+        }
+    });
+},
+
 
                 async sendInlineReply(msg) {
-                    if (!this.inlineReplyText.trim()) return;
-                    
-                    const token = this.getPageToken(this.currentSession);
-                    if (!token) return alert("Токен не найден");
+    const token = this.getPageToken(this.currentSession);
+    const type = this.getClientType(this.currentSession); 
+    
+    // Прямой выбор эндпоинта по платформе (guess-free)
+    const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
+    const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}/${endpoint}?message=${encodeURIComponent(this.inlineReplyText)}&access_token=${token}`;
 
-                    try {
-                        // Публичный ответ в ветку комментария (v24.0)
-                        const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}/comments?message=${encodeURIComponent(this.inlineReplyText)}&access_token=${token}`;
-                        const res = await fetch(url, { method: 'POST' });
-                        const data = await res.json();
+    try {
+        const res = await fetch(url, { method: 'POST' });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
 
-                        if (data.error) throw new Error(data.error.message);
+        await sb.from('chat_memory').insert({
+            session_id: this.currentSession,
+            message: { 
+                role: "ai", 
+                is_admin: true, 
+                content: this.inlineReplyText,
+                instagram_comment_id: data.id 
+            }
+        });
 
-                        // Сохраняем в базу, чтобы ответ появился в чате
-                        await sb.from('chat_memory').insert({
-                            session_id: this.currentSession,
-                            message: { 
-                                type: "ai", 
-                                is_admin: true, 
-                                content: this.inlineReplyText,
-                                instagram_comment_id: data.id 
-                            }
-                        });
+        this.activeInlineReplyId = null;
+        this.inlineReplyText = '';
+        this.fetchMessages(); 
+    } catch (e) { alert("Meta API Error: " + e.message); }
+}
 
-                        this.inlineReplyText = '';
-                        this.activeInlineReplyId = null;
-                        
-                        // Мгновенно обновляем чат
-                        this.fetchMessages(); 
-                    } catch (e) {
-                        alert("Ошибка отправки: " + e.message);
-                    }
                 },
 
                 getClientType(sid) { 
