@@ -578,11 +578,14 @@
                 async deleteMsg(msg) {
                     if(!confirm('Удалить комментарий из соцсети?')) return;
                     const token = this.getPageToken(this.currentSession);
+                    console.log("DEBUG DELETE -> MsgID:", msg.id, "MetaID:", msg.instagram_comment_id, "Token:", token ? "EST" : "NET");
                     try {
                         if (msg.instagram_comment_id && token) {
                             const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?access_token=${token}`;
+                            console.log("DEBUG: Sending request to:", url);
                             const res = await fetch(url, { method: 'DELETE' });
                             const d = await res.json();
+                            console.log("DEBUG: Meta Response:", d);
                             if (!d.success && !d.id) throw new Error(d.error?.message);
                         }
                         await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
