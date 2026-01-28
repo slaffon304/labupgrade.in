@@ -476,56 +476,71 @@
                     await this.togglePageStatus(asset.id);
                 },
 
-                     async fetchMessages() {
+                                     async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
-                            // 1. Нормализация JSON сообщения
+                            // 1. Нормализация JSON
                             let cObj = row.message;
                             if (typeof cObj === 'string') { 
                                 try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } 
                             }
                             
-                            // 2. Извлекаем "грязный" контент
+                            // 2. Извлекаем контент
                             let rawContent = cObj.content || "";
                             let finalContent = rawContent;
                             let commentId = null;
 
-                            // 3. ЛЕЧЕНИЕ: Если внутри контента лежит JSON (public_text/private_text)
-                            // n8n иногда шлет строку, внутри которой JSON
+                            // 3. Обработка public_text/private_text (от n8n)
                             if (typeof rawContent === 'string' && (rawContent.startsWith('{') || rawContent.includes('"public_text"'))) {
                                 try {
                                     const innerJson = JSON.parse(rawContent);
                                     if (innerJson.public_text) {
-                                        // Формируем читаемый вид: Публичный ответ + (если есть) Приватный
                                         finalContent = innerJson.public_text; 
                                         if (innerJson.private_text) {
                                             finalContent += `\n\n[DM]: ${innerJson.private_text}`;
                                         }
                                     }
-                                } catch (e) { /* не json, идем дальше */ }
+                                } catch (e) { }
                             }
 
-                            // 4. ЛЕЧЕНИЕ: Вырезаем HIDDEN_ID (Регуляркой, чтобы наверняка)
-                            // Ищет "HIDDEN_ID:", потом любые символы до "|||"
+                            // 4. Вырезаем HIDDEN_ID
                             const hiddenMatch = finalContent.match(/HIDDEN_ID:(.*?)\|\|\|/);
                             if (hiddenMatch) {
-                                commentId = hiddenMatch[1].trim(); // Сохраняем ID
-                                finalContent = finalContent.replace(hiddenMatch[0], '').trim(); // Удаляем мусор из текста
+                                commentId = hiddenMatch[1].trim();
+                                finalContent = finalContent.replace(hiddenMatch[0], '').trim();
                             }
                             
-                            // Возвращаем чистый объект
+                            // --- ВОТ ГЛАВНОЕ ИСПРАВЛЕНИЕ ---
+                            
+                            // Определяем type (если был role, превращаем его в type)
+                            const safeType = cObj.type || cObj.role || 'human';
+
+                            // Создаем АБСОЛЮТНО ЧИСТЫЙ объект для message
+                            // В нем НЕТ поля 'role', только 'type'
+                            const cleanMessageObj = {
+                                type: safeType,
+                                content: finalContent,
+                                is_admin: cObj.is_admin || false,
+                                instagram_comment_id: commentId || cObj.instagram_comment_id || null,
+                                reply_to_text: cObj.reply_to_text || null
+                            };
+
                             return { 
                                 id: row.id, 
                                 session_id: row.session_id, 
-                                content: finalContent, // <--- Теперь тут всегда ЧИСТЫЙ текст
-                                message: { ...cObj, content: finalContent }, // Обновляем и в объекте message
-                                role: cObj.type || cObj.role, // Поддержка и type, и role
+                                content: finalContent, 
+                                
+                                // Сюда кладем наш чистый объект (теперь n8n не подавится)
+                                message: cleanMessageObj, 
+                                
+                                // А это для Vue (отображение), тут role допустим, но он не попадет в базу
+                                role: safeType, 
+                                
                                 is_admin: cObj.is_admin || false, 
                                 is_hidden: row.is_hidden, 
                                 is_deleted: row.is_deleted, 
-                                // Логика определения типа (коммент или личка)
-                                msg_type: ( (cObj.type === 'ai' || cObj.role === 'ai') && !cObj.is_admin) ? 'auto_reply' : 
+                                msg_type: ( (safeType === 'ai') && !cObj.is_admin) ? 'auto_reply' : 
                                           ( commentId ? 'comment_ref' : 'dm' ),
                                 instagram_comment_id: commentId
                             };
@@ -533,6 +548,7 @@
                     }
                     this.scrollToBottom();
                 },
+
 
 
                 prepareReply(msg) {
