@@ -736,52 +736,47 @@ getPageToken(sid) {
         },
 
         // 3. Отправка ответа в комментарии (Разные ссылки для FB и IG)
-        async sendInlineReply(msg) {
-            if (!this.inlineReplyText.trim()) return;
-            const token = this.getPageToken(this.currentSession);
-            const type = this.getClientType(this.currentSession); // 'ig' или 'fb'
-            
-            // ВАЖНО: У Инстаграма эндпоинт 'replies', у Фейсбука 'comments'
-            const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
-            const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}/${endpoint}?message=${encodeURIComponent(this.inlineReplyText)}&access_token=${token}`;
+                        async sendInlineReply(msg) {
+                    if (!this.inlineReplyText.trim()) return;
+                    
+                    // --- 1. Логика отправки в Meta (ОСТАВЛЯЕМ КАК БЫЛО) ---
+                    const token = this.getPageToken(this.currentSession);
+                    const type = this.getClientType(this.currentSession); 
+                    const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
+                    const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}/${endpoint}?message=${encodeURIComponent(this.inlineReplyText)}&access_token=${token}`;
 
-            try {
-                const res = await fetch(url, { method: 'POST' });
-                const data = await res.json();
+                    try {
+                        const res = await fetch(url, { method: 'POST' });
+                        const data = await res.json();
 
-                if (data.error) throw new Error(data.error.message);
+                        if (data.error) throw new Error(data.error.message);
 
-                // Сохраняем в базу Lab Upgrade
-                                                // 1. Ищем родительское сообщение (Используем == для сравнения строки и числа)
-                const parentMsg = this.messages.find(m => 
-                    m.instagram_comment_id == this.activeInlineReplyId || 
-                    (m.message && m.message.instagram_comment_id == this.activeInlineReplyId)
-                );
-                
-                // 2. Берем текст (уже очищенный в fetchMessages)
-                const parentText = parentMsg ? (parentMsg.content || 'Comment') : 'Comment';
+                        // --- 2. Логика сохранения в базу (ИСПРАВЛЕННАЯ) ---
+                        // Мы берем текст цитаты ПРЯМО из сообщения msg, на которое нажали.
+                        // Никаких поисков через .find() больше не нужно.
+                        const quoteText = msg.content || 'Comment';
 
-                // 3. Сохраняем (English version)
-                await sb.from('chat_memory').insert({
-                    session_id: this.currentSession,
-                    message: { 
-                        type: "ai", 
-                        is_admin: true, 
-                        content: this.inlineReplyText,
-                        instagram_comment_id: data.id,
-                        reply_to_text: parentText 
+                        await sb.from('chat_memory').insert({
+                            session_id: this.currentSession,
+                            message: { 
+                                type: "ai", 
+                                is_admin: true, 
+                                content: this.inlineReplyText,
+                                instagram_comment_id: data.id, // ID нового ответа от Meta
+                                reply_to_text: quoteText       // <--- ВОТ ТУТ МЫ БЕРЕМ ТЕКСТ ИЗ MSG
+                            }
+                        });
+
+                        // --- 3. Очистка ---
+                        this.activeInlineReplyId = null;
+                        this.inlineReplyText = '';
+                        this.fetchMessages(); 
+                        
+                    } catch (e) {
+                        alert("Meta Send Error: " + e.message);
                     }
-                });
+                },
 
-
-
-                this.activeInlineReplyId = null;
-                this.inlineReplyText = '';
-                this.fetchMessages(); // Обновляем чат
-            } catch (e) {
-                alert("Meta Send Error: " + e.message);
-            }
-        },
 
                 getClientType(sid) { 
                     return this.clientMap[sid]?.type || 'fb'; 
