@@ -749,32 +749,48 @@ getPageToken(sid) {
 
 
         // 2. Редактирование и СИНХРОНИЗАЦИЯ с Meta
-        async saveEdit(msg) {
-            const token = this.getPageToken(this.currentSession);
-            if (!token) return alert("No token found for this page");
+                        async saveEdit(msg) {
+                    const token = this.getPageToken(this.currentSession);
+                    if (!token) return alert("No token found for this page");
 
-            try {
-                // СИНХРОН С META (v24.0)
-                if (msg.instagram_comment_id) {
-                    const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
-                    const metaRes = await fetch(url, { method: 'POST' });
-                    const metaData = await metaRes.json();
-                    if (metaData.error) console.error("Meta API Error:", metaData.error.message);
-                }
+                    try {
+                        // СИНХРОН С META (v24.0)
+                        if (msg.instagram_comment_id) {
+                            // (Оставляем твой код как есть, хотя Meta часто не дает править, но пусть будет)
+                            const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
+                            const metaRes = await fetch(url, { method: 'POST' });
+                            const metaData = await metaRes.json();
+                            if (metaData.error) console.error("Meta API Error:", metaData.error.message);
+                        }
 
-                // ОБНОВЛЕНИЕ В SUPABASE (сохраняем структуру, чтобы бот не уезжал влево)
-                const newMsgObj = { ...msg.message, content: this.editingText, role: 'ai', is_admin: true };
-                const { error } = await sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id);
-                
-                if (!error) {
-                    msg.content = this.editingText;
-                    msg.type = 'ai'; // Принудительно оставляем роль, чтобы не «улетел» влево
-                    this.editingMsgId = null;
-                }
-            } catch (e) {
-                alert("Save failed: " + e.message);
-            }
-        },
+                        // ОБНОВЛЕНИЕ В SUPABASE
+                        // 1. Копируем старый объект
+                        const newMsgObj = { ...msg.message };
+                        
+                        // 2. Обновляем контент и флаг админа
+                        newMsgObj.content = this.editingText;
+                        newMsgObj.is_admin = true;
+                        
+                        // 3. !!! ИСПРАВЛЕНИЕ !!!
+                        // Вместо role ставим type
+                        newMsgObj.type = 'ai'; 
+                        
+                        // 4. УБИВАЕМ role, чтобы он не попал в базу
+                        delete newMsgObj.role;
+
+                        const { error } = await sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id);
+                        
+                        if (!error) {
+                            msg.content = this.editingText;
+                            // Обновляем локальный объект, чтобы интерфейс сразу подхватил изменения
+                            msg.message = newMsgObj; 
+                            this.editingMsgId = null;
+                        }
+                    } catch (e) {
+                        alert("Save failed: " + e.message);
+                    }
+                },
+
 
         // 3. Отправка ответа в комментарии (Разные ссылки для FB и IG)
                                         async sendInlineReply(msg) {
