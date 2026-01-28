@@ -752,14 +752,7 @@ getPageToken(sid) {
                 if (data.error) throw new Error(data.error.message);
 
                 // Сохраняем в базу Lab Upgrade
-                                // 1. Ищем родительское сообщение в массиве this.messages
-                const parentMsg = this.messages.find(m => 
-                    m.instagram_comment_id === this.activeInlineReplyId || 
-                    (m.message && m.message.instagram_comment_id === this.activeInlineReplyId)
-                );
-                
-                // 2. Достаем текст, на который отвечаем (если нашли)
-                                // 1. Ищем родительское сообщение (Используем == для сравнения строки и числа)
+                                                // 1. Ищем родительское сообщение (Используем == для сравнения строки и числа)
                 const parentMsg = this.messages.find(m => 
                     m.instagram_comment_id == this.activeInlineReplyId || 
                     (m.message && m.message.instagram_comment_id == this.activeInlineReplyId)
@@ -780,18 +773,6 @@ getPageToken(sid) {
                     }
                 });
 
-
-                // 3. Сохраняем в базу Lab Upgrade с полем reply_to_text
-                await sb.from('chat_memory').insert({
-                    session_id: this.currentSession,
-                    message: { 
-                        type: "ai", 
-                        is_admin: true, 
-                        content: this.inlineReplyText,
-                        instagram_comment_id: data.id,
-                        reply_to_text: parentText // <--- Добавили контекст
-                    }
-                });
 
 
                 this.activeInlineReplyId = null;
