@@ -462,40 +462,64 @@
                     await this.togglePageStatus(asset.id);
                 },
 
-                                     async fetchMessages() {
+                     async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
+                            // 1. Нормализация JSON сообщения
                             let cObj = row.message;
-                            if (typeof cObj === 'string') { try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } }
+                            if (typeof cObj === 'string') { 
+                                try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } 
+                            }
                             
+                            // 2. Извлекаем "грязный" контент
                             let rawContent = cObj.content || "";
                             let finalContent = rawContent;
                             let commentId = null;
 
-                            // Обработка HIDDEN_ID из n8n
-                            if (rawContent.startsWith('HIDDEN_ID:') && rawContent.includes('|||')) {
-                                const parts = rawContent.split('|||');
-                                commentId = parts[0].replace('HIDDEN_ID:', '').trim();
-                                finalContent = parts.slice(1).join('|||');
+                            // 3. ЛЕЧЕНИЕ: Если внутри контента лежит JSON (public_text/private_text)
+                            // n8n иногда шлет строку, внутри которой JSON
+                            if (typeof rawContent === 'string' && (rawContent.startsWith('{') || rawContent.includes('"public_text"'))) {
+                                try {
+                                    const innerJson = JSON.parse(rawContent);
+                                    if (innerJson.public_text) {
+                                        // Формируем читаемый вид: Публичный ответ + (если есть) Приватный
+                                        finalContent = innerJson.public_text; 
+                                        if (innerJson.private_text) {
+                                            finalContent += `\n\n[DM]: ${innerJson.private_text}`;
+                                        }
+                                    }
+                                } catch (e) { /* не json, идем дальше */ }
+                            }
+
+                            // 4. ЛЕЧЕНИЕ: Вырезаем HIDDEN_ID (Регуляркой, чтобы наверняка)
+                            // Ищет "HIDDEN_ID:", потом любые символы до "|||"
+                            const hiddenMatch = finalContent.match(/HIDDEN_ID:(.*?)\|\|\|/);
+                            if (hiddenMatch) {
+                                commentId = hiddenMatch[1].trim(); // Сохраняем ID
+                                finalContent = finalContent.replace(hiddenMatch[0], '').trim(); // Удаляем мусор из текста
                             }
                             
+                            // Возвращаем чистый объект
                             return { 
                                 id: row.id, 
                                 session_id: row.session_id, 
-                                content: finalContent, 
-                                message: cObj, // <--- ВАЖНО: Мы добавили это поле, чтобы работали цитаты
-                                role: cObj.type, 
+                                content: finalContent, // <--- Теперь тут всегда ЧИСТЫЙ текст
+                                message: { ...cObj, content: finalContent }, // Обновляем и в объекте message
+                                role: cObj.type || cObj.role, // Поддержка и type, и role
                                 is_admin: cObj.is_admin || false, 
                                 is_hidden: row.is_hidden, 
                                 is_deleted: row.is_deleted, 
-                                msg_type: (cObj.type === 'ai' && !cObj.is_admin) ? 'auto_reply' : ( (cObj.type === 'human' && /^\d{6,}$/.test(finalContent)) ? 'comment_ref' : 'dm' ),
+                                // Логика определения типа (коммент или личка)
+                                msg_type: ( (cObj.type === 'ai' || cObj.role === 'ai') && !cObj.is_admin) ? 'auto_reply' : 
+                                          ( commentId ? 'comment_ref' : 'dm' ),
                                 instagram_comment_id: commentId
                             };
                         });
                     }
                     this.scrollToBottom();
                 },
+
 
                 prepareReply(msg) {
     this.replyContext = msg.instagram_comment_id;
@@ -735,7 +759,7 @@ getPageToken(sid) {
                 );
                 
                 // 2. Достаем текст, на который отвечаем (если нашли)
-                const parentText = parentMsg ? (parentMsg.message.content || 'Комментарий') : 'Комментарий';
+                const parentText = parentMsg ? (parentMsg.content || 'Комментарий') : 'Комментарий';
 
                 // 3. Сохраняем в базу Lab Upgrade с полем reply_to_text
                 await sb.from('chat_memory').insert({
