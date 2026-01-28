@@ -525,29 +525,41 @@
     this.replyContext = msg.instagram_comment_id;
     this.replyText = `@User `; 
 },
-                                async toggleHide(msg) {
+                                                async toggleHide(msg) {
                     const token = this.getPageToken(this.currentSession);
-                    if (!token || !msg.instagram_comment_id) {
-                        msg.is_hidden = !msg.is_hidden; 
-                        await sb.from('chat_memory').update({ is_hidden: msg.is_hidden }).eq('id', msg.id);
+                    
+                    // ИЗМЕНЕНИЕ: Если нет токена — выводим ошибку, а не пишем молча в базу
+                    if (!token) {
+                        alert("Error: Access Token not found!");
+                        return;
+                    }
+                    if (!msg.instagram_comment_id) {
+                        alert("Error: No Instagram ID!");
                         return;
                     }
 
+                    // Дальше твой код без изменений (только Alert перевел на английский)
                     const type = this.getClientType(this.currentSession);
                     const nextStatus = !msg.is_hidden;
+                    
                     try {
-                        // Для Инсты параметр 'hide', для ФБ 'is_hidden'
-                        const param = (type === 'ig') ? `hide=${nextStatus}` : `is_hidden=${nextStatus}`;
+                        const param = (type === 'ig' || type === 'instagram') ? `hide=${nextStatus}` : `is_hidden=${nextStatus}`;
                         const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?${param}&access_token=${token}`;
+                        
                         const res = await fetch(url, { method: 'POST' });
                         const d = await res.json();
                         
                         if (d.success) {
                             msg.is_hidden = nextStatus;
                             await sb.from('chat_memory').update({ is_hidden: nextStatus }).eq('id', msg.id);
-                        } else throw new Error(d.error?.message);
-                    } catch(e) { alert("Ошибка Meta API: " + e.message); }
+                        } else {
+                            throw new Error(d.error?.message);
+                        }
+                    } catch(e) { 
+                        alert("Meta API Error: " + e.message); 
+                    }
                 },
+
 
                 async deleteMsg(msg) {
                     if(!confirm('Удалить комментарий из соцсети?')) return;
