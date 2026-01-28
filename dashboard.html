@@ -603,12 +603,8 @@ getPageToken(sid) {
                 getClientName(sid) { return this.clientMap[sid]?.name || `User ${sid.substring(0,4)}...`; },
                 getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
-                async toggleHide(msg) {
-                    msg.is_hidden = !msg.is_hidden; 
-                    await sb.from('chat_memory').update({ is_hidden: msg.is_hidden }).eq('id', msg.id);
-                },
-                                async deleteMsg(msg) { if(!confirm('Delete?')) return; await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id); },
-
+                
+                    
                 async sendReply() {
                     if (!this.replyText.trim() || this.isSending) return;
                     this.isSending = true;
