@@ -167,8 +167,16 @@
                 </div>
                 
                 <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">
-                    {{ msg.content }}
-                </div>
+    
+    <div v-if="parseMessage(msg.message).reply_to_text" class="mb-2 px-3 py-2 bg-black/20 rounded border-l-4 border-gray-500 text-xs text-gray-300 italic">
+        <div class="font-bold not-italic text-gray-400 mb-0.5">
+            <i class="fa-solid fa-share mr-1"></i>Ответ на:
+        </div>
+        "{{ parseMessage(msg.message).reply_to_text.substring(0, 60) }}..."
+    </div>
+    {{ parseMessage(msg.message).content }}
+</div>
+
 
                 <div v-if="editingMsgId !== msg.id" class="mt-2 pt-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-white/50">
                     <button @click="handleReplyClick(msg)"><i class="fas fa-reply"></i> Reply</button>
@@ -708,15 +716,27 @@ getPageToken(sid) {
                 if (data.error) throw new Error(data.error.message);
 
                 // Сохраняем в базу Lab Upgrade
+                                // 1. Ищем родительское сообщение в массиве this.messages
+                const parentMsg = this.messages.find(m => 
+                    m.instagram_comment_id === this.activeInlineReplyId || 
+                    (m.message && m.message.instagram_comment_id === this.activeInlineReplyId)
+                );
+                
+                // 2. Достаем текст, на который отвечаем (если нашли)
+                const parentText = parentMsg ? (parentMsg.message.content || 'Комментарий') : 'Комментарий';
+
+                // 3. Сохраняем в базу Lab Upgrade с полем reply_to_text
                 await sb.from('chat_memory').insert({
                     session_id: this.currentSession,
                     message: { 
                         role: "ai", 
                         is_admin: true, 
                         content: this.inlineReplyText,
-                        instagram_comment_id: data.id 
+                        instagram_comment_id: data.id,
+                        reply_to_text: parentText // <--- Добавили контекст
                     }
                 });
+
 
                 this.activeInlineReplyId = null;
                 this.inlineReplyText = '';
