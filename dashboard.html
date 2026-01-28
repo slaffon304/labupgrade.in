@@ -170,7 +170,7 @@
     
     <div v-if="parseMessage(msg.message).reply_to_text" class="mb-2 px-3 py-2 bg-black/20 rounded border-l-4 border-gray-500 text-xs text-gray-300 italic min-w-[350px] whitespace-normal">
         <div class="font-bold not-italic text-gray-400 mb-0.5">
-            <i class="fa-solid fa-share mr-1"></i>Ответ на:
+            <i class="fa-solid fa-share mr-1"></i>Replying to:
         </div>
         "{{ parseMessage(msg.message).reply_to_text.substring(0, 60) }}..."
     </div>
@@ -759,7 +759,27 @@ getPageToken(sid) {
                 );
                 
                 // 2. Достаем текст, на который отвечаем (если нашли)
-                const parentText = parentMsg ? (parentMsg.content || 'Комментарий') : 'Комментарий';
+                                // 1. Ищем родительское сообщение (Используем == для сравнения строки и числа)
+                const parentMsg = this.messages.find(m => 
+                    m.instagram_comment_id == this.activeInlineReplyId || 
+                    (m.message && m.message.instagram_comment_id == this.activeInlineReplyId)
+                );
+                
+                // 2. Берем текст (уже очищенный в fetchMessages)
+                const parentText = parentMsg ? (parentMsg.content || 'Comment') : 'Comment';
+
+                // 3. Сохраняем (English version)
+                await sb.from('chat_memory').insert({
+                    session_id: this.currentSession,
+                    message: { 
+                        type: "ai", 
+                        is_admin: true, 
+                        content: this.inlineReplyText,
+                        instagram_comment_id: data.id,
+                        reply_to_text: parentText 
+                    }
+                });
+
 
                 // 3. Сохраняем в базу Lab Upgrade с полем reply_to_text
                 await sb.from('chat_memory').insert({
