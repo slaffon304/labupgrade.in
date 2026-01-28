@@ -345,6 +345,16 @@
                 sb.channel('public:chat_memory').on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => this.fetchMessages()).subscribe();
             },
             methods: {
+                                // --- ВСТАВИТЬ ЭТО В НАЧАЛО METHODS ---
+                parseMessage(data) {
+                    if (!data) return {};
+                    if (typeof data === 'string') {
+                        try { return JSON.parse(data); } catch (e) { return {}; }
+                    }
+                    return data;
+                },
+                // -------------------------------------
+                
                 connectNewPage() {
                     FB.login((response) => {
                         if (response.authResponse) {
@@ -452,7 +462,7 @@
                     await this.togglePageStatus(asset.id);
                 },
 
-                     async fetchMessages() {
+                                     async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
@@ -463,28 +473,30 @@
                             let finalContent = rawContent;
                             let commentId = null;
 
-                            // ТОЧЕЧНОЕ ДОБАВЛЕНИЕ: Выкусываем ID из n8n (HIDDEN_ID:123|||Текст)
+                            // Обработка HIDDEN_ID из n8n
                             if (rawContent.startsWith('HIDDEN_ID:') && rawContent.includes('|||')) {
                                 const parts = rawContent.split('|||');
                                 commentId = parts[0].replace('HIDDEN_ID:', '').trim();
-                                // Собираем текст обратно, если вдруг внутри сообщения тоже были символы |||
                                 finalContent = parts.slice(1).join('|||');
                             }
                             
                             return { 
                                 id: row.id, 
                                 session_id: row.session_id, 
-                                content: finalContent, // В чате будет только текст
+                                content: finalContent, 
+                                message: cObj, // <--- ВАЖНО: Мы добавили это поле, чтобы работали цитаты
                                 role: cObj.type, 
                                 is_admin: cObj.is_admin || false, 
                                 is_hidden: row.is_hidden, 
                                 is_deleted: row.is_deleted, 
                                 msg_type: (cObj.type === 'ai' && !cObj.is_admin) ? 'auto_reply' : ( (cObj.type === 'human' && /^\d{6,}$/.test(finalContent)) ? 'comment_ref' : 'dm' ),
-                                instagram_comment_id: commentId // Сохраняем ID для будущих кнопок
+                                instagram_comment_id: commentId
                             };
                         });
                     }
+                    this.scrollToBottom();
                 },
+
                 prepareReply(msg) {
     this.replyContext = msg.instagram_comment_id;
     this.replyText = `@User `; 
