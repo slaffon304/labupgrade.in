@@ -703,7 +703,7 @@ getPageToken(sid) {
                 
                 if (!error) {
                     msg.content = this.editingText;
-                    msg.role = 'ai'; // Принудительно оставляем роль, чтобы не «улетел» влево
+                    msg.type = 'ai'; // Принудительно оставляем роль, чтобы не «улетел» влево
                     this.editingMsgId = null;
                 }
             } catch (e) {
@@ -741,7 +741,7 @@ getPageToken(sid) {
                 await sb.from('chat_memory').insert({
                     session_id: this.currentSession,
                     message: { 
-                        role: "ai", 
+                        type: "ai", 
                         is_admin: true, 
                         content: this.inlineReplyText,
                         instagram_comment_id: data.id,
