@@ -736,10 +736,10 @@ getPageToken(sid) {
         },
 
         // 3. Отправка ответа в комментарии (Разные ссылки для FB и IG)
-                        async sendInlineReply(msg) {
+                                        async sendInlineReply(msg) {
                     if (!this.inlineReplyText.trim()) return;
-                    
-                    // --- 1. Логика отправки в Meta (ОСТАВЛЯЕМ КАК БЫЛО) ---
+
+                    // 1. Meta API (Оставляем как есть)
                     const token = this.getPageToken(this.currentSession);
                     const type = this.getClientType(this.currentSession); 
                     const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
@@ -748,26 +748,36 @@ getPageToken(sid) {
                     try {
                         const res = await fetch(url, { method: 'POST' });
                         const data = await res.json();
-
                         if (data.error) throw new Error(data.error.message);
 
-                        // --- 2. Логика сохранения в базу (ИСПРАВЛЕННАЯ) ---
-                        // Мы берем текст цитаты ПРЯМО из сообщения msg, на которое нажали.
-                        // Никаких поисков через .find() больше не нужно.
-                        const quoteText = msg.content || 'Comment';
+                        // 2. ПОИСК ТЕКСТА (БРОНЕБОЙНЫЙ ВАРИАНТ)
+                        // Ищем текст во всех возможных местах объекта
+                        let rawText = msg.content; 
+                        if (!rawText && msg.message && msg.message.content) rawText = msg.message.content;
+                        if (!rawText && typeof msg.message === 'string') rawText = msg.message;
+                        
+                        // Если нашли текст, но он с мусором HIDDEN_ID — чистим
+                        if (rawText && typeof rawText === 'string' && rawText.includes('HIDDEN_ID')) {
+                            const parts = rawText.split('|||');
+                            if (parts.length > 1) rawText = parts[1]; // Берем чистый текст
+                        }
 
+                        // Если вообще ничего не нашли — ставим 'Comment'
+                        const finalQuote = rawText || 'Comment';
+
+                        // 3. Сохранение в базу
                         await sb.from('chat_memory').insert({
                             session_id: this.currentSession,
                             message: { 
                                 type: "ai", 
                                 is_admin: true, 
                                 content: this.inlineReplyText,
-                                instagram_comment_id: data.id, // ID нового ответа от Meta
-                                reply_to_text: quoteText       // <--- ВОТ ТУТ МЫ БЕРЕМ ТЕКСТ ИЗ MSG
+                                instagram_comment_id: data.id,
+                                reply_to_text: finalQuote // <--- Записываем найденный текст
                             }
                         });
 
-                        // --- 3. Очистка ---
+                        // 4. Очистка
                         this.activeInlineReplyId = null;
                         this.inlineReplyText = '';
                         this.fetchMessages(); 
@@ -776,6 +786,7 @@ getPageToken(sid) {
                         alert("Meta Send Error: " + e.message);
                     }
                 },
+
 
 
                 getClientType(sid) { 
