@@ -723,28 +723,32 @@ getPageToken(sid) {
                 // Умная кнопка Reply
                         // 1. Обработка нажатия на Reply (чтобы окно открывалось везде)
                 handleReplyClick(msg) {
-    // 1. ДИАГНОСТИКА: Нажми Reply и посмотри в Eruda
-    console.log("СТРУКТУРА СООБЩЕНИЯ:", JSON.parse(JSON.stringify(msg)));
+    // 1. Проверяем, есть ли реальный ID КОММЕНТАРИЯ (ветки)
+    // Мы смотрим и в корень msg, и внутрь msg.message (на всякий случай)
+    const commentId = msg.instagram_comment_id || (msg.message && msg.message.instagram_comment_id);
+    
+    // Проверка: ID должен существовать и не быть строкой "null"
+    const isRealComment = commentId && commentId !== 'null';
 
-    // 2. ЖЕСТКАЯ ПРОВЕРКА: Если в сообщении есть хоть какой-то ID, содержащий нижнее подчеркивание (типично для IG комментов)
-    // или если платформа - Instagram, пробуем открыть окно в любом случае.
-    const isInstagram = this.getClientType(this.currentSession) === 'ig';
-    const hasAnyCommentId = msg.instagram_comment_id || 
-                            (msg.message && msg.message.instagram_comment_id) ||
-                            (msg.id && msg.id.includes('_'));
-
-    if (hasAnyCommentId || isInstagram) {
-        // Если это хоть капельку похоже на коммент или это инста - открываем окно
+    if (isRealComment) {
+        // ЭТО КОММЕНТАРИЙ -> Открываем всплывающее окно под сообщением
         this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
         this.inlineReplyText = '';
     } else {
-        // Если совсем ничего не нашли - идем в личку
-        this.replyContext = null; 
-        this.replyText = `@User `;
-        const area = document.querySelector('textarea');
-        if (area) area.focus();
+        // ЭТО ЛИЧКА (Direct) -> Идем в нижнее поле ввода
+        this.activeInlineReplyId = null; // Закрываем любые окна
+        this.replyContext = null;        // Убираем контекст ответа
+        
+        // Фокусируемся на главном поле ввода внизу
+        const bottomInput = document.querySelector('textarea[placeholder="Type a reply..."]');
+        if (bottomInput) {
+            bottomInput.focus();
+            // Можно добавить упоминание, если хочешь, или оставить пустым
+            // this.replyText = ''; 
+        }
     }
 },
+
 
 
 
