@@ -592,7 +592,7 @@
 
 
                 async deleteMsg(msg) {
-                    if(!confirm('Удалить комментарий из соцсети?')) return;
+                    Are you sure you want to DELETE this comment permanently?')) return;
                     const token = this.getPageToken(this.currentSession);
                     console.log("DEBUG DELETE -> MsgID:", msg.id, "MetaID:", msg.instagram_comment_id, "Token:", token ? "EST" : "NET");
                     try {
