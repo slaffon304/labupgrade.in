@@ -97,51 +97,53 @@
         </span>
     </button>
     <!-- /Scroll Top -->
-<button id="callAiButton" class="floating-ai-btn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-        <line x1="12" y1="19" x2="12" y2="23"></line>
-        <line x1="8" y1="23" x2="16" y2="23"></line>
-    </svg>
-</button>
-
 <style>
     .floating-ai-btn {
         position: fixed;
-        bottom: 30px;
+        /* ПОДНЯЛИ ВЫШЕ, ЧТОБЫ НЕ БЫЛО КОНФЛИКТА С КНОПКОЙ "НАВЕРХ" */
+        bottom: 100px; 
         right: 30px;
         width: 65px;
         height: 65px;
         border-radius: 50%;
-        background-color: #00c853; /* Ваш неоновый зеленый */
+        background-color: #00c853; 
         color: #111;
         border: none;
         cursor: pointer;
-        z-index: 999999; /* Максимальный приоритет поверх всего сайта */
+        z-index: 9999999 !important; /* Усилили приоритет */
         display: flex;
         justify-content: center;
         align-items: center;
         box-shadow: 0 0 15px rgba(0, 200, 83, 0.5);
         animation: pulse-green 2s infinite;
         transition: all 0.3s ease;
+        pointer-events: auto !important;
     }
 
-    .floating-ai-btn svg {
-        width: 30px;
-        height: 30px;
-    }
+    .floating-ai-btn svg { width: 30px; height: 30px; pointer-events: none; }
 
-    /* Анимация пульсации в режиме ожидания */
     @keyframes pulse-green {
         0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7); }
         70% { box-shadow: 0 0 0 15px rgba(0, 200, 83, 0); }
         100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
     }
 
-    /* Класс, который добавится при звонке */
+    /* НОВЫЙ СТАТУС: ЖЕЛТЫЙ (ПОДКЛЮЧЕНИЕ) */
+    .floating-ai-btn.connecting {
+        background-color: #ffb300; 
+        animation: pulse-yellow 1s infinite;
+        color: white;
+    }
+
+    @keyframes pulse-yellow {
+        0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); }
+    }
+
+    /* СТАТУС: КРАСНЫЙ (ЗАПИСЬ ИДЕТ) */
     .floating-ai-btn.recording {
-        background-color: #ff3d00; /* Красный цвет записи */
+        background-color: #ff3d00; 
         animation: pulse-red 1s infinite;
         color: white;
     }
@@ -1868,22 +1870,35 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     let socket;
     let mediaRecorder;
 
-    document.getElementById('callAiButton').addEventListener('click', async function() {
+    document.getElementById('callAiButton').addEventListener('click', async function(e) {
+        e.preventDefault(); // Блокируем случайные скроллы
         const btn = this;
         
-        // Если уже звоним - отключаем (чтобы кнопка работала как вкл/выкл)
-        if (btn.classList.contains('recording')) {
-            if (mediaRecorder) mediaRecorder.stop();
+        // Если уже звоним или подключаемся - отключаем всё
+        if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
             if (socket) socket.close();
-            btn.classList.remove('recording');
+            btn.classList.remove('recording', 'connecting');
             return;
         }
 
+        // МГНОВЕННЫЙ визуальный отклик: Кнопка становится ЖЕЛТОЙ
+        btn.classList.add('connecting');
+
         const domain = 'hkkgwo0wockgoc0c4ogkcs88.labupgrade.ai';
-        socket = new WebSocket(`wss://${domain}/ws`);
+        
+        try {
+            socket = new WebSocket(`wss://${domain}/ws`);
+        } catch (err) {
+            alert('Ошибка создания WebSocket. Домен недоступен.');
+            btn.classList.remove('connecting');
+            return;
+        }
 
         socket.onopen = async () => {
-            console.log('✅ Соединение с сервером установлено!');
+            // Сервер ответил!
+            btn.classList.remove('connecting');
+            
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
@@ -1895,13 +1910,12 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 };
                 mediaRecorder.start(250);
                 
-                // Включаем красную пульсацию
+                // Включаем КРАСНУЮ пульсацию (микрофон активен)
                 btn.classList.add('recording');
-                console.log('🎙️ Микрофон активен, передача пошла...');
                 
             } catch (err) {
-                console.error('❌ Нет доступа к микрофону:', err);
-                alert('Пожалуйста, разрешите доступ к микрофону в браузере.');
+                alert('Нет доступа к микрофону! Разрешите его в настройках браузера.');
+                socket.close();
             }
         };
 
@@ -1909,17 +1923,17 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             const audioBlob = new Blob([event.data], { type: 'audio/webm' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
-            audio.play().catch(e => console.error("Ошибка воспроизведения:", e));
+            audio.play().catch(e => console.error("Ошибка аудио:", e));
         };
 
         socket.onerror = (error) => {
-            console.error('❌ Ошибка WebSocket:', error);
-            btn.classList.remove('recording');
+            // ВЫВОДИМ АЛЕРТ НА ТЕЛЕФОН ЕСЛИ СЕРВЕР НЕ ОТВЕЧАЕТ
+            alert('Ошибка соединения с сервером! Проверьте, прописан ли поддомен Coolify в вашем DNS.');
+            btn.classList.remove('connecting', 'recording');
         };
         
         socket.onclose = () => {
-            console.log('🔌 Соединение закрыто');
-            btn.classList.remove('recording');
+            btn.classList.remove('connecting', 'recording');
         };
     });
 </script>
