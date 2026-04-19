@@ -1591,59 +1591,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             </div>
         </div>
     </div>
-    <!-- /Mobile Menu -->
-<button id="callAiButton" style="padding: 15px 30px; font-size: 18px; cursor: pointer;">
-    Позвонить ИИ
-</button>
-
-<script>
-let socket;
-let mediaRecorder;
-
-document.getElementById('callAiButton').addEventListener('click', async () => {
-    // 1. Подключаемся к вашему серверу на Coolify (Обязательно wss:// для защищенного соединения)
-    const domain = 'hkkgwo0wockgoc0c4ogkcs88.labupgrade.ai';
-    socket = new WebSocket(`wss://${domain}/ws`);
-
-    socket.onopen = async () => {
-        console.log('✅ Соединение с сервером установлено!');
-        
-        // 2. Запрашиваем у пользователя доступ к микрофону
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            // 3. Начинаем запись и нарезаем аудио на кусочки по 250 мс
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-            
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-                    socket.send(event.data); // Отправляем звук на сервер
-                }
-            };
-            mediaRecorder.start(250);
-            console.log('🎙️ Микрофон активен, передача пошла...');
-            
-        } catch (err) {
-            console.error('❌ Нет доступа к микрофону:', err);
-            alert('Пожалуйста, разрешите доступ к микрофону в браузере.');
-        }
-    };
-
-    // 4. Принимаем аудио ОБРАТНО от сервера и воспроизводим (Эхо-тест)
-    socket.onmessage = async (event) => {
-        const audioBlob = new Blob([event.data], { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        
-        audio.play().catch(e => console.error("Ошибка воспроизведения:", e));
-    };
-
-    socket.onerror = (error) => console.error('❌ Ошибка WebSocket:', error);
-    socket.onclose = () => console.log('🔌 Соединение закрыто');
-});
-</script>
-
-    
+    <!-- /Mobile Menu --> 
     <!-- Javascript -->
     <script src="assets/js/jquery.min.js"></script>
 
