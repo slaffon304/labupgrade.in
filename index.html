@@ -97,63 +97,6 @@
         </span>
     </button>
     <!-- /Scroll Top -->
-<style>
-    .floating-ai-btn {
-        position: fixed;
-        /* ПОДНЯЛИ ВЫШЕ, ЧТОБЫ НЕ БЫЛО КОНФЛИКТА С КНОПКОЙ "НАВЕРХ" */
-        bottom: 100px; 
-        right: 30px;
-        width: 65px;
-        height: 65px;
-        border-radius: 50%;
-        background-color: #00c853; 
-        color: #111;
-        border: none;
-        cursor: pointer;
-        z-index: 9999999 !important; /* Усилили приоритет */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 0 15px rgba(0, 200, 83, 0.5);
-        animation: pulse-green 2s infinite;
-        transition: all 0.3s ease;
-        pointer-events: auto !important;
-    }
-
-    .floating-ai-btn svg { width: 30px; height: 30px; pointer-events: none; }
-
-    @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(0, 200, 83, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
-    }
-
-    /* НОВЫЙ СТАТУС: ЖЕЛТЫЙ (ПОДКЛЮЧЕНИЕ) */
-    .floating-ai-btn.connecting {
-        background-color: #ffb300; 
-        animation: pulse-yellow 1s infinite;
-        color: white;
-    }
-
-    @keyframes pulse-yellow {
-        0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); }
-    }
-
-    /* СТАТУС: КРАСНЫЙ (ЗАПИСЬ ИДЕТ) */
-    .floating-ai-btn.recording {
-        background-color: #ff3d00; 
-        animation: pulse-red 1s infinite;
-        color: white;
-    }
-
-    @keyframes pulse-red {
-        0% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 61, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0); }
-    }
-</style>
 
 
     <!-- Preload -->
@@ -1866,15 +1809,78 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         });
     }
 </script>
-   <script>
+   <button id="callAiButton" class="floating-ai-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+        <line x1="12" y1="19" x2="12" y2="23"></line>
+        <line x1="8" y1="23" x2="16" y2="23"></line>
+    </svg>
+</button>
+
+<style>
+    .floating-ai-btn {
+        position: fixed;
+        bottom: 100px; /* Сдвинуто выше стандартной кнопки 'Наверх' */
+        right: 20px;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background-color: #00c853; 
+        color: #111;
+        border: none;
+        cursor: pointer;
+        z-index: 9999999 !important; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 15px rgba(0, 200, 83, 0.5);
+        animation: pulse-green 2s infinite;
+        transition: all 0.3s ease;
+        pointer-events: auto !important;
+    }
+
+    .floating-ai-btn svg { width: 30px; height: 30px; pointer-events: none; }
+
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(0, 200, 83, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
+    }
+
+    .floating-ai-btn.connecting {
+        background-color: #ffb300; 
+        animation: pulse-yellow 1s infinite;
+        color: white;
+    }
+
+    @keyframes pulse-yellow {
+        0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); }
+    }
+
+    .floating-ai-btn.recording {
+        background-color: #ff3d00; 
+        animation: pulse-red 1s infinite;
+        color: white;
+    }
+
+    @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(255, 61, 0, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0); }
+    }
+</style>
+
+<script>
     let socket;
     let mediaRecorder;
 
     document.getElementById('callAiButton').addEventListener('click', async function(e) {
-        e.preventDefault(); // Блокируем случайные скроллы
+        e.preventDefault(); 
         const btn = this;
         
-        // Если уже звоним или подключаемся - отключаем всё
         if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
             if (socket) socket.close();
@@ -1882,9 +1888,8 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             return;
         }
 
-        // МГНОВЕННЫЙ визуальный отклик: Кнопка становится ЖЕЛТОЙ
+        // Кнопка становится желтой (попытка соединения)
         btn.classList.add('connecting');
-
         const domain = 'hkkgwo0wockgoc0c4ogkcs88.labupgrade.ai';
         
         try {
@@ -1896,9 +1901,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         }
 
         socket.onopen = async () => {
-            // Сервер ответил!
             btn.classList.remove('connecting');
-            
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
@@ -1910,9 +1913,8 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 };
                 mediaRecorder.start(250);
                 
-                // Включаем КРАСНУЮ пульсацию (микрофон активен)
+                // Кнопка становится красной (запись пошла)
                 btn.classList.add('recording');
-                
             } catch (err) {
                 alert('Нет доступа к микрофону! Разрешите его в настройках браузера.');
                 socket.close();
@@ -1927,8 +1929,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         };
 
         socket.onerror = (error) => {
-            // ВЫВОДИМ АЛЕРТ НА ТЕЛЕФОН ЕСЛИ СЕРВЕР НЕ ОТВЕЧАЕТ
-            alert('Ошибка соединения с сервером! Проверьте, прописан ли поддомен Coolify в вашем DNS.');
+            alert('Ошибка соединения с сервером! Проверьте статус в Coolify.');
             btn.classList.remove('connecting', 'recording');
         };
         
@@ -1937,6 +1938,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         };
     });
 </script>
+
 
 
     
