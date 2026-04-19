@@ -1875,27 +1875,39 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 <script>
     let socket;
-    let mediaRecorder;
+    let audioContext;
+    let mediaStream;
+    let processor;
 
     document.getElementById('callAiButton').addEventListener('click', async function(e) {
         e.preventDefault(); 
         const btn = this;
         
+        // Если уже звоним - отключаем всё
         if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-            if (socket) socket.close();
+            if (processor) { processor.disconnect(); processor = null; }
+            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+            if (audioContext) { audioContext.close(); audioContext = null; }
+            if (socket) { socket.close(); socket = null; }
             btn.classList.remove('recording', 'connecting');
             return;
         }
 
-        // Кнопка становится желтой (попытка соединения)
         btn.classList.add('connecting');
-        const domain = 'voice.labupgrade.in';
+        
+        // Вставьте ваш рабочий домен
+        const domain = 'hkkgwo0wockgoc0c4ogkcs88.labupgrade.ai';
         
         try {
+            // Инициализируем аудио именно по клику (снимает блокировку звука на iPhone/Android)
+            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+            
             socket = new WebSocket(`wss://${domain}/ws`);
         } catch (err) {
-            alert('Ошибка создания WebSocket. Домен недоступен.');
+            alert('Ошибка создания WebSocket.');
             btn.classList.remove('connecting');
             return;
         }
@@ -1903,33 +1915,54 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         socket.onopen = async () => {
             btn.classList.remove('connecting');
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                // Захватываем микрофон
+                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioContext.createMediaStreamSource(mediaStream);
                 
-                mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-                        socket.send(event.data);
+                // Создаем процессор для нарезки сырого PCM аудио
+                processor = audioContext.createScriptProcessor(4096, 1, 1);
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                // Отправляем чистый звук на сервер в реальном времени
+                processor.onaudioprocess = function(e) {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        const float32Array = e.inputBuffer.getChannelData(0);
+                        const int16Array = new Int16Array(float32Array.length);
+                        for (let i = 0; i < float32Array.length; i++) {
+                            let s = Math.max(-1, Math.min(1, float32Array[i]));
+                            int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                        }
+                        socket.send(int16Array.buffer);
                     }
                 };
-                mediaRecorder.start(250);
                 
-                // Кнопка становится красной (запись пошла)
                 btn.classList.add('recording');
             } catch (err) {
-                alert('Нет доступа к микрофону! Разрешите его в настройках браузера.');
+                alert('Нет доступа к микрофону!');
                 socket.close();
             }
         };
 
+        // Принимаем звук от ИИ и воспроизводим его
         socket.onmessage = async (event) => {
-            const audioBlob = new Blob([event.data], { type: 'audio/webm' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
-            audio.play().catch(e => console.error("Ошибка аудио:", e));
+            if (event.data instanceof Blob) {
+                try {
+                    const arrayBuffer = await event.data.arrayBuffer();
+                    audioContext.decodeAudioData(arrayBuffer, (buffer) => {
+                        const source = audioContext.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(audioContext.destination);
+                        source.start();
+                    });
+                } catch (e) {
+                    console.error("Ошибка декодирования аудио:", e);
+                }
+            }
         };
 
         socket.onerror = (error) => {
-            alert('Ошибка соединения с сервером! Проверьте статус в Coolify.');
+            alert('Ошибка сети! Соединение прервано.');
             btn.classList.remove('connecting', 'recording');
         };
         
@@ -1938,6 +1971,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         };
     });
 </script>
+
 
 
 
