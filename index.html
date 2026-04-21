@@ -1880,9 +1880,6 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     let processor;
     let nextPlayTime = 0; 
 
-    // ВСТАВЬТЕ СЮДА РЕАЛЬНЫЙ UUID КЛИЕНТА ИЗ SUPABASE
-    const clientId = "ВАШ-РЕАЛЬНЫЙ-UUID-ИЗ-БАЗЫ"; 
-
     document.getElementById('callAiButton').addEventListener('click', async function(e) {
         e.preventDefault(); 
         const btn = this;
@@ -1899,8 +1896,8 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             await audioContext.resume(); 
             
-            // ИСПРАВЛЕНИЕ: Теперь мы передаем client_id на сервер!
-            socket = new WebSocket(`wss://${serverIp}/ws?client_id=${681ff2cc-afc4-435b-bcb5-e5699bc78159}`);
+            // ИСПРАВЛЕНИЕ: Убрали ${...}, теперь UUID просто вписан в строку
+            socket = new WebSocket(`wss://${serverIp}/ws?client_id=681ff2cc-afc4-435b-bcb5-e5699bc78159`);
             socket.binaryType = "arraybuffer"; 
         } catch (err) {
             alert('Не удалось создать WebSocket соединение.');
@@ -1973,6 +1970,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         };
     });
 </script>
+
 
 
 
