@@ -1880,6 +1880,9 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     let processor;
     let nextPlayTime = 0; 
 
+    // ВСТАВЬТЕ СЮДА РЕАЛЬНЫЙ UUID КЛИЕНТА ИЗ SUPABASE
+    const clientId = "ВАШ-РЕАЛЬНЫЙ-UUID-ИЗ-БАЗЫ"; 
+
     document.getElementById('callAiButton').addEventListener('click', async function(e) {
         e.preventDefault(); 
         const btn = this;
@@ -1893,11 +1896,11 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         const serverIp = 'voice.labupgrade.in'; 
         
         try {
-            // Оставляем 16000 для микрофона - Gemini слушает на этой частоте
             audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             await audioContext.resume(); 
             
-            socket = new WebSocket(`wss://${serverIp}/ws`);
+            // ИСПРАВЛЕНИЕ: Теперь мы передаем client_id на сервер!
+            socket = new WebSocket(`wss://${serverIp}/ws?client_id=${681ff2cc-afc4-435b-bcb5-e5699bc78159}`);
             socket.binaryType = "arraybuffer"; 
         } catch (err) {
             alert('Не удалось создать WebSocket соединение.');
@@ -1938,7 +1941,6 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
         socket.onmessage = async (event) => {
             try {
-                // ИГНОРИРУЕМ ТЕКСТ: иногда Gemini присылает служебный JSON, его нельзя совать в аудио
                 if (typeof event.data === "string") return;
 
                 const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
@@ -1949,7 +1951,6 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     float32Array[i] = int16Array[i] / 32768;
                 }
 
-                // ИСПРАВЛЕНИЕ: Воспроизводим звук на скорости 24000 Гц
                 const buffer = audioContext.createBuffer(1, float32Array.length, 24000);
                 buffer.getChannelData(0).set(float32Array);
 
@@ -1958,7 +1959,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 source.connect(audioContext.destination);
 
                 if (nextPlayTime < audioContext.currentTime) {
-                    nextPlayTime = audioContext.currentTime + 0.1; // Небольшой буфер для гладкости
+                    nextPlayTime = audioContext.currentTime + 0.1; 
                 }
                 source.start(nextPlayTime);
                 nextPlayTime += buffer.duration;
@@ -1972,6 +1973,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         };
     });
 </script>
+
 
 
 
