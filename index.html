@@ -1925,7 +1925,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 </script>
 
 
-<style>
+    <style>
     /* Современная минималистичная кнопка */
     .floating-ai-btn {
         position: fixed;
@@ -1934,7 +1934,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         width: 65px;
         height: 65px;
         border-radius: 50%;
-        background-color: #1a1a1a; /* Глубокий темный фон */
+        background-color: #1a1a1a; 
         color: #ffffff;
         border: 1px solid rgba(255, 255, 255, 0.1);
         cursor: pointer;
@@ -1971,9 +1971,9 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
 
-    /* Состояние: Разговор/Запись (Акцентный высококонтрастный цвет, например, циановый или фирменный) */
+    /* Состояние: Разговор/Запись */
     .floating-ai-btn.recording {
-        background-color: #00e5ff; /* Кинематографичный циан */
+        background-color: #00e5ff; 
         color: #000000;
         border: none;
         animation: pulse-cyan 1.5s infinite;
@@ -1987,8 +1987,11 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 </style>
 
 <button class="floating-ai-btn" id="ai-call-btn">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg id="ai-icon-phone" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+    </svg>
+    <svg id="ai-icon-close" style="display: none;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
     </svg>
 </button>
 
@@ -1999,9 +2002,12 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     let processor;
     let nextPlayTime = 0; 
 
-    document.getElementById('callAiButton').addEventListener('click', async function(e) {
+    // ИСПРАВЛЕНИЕ: Привязали слушатель к правильному ID кнопки
+    document.getElementById('ai-call-btn').addEventListener('click', async function(e) {
         e.preventDefault(); 
         const btn = this;
+        const iconPhone = document.getElementById('ai-icon-phone');
+        const iconClose = document.getElementById('ai-icon-close');
         
         if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
             location.reload(); 
@@ -2015,7 +2021,6 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             await audioContext.resume(); 
             
-            // ИСПРАВЛЕНИЕ: Убрали ${...}, теперь UUID просто вписан в строку
             socket = new WebSocket(`wss://${serverIp}/ws?client_id=681ff2cc-afc4-435b-bcb5-e5699bc78159`);
             socket.binaryType = "arraybuffer"; 
         } catch (err) {
@@ -2046,7 +2051,12 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                         socket.send(int16Array.buffer);
                     }
                 };
+                
+                // Включаем активное состояние и меняем иконку
                 btn.classList.add('recording');
+                iconPhone.style.display = 'none';
+                iconClose.style.display = 'block';
+                
                 nextPlayTime = audioContext.currentTime; 
                 
             } catch (err) {
@@ -2086,13 +2096,14 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
         socket.onerror = () => {
             btn.classList.remove('connecting', 'recording');
+            iconPhone.style.display = 'block';
+            iconClose.style.display = 'none';
         };
     });
 </script>
 
 
-
-
+                        
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 
