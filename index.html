@@ -1819,59 +1819,71 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 </button>
 
 <style>
+    /* Современная минималистичная кнопка */
     .floating-ai-btn {
         position: fixed;
-        bottom: 100px; /* Сдвинуто выше стандартной кнопки 'Наверх' */
+        bottom: 100px; 
         right: 20px;
         width: 65px;
         height: 65px;
         border-radius: 50%;
-        background-color: #00c853; 
-        color: #111;
-        border: none;
+        background-color: #1a1a1a; /* Глубокий темный фон */
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         cursor: pointer;
         z-index: 9999999 !important; 
         display: flex;
         justify-content: center;
         align-items: center;
-        box-shadow: 0 0 15px rgba(0, 200, 83, 0.5);
-        animation: pulse-green 2s infinite;
-        transition: all 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         pointer-events: auto !important;
     }
 
-    .floating-ai-btn svg { width: 30px; height: 30px; pointer-events: none; }
-
-    @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(0, 200, 83, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
+    .floating-ai-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+        background-color: #2a2a2a;
     }
 
+    .floating-ai-btn svg { 
+        width: 28px; 
+        height: 28px; 
+        fill: currentColor;
+        pointer-events: none; 
+    }
+
+    /* Состояние: Соединение (мягкий белый пульс) */
     .floating-ai-btn.connecting {
-        background-color: #ffb300; 
-        animation: pulse-yellow 1s infinite;
-        color: white;
+        animation: pulse-white 1.5s infinite;
     }
 
-    @keyframes pulse-yellow {
-        0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); }
+    @keyframes pulse-white {
+        0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
 
+    /* Состояние: Разговор/Запись (Акцентный высококонтрастный цвет, например, циановый или фирменный) */
     .floating-ai-btn.recording {
-        background-color: #ff3d00; 
-        animation: pulse-red 1s infinite;
-        color: white;
+        background-color: #00e5ff; /* Кинематографичный циан */
+        color: #000000;
+        border: none;
+        animation: pulse-cyan 1.5s infinite;
     }
 
-    @keyframes pulse-red {
-        0% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 61, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0); }
+    @keyframes pulse-cyan {
+        0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.6); }
+        70% { box-shadow: 0 0 0 20px rgba(0, 229, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
     }
 </style>
+
+<button class="floating-ai-btn" id="ai-call-btn">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+    </svg>
+</button>
 
 <script>
     let socket;
