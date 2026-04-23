@@ -2045,29 +2045,35 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             }
         };
 
-        socket.onmessage = async (event) => {
-            if (event.data instanceof Blob) {
-                try {
-                    const arrayBuffer = await event.data.arrayBuffer();
-                    audioContext.decodeAudioData(arrayBuffer, (buffer) => {
-                        const source = audioContext.createBufferSource();
-                        source.buffer = buffer;
-                        source.connect(audioContext.destination);
-                        source.start();
-                    });
-                } catch (e) { console.error("Ошибка аудио:", e); }
+                socket.onmessage = async (event) => {
+            try {
+                if (typeof event.data === "string") return;
+
+                const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
+                const int16Array = new Int16Array(arrayBuffer);
+                const float32Array = new Float32Array(int16Array.length);
+
+                for (let i = 0; i < int16Array.length; i++) {
+                    float32Array[i] = int16Array[i] / 32768;
+                }
+
+                const buffer = audioContext.createBuffer(1, float32Array.length, 24000);
+                buffer.getChannelData(0).set(float32Array);
+
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+
+                if (nextPlayTime < audioContext.currentTime) {
+                    nextPlayTime = audioContext.currentTime + 0.1; 
+                }
+                source.start(nextPlayTime);
+                nextPlayTime += buffer.duration;
+            } catch (e) {
+                console.error("Ошибка декодирования:", e);
             }
         };
 
-        const resetBtn = () => {
-            btn.classList.remove('connecting', 'recording');
-            iconPhone.style.display = 'block';
-            iconClose.style.display = 'none';
-        };
-
-        socket.onerror = () => { alert('Ошибка сети!'); resetBtn(); };
-        socket.onclose = () => { resetBtn(); };
-    });
 </script>              
                 
 
