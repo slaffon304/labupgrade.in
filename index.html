@@ -98,34 +98,7 @@
     </button>
     <!-- /Scroll Top -->
 
-    <div class="demo-showcase">
-    <div class="demo-tabs">
-        <button class="demo-tab-btn active" onclick="switchDemo('text')">Text</button>
-        <button class="demo-tab-btn" onclick="switchDemo('live')">Live AI</button>
-        <button class="demo-tab-btn" onclick="switchDemo('voice')">Voice</button>
-    </div>
-
-    <div class="demo-grid">
-        <div class="demo-card" id="demo-text">
-            <h3>Text AI</h3>
-            <p>Suport instantaneu pentru clienți. Răspunde la întrebări frecvente și ghidează utilizatorii 24/7.</p>
-            <button style="padding:10px; background:#333; color:#fff; border:none; border-radius:5px;">Încearcă Text</button>
-        </div>
-
-        <div class="demo-card active" id="demo-live" style="border-color: rgba(0, 229, 255, 0.3);">
-            <h3>Live Assistant</h3>
-            <p>Asistent vocal complet. Discută în timp real, programează întâlniri și gestionează obiecțiile.</p>
-            <button style="padding:15px; background:#00e5ff; color:#000; border:none; border-radius:5px; font-weight:bold;">Apelează Acum</button>
-        </div>
-
-        <div class="demo-card" id="demo-voice">
-            <h3>Voice Messages</h3>
-            <p>Comunicați natural prin mesaje vocale. AI-ul nostru înțelege contextul și generează răspunsuri audio clare.</p>
-            <button style="padding:10px; background:#333; color:#fff; border:none; border-radius:5px;">Înregistrează Mesaj</button>
-        </div>
-    </div>
-    </div>
-
+    
     <!-- Preload -->
     <div class="preloader overflow-hidden">
         <div class="site-name"><span>LAB UPGRADE</span></div>
@@ -296,6 +269,36 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             </div>
         </div>
         <!-- /Select Work -->
+
+        <div class="demo-showcase">
+    <div class="demo-tabs">
+        <button class="demo-tab-btn active" onclick="switchDemo('text')">Text</button>
+        <button class="demo-tab-btn" onclick="switchDemo('live')">Live AI</button>
+        <button class="demo-tab-btn" onclick="switchDemo('voice')">Voice</button>
+    </div>
+
+    <div class="demo-grid">
+        <div class="demo-card" id="demo-text">
+            <h3>Text AI</h3>
+            <p>Suport instantaneu pentru clienți. Răspunde la întrebări frecvente și ghidează utilizatorii 24/7.</p>
+            <button style="padding:10px; background:#333; color:#fff; border:none; border-radius:5px;">Încearcă Text</button>
+        </div>
+
+        <div class="demo-card active" id="demo-live" style="border-color: rgba(0, 229, 255, 0.3);">
+            <h3>Live Assistant</h3>
+            <p>Asistent vocal complet. Discută în timp real, programează întâlniri și gestionează obiecțiile.</p>
+            <button style="padding:15px; background:#00e5ff; color:#000; border:none; border-radius:5px; font-weight:bold;">Apelează Acum</button>
+        </div>
+
+        <div class="demo-card" id="demo-voice">
+            <h3>Voice Messages</h3>
+            <p>Comunicați natural prin mesaje vocale. AI-ul nostru înțelege contextul și generează răspunsuri audio clare.</p>
+            <button style="padding:10px; background:#333; color:#fff; border:none; border-radius:5px;">Înregistrează Mesaj</button>
+        </div>
+    </div>
+    </div>
+
+        
         <!-- Feature -->
         <section class="section-feature flat-spacing tf-btn-swiper-main">
             <div class="container">
@@ -1926,111 +1929,44 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 </script>
 
 
-    <style>
-    /* Современная минималистичная кнопка */
-    
-    .floating-ai-btn:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-        background-color: #2a2a2a;
-    }
-
-    .floating-ai-btn svg { 
-        width: 28px; 
-        height: 28px; 
-        fill: currentColor;
-        pointer-events: none; 
-    }
-
-    /* Состояние: Соединение (мягкий белый пульс) */
-    .floating-ai-btn.connecting {
-        animation: pulse-white 1.5s infinite;
-    }
-
-    @keyframes pulse-white {
-        0% { box-shadow: 0 0 0 0 rgba(255, 2 .floating-ai-btn {
+      <style>
+    .floating-ai-btn {
         position: fixed;
-        bottom: 100px; 
+        bottom: 100px;
         right: 20px;
         width: 65px;
         height: 65px;
         border-radius: 50%;
-        background-color: #00c853; /* Зеленый */
+        background-color: #00c853; /* Зеленая трубка по умолчанию */
         color: #ffffff;
         border: none;
         cursor: pointer;
-        z-index: 9999999 !important; 
+        z-index: 9999999 !important;
         display: flex;
         justify-content: center;
         align-items: center;
         box-shadow: 0 8px 32px rgba(0, 200, 83, 0.4);
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         pointer-events: auto !important;
-    }55, 255, 0.4); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
 
-    /* Состояние: Разговор/Запись */
-    .floating-ai-btn.recording {
-        background-color: #ff3d00; 
-        color: #000000;
-        border: none;
-        animation: pulse-cyan 1.5s infinite;
+    .floating-ai-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 200, 83, 0.6);
     }
 
-    @keyframes pulse-red {
-        0% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.6); }
-        70% { box-shadow: 0 0 0 20px rgba(255, 61, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0); }
-    }
+    .floating-ai-btn svg { width: 28px; height: 28px; fill: currentColor; pointer-events: none; }
+
+    /* Желтый пульс при подключении */
+    .floating-ai-btn.connecting { background-color: #ffb300; animation: pulse-yellow 1.5s infinite; }
+    @keyframes pulse-yellow { 0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.6); } 70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); } }
+
+    /* Красная трубка при активном разговоре */
+    .floating-ai-btn.recording { background-color: #ff3d00; animation: pulse-red 1.5s infinite; }
+    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(255, 61, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0); } }
 </style>
 
-
-
-<script>
-    let socket;
-    let audioContext;
-    let mediaStream;
-    let processor;
-    let nextPlayTime = 0; 
-
-    // ИСПРАВЛЕНИЕ: Привязали слушатель к правильному ID кнопки
-    document.getElementById('ai-call-btn').addEventListener('click', async function(e) {
-        e.preventDefault(); 
-        const btn = this;
-        const iconPhone = document.getElementById('ai-icon-phone');
-        const iconClose = document.getElementById('ai-icon-close');
-        
-        if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
-            location.reload(); 
-            return;
-        }
-
-        btn.classList.add('connecting');
-        const serverIp = 'voice.labupgrade.in'; 
-        
-        try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-            await audioContext.resume(); 
-            
-            socket = new WebSocket(`wss://${serverIp}/ws?client_id=681ff2cc-afc4-435b-bcb5-e5699bc78159`);
-            socket.binaryType = "arraybuffer"; 
-        } catch (err) {
-            alert('Не удалось создать WebSocket соединение.');
-            btn.classList.remove('connecting');
-            return;
-        }
-
-        socket.onopen = async () => {
-            btn.classList.remove('connecting');
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: { echoCancellation: true, noiseSuppression: true } 
-                });
-                const source = audioContext.createMediaStreamSource(mediaStream);
-                processor = audioContext.createScriptProcessor(4096, 1, 1);
-                source.connect(processor)<button class="floating-ai-btn" id="ai-call-btn">
+<button class="floating-ai-btn" id="ai-call-btn">
     <svg id="ai-icon-phone" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
     </svg>
@@ -2038,10 +1974,56 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.52-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
     </svg>
 </button>
-;
+
+<script>
+    let socket;
+    let audioContext;
+    let mediaStream;
+    let processor;
+
+    document.getElementById('ai-call-btn').addEventListener('click', async function(e) {
+        e.preventDefault(); 
+        const btn = this;
+        const iconPhone = document.getElementById('ai-icon-phone');
+        const iconClose = document.getElementById('ai-icon-close');
+        
+        // Если уже звоним - отключаем всё и возвращаем зеленую кнопку
+        if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
+            if (processor) { processor.disconnect(); processor = null; }
+            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+            if (audioContext) { audioContext.close(); audioContext = null; }
+            if (socket) { socket.close(); socket = null; }
+            btn.classList.remove('recording', 'connecting');
+            iconPhone.style.display = 'block';
+            iconClose.style.display = 'none';
+            return;
+        }
+
+        btn.classList.add('connecting');
+        const domain = 'hkkgwo0wockgoc0c4ogkcs88.labupgrade.ai'; 
+        
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            if (audioContext.state === 'suspended') { await audioContext.resume(); }
+            
+            socket = new WebSocket(`wss://${domain}/ws`);
+            socket.binaryType = "arraybuffer"; 
+        } catch (err) {
+            alert('Ошибка создания WebSocket.');
+            btn.classList.remove('connecting');
+            return;
+        }
+
+        socket.onopen = async () => {
+            btn.classList.remove('connecting');
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioContext.createMediaStreamSource(mediaStream);
+                processor = audioContext.createScriptProcessor(4096, 1, 1);
+                source.connect(processor);
                 processor.connect(audioContext.destination);
 
-                processor.onaudioprocess = (e) => {
+                processor.onaudioprocess = function(e) {
                     if (socket.readyState === WebSocket.OPEN) {
                         const float32Array = e.inputBuffer.getChannelData(0);
                         const int16Array = new Int16Array(float32Array.length);
@@ -2053,55 +2035,41 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     }
                 };
                 
-                // Включаем активное состояние и меняем иконку
+                // Включаем активное состояние (красная кнопка)
                 btn.classList.add('recording');
                 iconPhone.style.display = 'none';
                 iconClose.style.display = 'block';
-                
-                nextPlayTime = audioContext.currentTime; 
-                
             } catch (err) {
-                alert('Доступ к микрофону закрыт.');
+                alert('Нет доступа к микрофону!');
                 socket.close();
             }
         };
 
         socket.onmessage = async (event) => {
-            try {
-                if (typeof event.data === "string") return;
-
-                const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
-                const int16Array = new Int16Array(arrayBuffer);
-                const float32Array = new Float32Array(int16Array.length);
-
-                for (let i = 0; i < int16Array.length; i++) {
-                    float32Array[i] = int16Array[i] / 32768;
-                }
-
-                const buffer = audioContext.createBuffer(1, float32Array.length, 24000);
-                buffer.getChannelData(0).set(float32Array);
-
-                const source = audioContext.createBufferSource();
-                source.buffer = buffer;
-                source.connect(audioContext.destination);
-
-                if (nextPlayTime < audioContext.currentTime) {
-                    nextPlayTime = audioContext.currentTime + 0.1; 
-                }
-                source.start(nextPlayTime);
-                nextPlayTime += buffer.duration;
-            } catch (e) {
-                console.error("Ошибка декодирования:", e);
+            if (event.data instanceof Blob) {
+                try {
+                    const arrayBuffer = await event.data.arrayBuffer();
+                    audioContext.decodeAudioData(arrayBuffer, (buffer) => {
+                        const source = audioContext.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(audioContext.destination);
+                        source.start();
+                    });
+                } catch (e) { console.error("Ошибка аудио:", e); }
             }
         };
 
-        socket.onerror = () => {
+        const resetBtn = () => {
             btn.classList.remove('connecting', 'recording');
             iconPhone.style.display = 'block';
             iconClose.style.display = 'none';
         };
+
+        socket.onerror = () => { alert('Ошибка сети!'); resetBtn(); };
+        socket.onclose = () => { resetBtn(); };
     });
-</script>
+</script>              
+                
 
 
                         
