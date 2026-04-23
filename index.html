@@ -1818,6 +1818,113 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     </svg>
 </button>
 
+///Демо окно///
+    <style>
+    .demo-showcase {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        color: #fff;
+    }
+
+    /* Мобильные табы (скрыты на десктопе) */
+    .demo-tabs {
+        display: none;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .demo-tab-btn {
+        background: #1a1a1a;
+        color: #fff;
+        border: 1px solid #333;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .demo-tab-btn.active {
+        background: #00e5ff;
+        color: #000;
+        border-color: #00e5ff;
+    }
+
+    /* Контейнер для трех блоков */
+    .demo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr; /* Центральный блок чуть шире */
+        gap: 20px;
+        align-items: stretch;
+    }
+
+    .demo-card {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 12px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .demo-card h3 { margin-top: 0; color: #fff; }
+    .demo-card p { color: #888; font-size: 14px; margin-bottom: 20px; flex-grow: 1; }
+
+    /* Медиа-запрос для мобильных устройств */
+    @media (max-width: 768px) {
+        .demo-tabs { display: flex; }
+        .demo-grid { grid-template-columns: 1fr; }
+        
+        /* Скрываем неактивные карточки на мобильных */
+        .demo-card { display: none; }
+        .demo-card.active { display: flex; }
+    }
+</style>
+
+<div class="demo-showcase">
+    <div class="demo-tabs">
+        <button class="demo-tab-btn active" onclick="switchDemo('text')">Text</button>
+        <button class="demo-tab-btn" onclick="switchDemo('live')">Live AI</button>
+        <button class="demo-tab-btn" onclick="switchDemo('voice')">Voice</button>
+    </div>
+
+    <div class="demo-grid">
+        <div class="demo-card" id="demo-text">
+            <h3>Text AI</h3>
+            <p>Suport instantaneu pentru clienți. Răspunde la întrebări frecvente și ghidează utilizatorii 24/7.</p>
+            <button style="padding:10px; background:#333; color:#fff; border:none; border-radius:5px;">Încearcă Text</button>
+        </div>
+
+        <div class="demo-card active" id="demo-live" style="border-color: rgba(0, 229, 255, 0.3);">
+            <h3>Live Assistant</h3>
+            <p>Asistent vocal complet. Discută în timp real, programează întâlniri și gestionează obiecțiile.</p>
+            <button style="padding:15px; background:#00e5ff; color:#000; border:none; border-radius:5px; font-weight:bold;">Apelează Acum</button>
+        </div>
+
+        <div class="demo-card" id="demo-voice">
+            <h3>Voice Messages</h3>
+            <p>Comunicați natural prin mesaje vocale. AI-ul nostru înțelege contextul și generează răspunsuri audio clare.</p>
+            <button style="padding:10px; background:#333; color:#fff; border:none; border-radius:5px;">Înregistrează Mesaj</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Простая логика переключения вкладок для мобильных
+    function switchDemo(targetId) {
+        if (window.innerWidth > 768) return; // На десктопе табы не работают
+        
+        document.querySelectorAll('.demo-card').forEach(card => card.classList.remove('active'));
+        document.querySelectorAll('.demo-tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById('demo-' + targetId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+
 <style>
     /* Современная минималистичная кнопка */
     .floating-ai-btn {
