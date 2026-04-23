@@ -2000,13 +2000,13 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         }
 
         btn.classList.add('connecting');
-        const domain = 'https://voice.labupgrade.in'; 
+         
         
         try {
             audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             if (audioContext.state === 'suspended') { await audioContext.resume(); }
             
-            socket = new WebSocket(`wss://${domain}/ws?client_id=681ff2cc-afc4-435b-bcb5-e5699bc78159`);
+            socket = new WebSocket('wss://voice.labupgrade.in/ws?client_id=681ff2cc-afc4-435b-bcb5-e5699bc78159');
             socket.binaryType = "arraybuffer"; 
         } catch (err) {
             alert('Ошибка создания WebSocket.');
