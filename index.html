@@ -272,11 +272,14 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 
         <style>
+    /* Базовый контейнер */
     .demo-showcase {
         max-width: 1200px;
         margin: 50px auto;
         padding: 20px;
         color: #fff;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Мобильные табы */
@@ -285,6 +288,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         justify-content: center;
         gap: 10px;
         margin-bottom: 20px;
+        flex-wrap: wrap;
     }
 
     .demo-tab-btn {
@@ -296,6 +300,8 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         cursor: pointer;
         transition: 0.3s;
         font-weight: 500;
+        flex: 1 1 auto;
+        text-align: center;
     }
 
     .demo-tab-btn.active {
@@ -304,78 +310,88 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         border-color: #00e5ff;
     }
 
-    /* Контейнер для карточек */
+    /* Сетка десктоп */
     .demo-grid {
         display: grid;
         grid-template-columns: 1fr 1.2fr 1fr;
         gap: 20px;
         align-items: stretch;
+        width: 100%;
     }
 
+    /* Карточки */
     .demo-card {
         background: #111;
         border: 1px solid #222;
         border-radius: 12px;
-        padding: 30px;
+        padding: 30px 20px;
         display: flex;
         flex-direction: column;
         text-align: center;
         transition: all 0.3s ease;
+        box-sizing: border-box;
     }
 
-    /* Подсветка центральной карточки (Live AI) на десктопе */
     .demo-card.highlight-card {
         border-color: rgba(0, 229, 255, 0.3);
     }
 
-    .demo-card h3 { margin-top: 0; color: #fff; }
-    .demo-card p { color: #888; font-size: 14px; margin-bottom: 20px; flex-grow: 1; }
-
-    /* Стили для кнопок внутри карточек */
-    
-    
-    .demo-action-btn.dark {
-        background: #333;
-        color: #fff;
+    .demo-card h3 { 
+        margin-top: 0; 
+        color: #fff; 
+        white-space: nowrap; 
     }
     
-    .demo-action-btn.dark:hover { 
-        background: #444; 
+    .demo-card p { 
+        color: #888; 
+        font-size: 14px; 
+        margin-bottom: 20px; 
+        flex-grow: 1; 
     }
 
-    .demo-action-btn.cyan {
-        background: #00e5ff;
-        color: #000;
-        padding: 15px;
-        font-size: 16px;
-    }
-    
-    .demo-action-btn.cyan:hover {
-        box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-          /* Стили для кнопок внутри карточек */
+    /* Железобетонные кнопки */
     .demo-action-btn {
-        display: block !important; 
-        width: 100% !important; 
-        box-sizing: border-box !important; /* Защищает кнопку от сужения */
-        padding: 15px !important; 
-        text-align: center !important; /* Центрируем текст */
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 15px !important;
+        text-align: center !important;
         border: none !important;
         border-radius: 5px !important;
         font-weight: 600 !important;
-        line-height: normal !important;
+        font-size: 16px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
+        white-space: nowrap !important; /* Запрещает тексту падать на вторую строку */
     }
 
+    .demo-action-btn.dark { background: #333 !important; color: #fff !important; }
+    .demo-action-btn.dark:hover { background: #444 !important; }
+    .demo-action-btn.cyan { background: #00e5ff !important; color: #000 !important; }
+    .demo-action-btn.cyan:hover { box-shadow: 0 0 15px rgba(0, 229, 255, 0.4) !important; }
 
-    /* Мобильный вид */
-    @media (max-width: 768px) {
-        .demo-tabs { display: flex; }
-        .demo-grid { grid-template-columns: 1fr; }
-        .demo-card { display: none; }
-        .demo-card.active { display: flex; }
+    /* МОБИЛЬНАЯ ВЕРСИЯ (Агрессивное переопределение шаблона) */
+    @media (max-width: 991px) {
+        .demo-tabs { 
+            display: flex !important; 
+        }
+        .demo-grid { 
+            display: block !important; /* Убиваем grid на мобилке, чтобы колонки не плющило */
+            width: 100% !important;
+        }
+        .demo-card { 
+            display: none !important; /* Прячем все карточки */
+            width: 100% !important;
+        }
+        .demo-card.active { 
+            display: flex !important; /* Показываем только активную */
+        }
+        .demo-card h3 {
+            white-space: normal !important; /* Разрешаем перенос заголовка на мелких экранах */
+        }
     }
 </style>
+
 
 <div class="demo-showcase">
     <div class="demo-tabs">
