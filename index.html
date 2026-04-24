@@ -352,22 +352,21 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     
     .demo-action-btn.cyan:hover {
         box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-      /* Стили для кнопок внутри карточек */
+          /* Стили для кнопок внутри карточек */
     .demo-action-btn {
-        width: 100%; 
-        padding: 12px;
-        border: none;
-        border-radius: 5px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        /* Жесткое центрирование, которое не перебьет шаблон */
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
+        display: block !important; 
+        width: 100% !important; 
+        box-sizing: border-box !important; /* Защищает кнопку от сужения */
+        padding: 15px !important; 
+        text-align: center !important; /* Центрируем текст */
+        border: none !important;
+        border-radius: 5px !important;
+        font-weight: 600 !important;
+        line-height: normal !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
     }
-  }
+
 
     /* Мобильный вид */
     @media (max-width: 768px) {
