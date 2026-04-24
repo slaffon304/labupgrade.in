@@ -594,10 +594,12 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        source: 'website',
-                        session_id: sessionId,
-                        message: text
-                    })
+  "source": "website",
+  "session_id": "web_demo_m7ech23dn",
+  "msg_type": "text",
+  "message": "Salut"
+}
+)
                 });
 
                 if (!response.ok) throw new Error('Eroare HTTP: ' + response.status);
