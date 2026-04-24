@@ -543,17 +543,22 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         }
     }
 
-        // Логика Inline чата
+    
+        // Логика Inline чата (Связь с n8n)
     document.addEventListener('DOMContentLoaded', function() {
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-chat-btn');
         const chatMessages = document.getElementById('chat-messages');
+        
+        // Генерируем уникальный ID сессии для вкладки (чтобы ИИ помнил контекст диалога)
+        const sessionId = 'web_demo_' + Math.random().toString(36).substr(2, 9);
+        const webhookUrl = 'https://n8n.labupgrade.in/webhook/tg_labupgrade';
 
         // Авто-растягивание textarea
         chatInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
-            if (this.value === '') this.style.height = 'auto'; // Сброс, если стерли текст
+            if (this.value === '') this.style.height = 'auto'; // Сброс
         });
 
         // Отправка по Enter (без Shift)
@@ -566,30 +571,63 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
         sendBtn.addEventListener('click', sendMessage);
 
-        function sendMessage() {
+        async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
 
             // 1. Рисуем сообщение пользователя
-            const userMsg = document.createElement('div');
-            userMsg.className = 'message user-message';
-            userMsg.textContent = text;
-            chatMessages.appendChild(userMsg);
+            appendMessage(text, 'user-message');
 
             // Сбрасываем инпут
             chatInput.value = '';
             chatInput.style.height = 'auto';
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Скролл вниз
 
-            // 2. ТУТ БУДЕТ ЗАПРОС В n8n
-            // Пока делаем заглушку, чтобы видеть, что чат живой
-            setTimeout(() => {
-                const aiMsg = document.createElement('div');
-                aiMsg.className = 'message ai-message';
-                aiMsg.textContent = "Analizez cererea ta... (Aici va fi răspunsul din n8n)";
-                chatMessages.appendChild(aiMsg);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000);
+            // 2. Показываем индикатор загрузки
+            const loadingId = 'loading-' + Date.now();
+            appendMessage('Analizez...', 'ai-message', loadingId);
+
+            // 3. Отправляем запрос в n8n
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        source: 'website',
+                        session_id: sessionId,
+                        message: text
+                    })
+                });
+
+                if (!response.ok) throw new Error('Eroare HTTP: ' + response.status);
+
+                const data = await response.json();
+                
+                // Удаляем индикатор "Analizez..."
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+
+                // 4. Выводим ответ ИИ. 
+                // ВАЖНО: Предполагается, что n8n вернет JSON вида {"output": "текст ответа"}
+                const aiText = data.output || data.response || data.text || "Eroare: Nu am primit text de la n8n.";
+                appendMessage(aiText, 'ai-message');
+
+            } catch (error) {
+                console.error('Eroare de rețea:', error);
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+                appendMessage('Scuze, a apărut o eroare de conexiune. Încearcă din nou.', 'ai-message');
+            }
+        }
+
+        function appendMessage(text, className, id = null) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + className;
+            msgDiv.textContent = text;
+            if (id) msgDiv.id = id;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Прокрутка вниз
         }
     });
 
