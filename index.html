@@ -500,7 +500,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     <div class="message ai-message">Salut! Sunt asistentul digital Lab Upgrade. Cu ce te pot ajuta astăzi?</div>
                 </div>
                 <div class="chat-input-area">
-                    <textarea id="chat-input" placeholder="Scrie un mesaj..." rows="1"></textarea>
+                    <textarea id="chat-input" translate="no" placeholder="Scrie un mesaj..." rows="1"></textarea>
                     <button id="send-chat-btn" class="send-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -586,7 +586,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             const loadingId = 'loading-' + Date.now();
             appendMessage('Analizez...', 'ai-message', loadingId);
 
-            // 3. Отправляем запрос в n8n
+                        // 3. Отправляем запрос в n8n
             try {
                 const response = await fetch(webhookUrl, {
                     method: 'POST',
@@ -594,34 +594,44 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-  "source": "website",
-  "session_id": "web_demo_m7ech23dn",
-  "msg_type": "text",
-  "message": "Salut"
-}
-)
+                        source: 'website',
+                        session_id: sessionId,
+                        msg_type: 'text', // Заодно добавили параметр для узла Switch
+                        message: text
+                    })
                 });
 
-                if (!response.ok) throw new Error('Eroare HTTP: ' + response.status);
-
-                const data = await response.json();
+                // Читаем сырой ответ сервера
+                const rawText = await response.text(); 
                 
-                // Удаляем индикатор "Analizez..."
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
 
-                // 4. Выводим ответ ИИ. 
-                // ВАЖНО: Предполагается, что n8n вернет JSON вида {"output": "текст ответа"}
-                const aiText = data.output || data.response || data.text || "Eroare: Nu am primit text de la n8n.";
+                // Проверяем, не выдал ли сервер ошибку 500/404
+                if (!response.ok) {
+                    appendMessage(`Eroare HTTP ${response.status}: ${rawText.substring(0, 40)}...`, 'ai-message');
+                    return;
+                }
+
+                // Пытаемся распарсить JSON
+                let data = JSON.parse(rawText);
+                
+                // Если n8n вернул массив (например, [ { output: "..." } ]), берем первый элемент
+                if (Array.isArray(data)) {
+                    data = data[0];
+                }
+
+                const aiText = data.output || data.response || data.text || "Eroare: JSON valid, dar fără cheia 'output'.";
                 appendMessage(aiText, 'ai-message');
 
             } catch (error) {
-                console.error('Eroare de rețea:', error);
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
-                appendMessage('Scuze, a apărut o eroare de conexiune. Încearcă din nou.', 'ai-message');
+                
+                // Выводим ТОЧНУЮ причину сбоя прямо в чат (например, Failed to fetch)
+                appendMessage(`Detalii eroare: ${error.message}`, 'ai-message');
             }
-        }
+
 
         function appendMessage(text, className, id = null) {
             const msgDiv = document.createElement('div');
