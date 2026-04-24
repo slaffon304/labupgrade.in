@@ -272,9 +272,9 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 
         <style>
-    /* Базовый контейнер */
+    /* Базовый контейнер - сделал немного уже (800px), так как карточка теперь одна */
     .demo-showcase {
-        max-width: 1200px;
+        max-width: 800px;
         margin: 50px auto;
         padding: 20px;
         color: #fff;
@@ -282,74 +282,82 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         box-sizing: border-box;
     }
 
-    /* Мобильные табы */
+    /* Табы - теперь работают всегда и везде */
     .demo-tabs {
-        display: none;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+        flex-wrap: wrap !important;
     }
 
+    /* Кнопки табов - жесткое центрирование текста */
     .demo-tab-btn {
-        background: #1a1a1a;
-        color: #fff;
-        border: 1px solid #333;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-        font-weight: 500;
+        background: #1a1a1a !important;
+        color: #fff !important;
+        border: 1px solid #333 !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        transition: 0.3s !important;
+        font-weight: 500 !important;
         flex: 1 1 auto;
-        text-align: center;
+        /* Выравниваем текст ровно по центру */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
     }
 
     .demo-tab-btn.active {
-        background: #00e5ff;
-        color: #000;
-        border-color: #00e5ff;
+        background: #00e5ff !important;
+        color: #000 !important;
+        border-color: #00e5ff !important;
     }
 
-    /* Сетка десктоп */
+    /* Контейнер карточек - сетка больше не нужна */
     .demo-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr 1fr;
-        gap: 20px;
-        align-items: stretch;
-        width: 100%;
+        display: block !important;
+        width: 100% !important;
     }
 
-    /* Карточки */
+    /* Карточки - прячем все по умолчанию */
     .demo-card {
-        background: #111;
-        border: 1px solid #222;
-        border-radius: 12px;
-        padding: 30px 20px;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        transition: all 0.3s ease;
-        box-sizing: border-box;
+        display: none !important; 
+        background: #111 !important;
+        border: 1px solid #222 !important;
+        border-radius: 12px !important;
+        padding: 30px 20px !important;
+        flex-direction: column !important;
+        text-align: center !important;
+        transition: all 0.3s ease !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    /* Показываем только активную карточку */
+    .demo-card.active {
+        display: flex !important; 
     }
 
     .demo-card.highlight-card {
-        border-color: rgba(0, 229, 255, 0.3);
+        border-color: rgba(0, 229, 255, 0.3) !important;
     }
 
     .demo-card h3 { 
-        margin-top: 0; 
-        color: #fff; 
-        white-space: nowrap; 
+        margin-top: 0 !important; 
+        color: #fff !important; 
+        white-space: normal !important; 
     }
     
     .demo-card p { 
-        color: #888; 
-        font-size: 14px; 
-        margin-bottom: 20px; 
-        flex-grow: 1; 
+        color: #888 !important; 
+        font-size: 14px !important; 
+        margin-bottom: 20px !important; 
+        flex-grow: 1 !important; 
     }
 
-    /* Железобетонные кнопки */
+    /* Железобетонные кнопки действий (оставляем как есть, они работают идеально) */
     .demo-action-btn {
         display: block !important;
         width: 100% !important;
@@ -362,35 +370,15 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         font-size: 16px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
-        white-space: nowrap !important; /* Запрещает тексту падать на вторую строку */
+        white-space: nowrap !important;
     }
 
     .demo-action-btn.dark { background: #333 !important; color: #fff !important; }
     .demo-action-btn.dark:hover { background: #444 !important; }
     .demo-action-btn.cyan { background: #00e5ff !important; color: #000 !important; }
     .demo-action-btn.cyan:hover { box-shadow: 0 0 15px rgba(0, 229, 255, 0.4) !important; }
-
-    /* МОБИЛЬНАЯ ВЕРСИЯ (Агрессивное переопределение шаблона) */
-    @media (max-width: 991px) {
-        .demo-tabs { 
-            display: flex !important; 
-        }
-        .demo-grid { 
-            display: block !important; /* Убиваем grid на мобилке, чтобы колонки не плющило */
-            width: 100% !important;
-        }
-        .demo-card { 
-            display: none !important; /* Прячем все карточки */
-            width: 100% !important;
-        }
-        .demo-card.active { 
-            display: flex !important; /* Показываем только активную */
-        }
-        .demo-card h3 {
-            white-space: normal !important; /* Разрешаем перенос заголовка на мелких экранах */
-        }
-    }
 </style>
+
 
 
 <div class="demo-showcase">
@@ -423,19 +411,22 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
 <script>
     function switchDemo(targetId, event) {
-        if (window.innerWidth > 768) return; // На десктопе табы не работают
+        // Мы удалили блокировку для десктопа. Теперь вкладки кликабельны везде!
         
-        // Сбрасываем активности карточек и табов
+        // 1. Прячем все карточки и сбрасываем активные табы
         document.querySelectorAll('.demo-card').forEach(card => card.classList.remove('active'));
         document.querySelectorAll('.demo-tab-btn').forEach(btn => btn.classList.remove('active'));
         
-        // Включаем нужную карточку и таб
+        // 2. Показываем нужную карточку
         document.getElementById('demo-' + targetId).classList.add('active');
+        
+        // 3. Подсвечиваем нажатую кнопку
         if(event && event.currentTarget) {
             event.currentTarget.classList.add('active');
         }
     }
 </script>
+
 
         
         
