@@ -543,203 +543,194 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         </div>
         
 
-<script>
+            <script>
+    // 1. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
     function switchDemo(targetId, event) {
-        // Мы удалили блокировку для десктопа. Теперь вкладки кликабельны везде!
-        
-        // 1. Прячем все карточки и сбрасываем активные табы
         document.querySelectorAll('.demo-card').forEach(card => card.classList.remove('active'));
         document.querySelectorAll('.demo-tab-btn').forEach(btn => btn.classList.remove('active'));
         
-        // 2. Показываем нужную карточку
         document.getElementById('demo-' + targetId).classList.add('active');
         
-        // 3. Подсвечиваем нажатую кнопку
         if(event && event.currentTarget) {
             event.currentTarget.classList.add('active');
         }
     }
 
-    
-        // Логика Inline чата (Связь с n8n)
     document.addEventListener('DOMContentLoaded', function() {
-        const chatInput = document.getElementById('chat-input');
-        const sendBtn = document.getElementById('send-chat-btn');
-        const chatMessages = document.getElementById('chat-messages');
-        const recordBtn = document.getElementById('record-btn');
-
-        
-        // Генерируем уникальный ID сессии для вкладки (чтобы ИИ помнил контекст диалога)
         const sessionId = 'web_demo_' + Math.random().toString(36).substr(2, 9);
         const webhookUrl = 'https://n8n.labupgrade.in/webhook/lab_upgrade?client_id=07e1d002-20a3-47f8-b8cb-8736a60dc1f4';
 
-        // Авто-растягивание textarea
-        chatInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            if (this.value === '') this.style.height = 'auto'; // Сброс
-        });
+        // Универсальная функция для сообщений в нужную вкладку
+        function appendMsg(containerId, text, className, id = null) {
+            const box = document.getElementById(containerId);
+            if (!box) return;
+            const div = document.createElement('div');
+            div.className = 'message ' + className;
+            div.textContent = text;
+            if (id) div.id = id;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
 
-        // Отправка по Enter (без Shift)
-        chatInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        // Универсальная отправка на сервер
+        async function sendToServer(payload, containerId) {
+            const loadingId = 'loading-' + Date.now();
+            appendMsg(containerId, payload.msg_type === 'voice' ? 'Analizez audio...' : 'Analizez...', 'ai-message', loadingId);
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                let rawText = await response.text();
+                if (rawText.trim().startsWith('=')) rawText = rawText.replace(/^=/, '').trim();
+                
+                document.getElementById(loadingId)?.remove();
+
+                if (!response.ok) {
+                    appendMsg(containerId, `Eroare HTTP ${response.status}`, 'ai-message');
+                    return;
+                }
+
+                let data = JSON.parse(rawText);
+                if (Array.isArray(data)) data = data[0];
+
+                if (payload.msg_type === 'voice' && data.audio_base64) {
+                    // Воспроизводим звук без вывода текста агента
+                    const audio = new Audio("data:audio/wav;base64," + data.audio_base64);
+                    audio.play();
+                } else {
+                    // Выводим текст
+                    const aiText = data.output || data.response || data.text || "Eroare de răspuns.";
+                    appendMsg(containerId, aiText, 'ai-message');
+                }
+
+            } catch (error) {
+                document.getElementById(loadingId)?.remove();
+                appendMsg(containerId, `Detalii eroare: ${error.message}`, 'ai-message');
             }
-        });
+        }
 
-        sendBtn.addEventListener('click', sendMessage);
-        
-                // --- НАЧАЛО БЛОКА ГОЛОСОВОГО ВВОДА ---
-        
+        // ==========================================
+        // ЛОГИКА ВКЛАДКИ 1: TEXT AI
+        // ==========================================
+        const textInput = document.getElementById('chat-input-text');
+        const textSendBtn = document.getElementById('send-btn-text');
+
+        if (textInput && textSendBtn) {
+            textInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            textInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    textSendBtn.click();
+                }
+            });
+
+            textSendBtn.addEventListener('click', () => {
+                const text = textInput.value.trim();
+                if (!text) return;
+
+                appendMsg('chat-messages-text', text, 'user-message');
+                textInput.value = '';
+                textInput.style.height = 'auto';
+
+                sendToServer({
+                    source: 'website',
+                    session_id: sessionId,
+                    msg_type: 'text',
+                    message: text
+                }, 'chat-messages-text');
+            });
+        }
+
+        // ==========================================
+        // ЛОГИКА ВКЛАДКИ 3: VOICE (Только аудио)
+        // ==========================================
+        const recordBtnVoice = document.getElementById('record-btn-voice');
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
 
-        // Включаем микрофон только когда пользователь нажал кнопку (обход защиты браузера)
-        async function initAudio() {
-            if (mediaRecorder) return true;
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                
-                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-                
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks);
-                    audioChunks = [];
-                    appendMsg('chat-messages-voice', '🎤 Mesaj vocal trimis', 'user-message');
+        if (recordBtnVoice) {
+            async function initAudio() {
+                if (mediaRecorder) return true;
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
                     
-                    const reader = new FileReader();
-                    reader.readAsDataURL(audioBlob);
-                    reader.onloadend = () => {
-                        const base64Audio = reader.result.split(',')[1];
-                        sendToServer({ source: 'website', session_id: sessionId, msg_type: 'voice', audio_base64: base64Audio }, 'chat-messages-voice');
+                    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks);
+                        audioChunks = [];
+                        appendMsg('chat-messages-voice', '🎤 Mesaj vocal trimis', 'user-message');
+                        
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = () => {
+                            const base64Audio = reader.result.split(',')[1];
+                            sendToServer({ 
+                                source: 'website', 
+                                session_id: sessionId, 
+                                msg_type: 'voice', 
+                                audio_base64: base64Audio 
+                            }, 'chat-messages-voice');
+                        };
                     };
-                };
-                return true;
-            } catch (err) {
-                console.error("Microfon indisponibil:", err);
-                appendMsg('chat-messages-voice', 'Eroare: Nu avem acces la microfon.', 'ai-message');
-                return false;
-            }
-        }
-
-        const startRecording = async (e) => { 
-            e.preventDefault(); // Защита от выделения на мобилках
-            const isReady = await initAudio();
-            
-            if(isReady && mediaRecorder.state === 'inactive') { 
-                audioChunks = [];
-                mediaRecorder.start(); 
-                isRecording = true;
-                
-                // Визуальный эффект записи (краснеет и увеличивается)
-                recordBtn.style.background = '#ff4444';
-                recordBtn.style.color = '#fff';
-                recordBtn.style.transform = 'scale(1.15)';
-                recordBtn.style.borderColor = '#ff4444';
-            }
-        };
-
-        const stopRecording = (e) => { 
-            e.preventDefault();
-            if(isRecording && mediaRecorder && mediaRecorder.state === 'recording') { 
-                mediaRecorder.stop(); 
-                isRecording = false;
-                
-                // Возвращаем кнопку в исходное состояние
-                recordBtn.style.background = '#222';
-                recordBtn.style.color = '#00e5ff';
-                recordBtn.style.transform = 'scale(1)';
-                recordBtn.style.borderColor = '#333';
-            }
-        };
-
-        recordBtn.addEventListener('mousedown', startRecording);
-        recordBtn.addEventListener('mouseup', stopRecording);
-        recordBtn.addEventListener('mouseleave', stopRecording);
-        recordBtn.addEventListener('touchstart', startRecording, {passive: false});
-        recordBtn.addEventListener('touchend', stopRecording, {passive: false});
-    });
-
-        // --- КОНЕЦ БЛОКА ГОЛОСОВОГО ВВОДА ---
-
-
-        async function sendMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            // 1. Рисуем сообщение пользователя
-            appendMessage(text, 'user-message');
-
-            // Сбрасываем инпут
-            chatInput.value = '';
-            chatInput.style.height = 'auto';
-
-            // 2. Показываем индикатор загрузки
-            const loadingId = 'loading-' + Date.now();
-            appendMessage('Analizez...', 'ai-message', loadingId);
-
-                        // 3. Отправляем запрос в n8n
-            try {
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        source: 'website',
-                        session_id: sessionId,
-                        msg_type: 'text', // Заодно добавили параметр для узла Switch
-                        message: text
-                    })
-                });
-
-                // Читаем сырой ответ сервера
-                const rawText = await response.text(); 
-                
-                const loadingEl = document.getElementById(loadingId);
-                if (loadingEl) loadingEl.remove();
-
-                // Проверяем, не выдал ли сервер ошибку 500/404
-                if (!response.ok) {
-                    appendMessage(`Eroare HTTP ${response.status}: ${rawText.substring(0, 40)}...`, 'ai-message');
-                    return;
+                    return true;
+                } catch (err) {
+                    console.error("Microfon indisponibil:", err);
+                    appendMsg('chat-messages-voice', 'Eroare: Nu avem acces la microfon.', 'ai-message');
+                    return false;
                 }
-
-                // Пытаемся распарсить JSON
-                let data = JSON.parse(rawText);
-                
-                // Если n8n вернул массив (например, [ { output: "..." } ]), берем первый элемент
-                if (Array.isArray(data)) {
-                    data = data[0];
-                }
-
-                const aiText = data.output || data.response || data.text || "Eroare: JSON valid, dar fără cheia 'output'.";
-                appendMessage(aiText, 'ai-message');
-
-            } catch (error) {
-                const loadingEl = document.getElementById(loadingId);
-                if (loadingEl) loadingEl.remove();
-                
-                // Выводим ТОЧНУЮ причину сбоя прямо в чат (например, Failed to fetch)
-                appendMessage(`Detalii eroare: ${error.message}`, 'ai-message');
             }
-        }
 
-        function appendMessage(text, className, id = null) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message ' + className;
-            msgDiv.textContent = text;
-            if (id) msgDiv.id = id;
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Прокрутка вниз
+            const startRecording = async (e) => { 
+                e.preventDefault(); 
+                const isReady = await initAudio();
+                
+                if(isReady && mediaRecorder.state === 'inactive') { 
+                    audioChunks = [];
+                    mediaRecorder.start(); 
+                    isRecording = true;
+                    
+                    // Эффект зажатой кнопки
+                    recordBtnVoice.style.background = '#ff4444';
+                    recordBtnVoice.style.color = '#fff';
+                    recordBtnVoice.style.transform = 'scale(1.15)';
+                    recordBtnVoice.style.borderColor = '#ff4444';
+                }
+            };
+
+            const stopRecording = (e) => { 
+                e.preventDefault();
+                if(isRecording && mediaRecorder && mediaRecorder.state === 'recording') { 
+                    mediaRecorder.stop(); 
+                    isRecording = false;
+                    
+                    // Возврат кнопки
+                    recordBtnVoice.style.background = '#222';
+                    recordBtnVoice.style.color = '#00e5ff';
+                    recordBtnVoice.style.transform = 'scale(1)';
+                    recordBtnVoice.style.borderColor = '#333';
+                }
+            };
+
+            recordBtnVoice.addEventListener('mousedown', startRecording);
+            recordBtnVoice.addEventListener('mouseup', stopRecording);
+            recordBtnVoice.addEventListener('mouseleave', stopRecording);
+            recordBtnVoice.addEventListener('touchstart', startRecording, {passive: false});
+            recordBtnVoice.addEventListener('touchend', stopRecording, {passive: false});
         }
     });
-
 </script>
-
+    
 
         
         
