@@ -597,18 +597,22 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 let data = JSON.parse(rawText);
                 if (Array.isArray(data)) data = data[0];
 
-                                if (payload.msg_type === 'voice' && data.audio_base64) {
+                                                if (payload.msg_type === 'voice' && data.audio_base64) {
                     const audioSrc = "data:audio/wav;base64," + data.audio_base64;
                     const box = document.getElementById(containerId);
                     
                     const msgDiv = document.createElement('div');
                     msgDiv.className = 'message ai-message';
-                    msgDiv.style.padding = '8px 12px';
                     
-                    // HTML5 плеер БЕЗ autoplay (включается вручную)
+                    // Делаем контейнер полностью прозрачным и убираем рамки
+                    msgDiv.style.background = 'transparent';
+                    msgDiv.style.border = 'none';
+                    msgDiv.style.padding = '0';
+                    msgDiv.style.boxShadow = 'none';
+                    
                     msgDiv.innerHTML = `
-                        <div style="font-size: 12px; color: #8e8e93; margin-bottom: 6px;">🎤 Răspuns vocal</div>
-                        <audio controls style="height: 36px; max-width: 220px; outline: none;">
+                        <div style="font-size: 12px; color: #8e8e93; margin-bottom: 6px; margin-left: 4px;">🎤 Răspuns vocal</div>
+                        <audio controls style="height: 40px; max-width: 240px; outline: none;">
                             <source src="${audioSrc}" type="audio/wav">
                         </audio>
                     `;
