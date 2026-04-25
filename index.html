@@ -468,6 +468,9 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         background: #00c4dd;
         transform: scale(1.05);
     }
+    .record-btn { background: none; border: none; cursor: pointer; color: #aaa; transition: 0.2s; padding: 0 10px;}
+.record-btn.recording { color: #ff4444; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
 </style>
 
@@ -501,6 +504,15 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     <div class="message ai-message">Salut! Sunt asistentul digital Lab Upgrade. Cu ce te pot ajuta astăzi?</div>
                 </div>
                 <div class="chat-input-area">
+                        <button id="record-btn" class="record-btn" title="Apasă pentru a înregistra">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+    </button>
+
                     <textarea id="chat-input" translate="no" placeholder="Scrie un mesaj..." rows="1"></textarea>
                     <button id="send-chat-btn" class="send-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -550,6 +562,8 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-chat-btn');
         const chatMessages = document.getElementById('chat-messages');
+        const recordBtn = document.getElementById('record-btn');
+
         
         // Генерируем уникальный ID сессии для вкладки (чтобы ИИ помнил контекст диалога)
         const sessionId = 'web_demo_' + Math.random().toString(36).substr(2, 9);
@@ -571,6 +585,96 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         });
 
         sendBtn.addEventListener('click', sendMessage);
+                // --- НАЧАЛО БЛОКА ГОЛОСОВОГО ВВОДА ---
+        let mediaRecorder;
+        let audioChunks = [];
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+                    
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks);
+                        audioChunks = []; // Очистка
+                        
+                        appendMessage('🎤 Mesaj vocal', 'user-message');
+                        const loadingId = 'loading-' + Date.now();
+                        appendMessage('Analizez audio...', 'ai-message', loadingId);
+
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = async () => {
+                            const base64Audio = reader.result.split(',')[1];
+                            
+                            try {
+                                const response = await fetch(webhookUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        source: 'website',
+                                        session_id: sessionId,
+                                        msg_type: 'voice',
+                                        audio_base64: base64Audio
+                                    })
+                                });
+
+                                let rawText = await response.text();
+                                if (rawText.trim().startsWith('=')) {
+                                    rawText = rawText.replace(/^=/, '').trim();
+                                }
+                                
+                                const loadingEl = document.getElementById(loadingId);
+                                if (loadingEl) loadingEl.remove();
+
+                                if (!response.ok) {
+                                    appendMessage(`Eroare HTTP ${response.status}`, 'ai-message');
+                                    return;
+                                }
+
+                                let data = JSON.parse(rawText);
+                                if (Array.isArray(data)) data = data[0];
+
+                                const aiText = data.output || data.response || data.text || "Eroare.";
+                                appendMessage(aiText, 'ai-message');
+
+                            } catch (error) {
+                                const loadingEl = document.getElementById(loadingId);
+                                if (loadingEl) loadingEl.remove();
+                                appendMessage(`Detalii eroare: ${error.message}`, 'ai-message');
+                            }
+                        };
+                    };
+                })
+                .catch(err => console.error("Microfon indisponibil: ", err));
+        }
+
+        const startRecording = (e) => { 
+            e.preventDefault(); 
+            if(mediaRecorder && mediaRecorder.state === 'inactive') {
+                mediaRecorder.start();
+                recordBtn.classList.add('recording');
+            }
+        };
+        const stopRecording = (e) => { 
+            e.preventDefault();
+            if(mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordBtn.classList.remove('recording');
+            }
+        };
+
+        recordBtn.addEventListener('mousedown', startRecording);
+        recordBtn.addEventListener('mouseup', stopRecording);
+        recordBtn.addEventListener('mouseleave', stopRecording);
+        recordBtn.addEventListener('touchstart', startRecording, {passive: false});
+        recordBtn.addEventListener('touchend', stopRecording, {passive: false});
+        // --- КОНЕЦ БЛОКА ГОЛОСОВОГО ВВОДА ---
+
 
         async function sendMessage() {
             const text = chatInput.value.trim();
