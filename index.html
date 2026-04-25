@@ -597,11 +597,26 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 let data = JSON.parse(rawText);
                 if (Array.isArray(data)) data = data[0];
 
-                if (payload.msg_type === 'voice' && data.audio_base64) {
-                    // Воспроизводим звук без вывода текста агента
-                    const audio = new Audio("data:audio/wav;base64," + data.audio_base64);
-                    audio.play();
+                                if (payload.msg_type === 'voice' && data.audio_base64) {
+                    const audioSrc = "data:audio/wav;base64," + data.audio_base64;
+                    const box = document.getElementById(containerId);
+                    
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'message ai-message';
+                    msgDiv.style.padding = '8px 12px';
+                    
+                    // HTML5 плеер БЕЗ autoplay (включается вручную)
+                    msgDiv.innerHTML = `
+                        <div style="font-size: 12px; color: #8e8e93; margin-bottom: 6px;">🎤 Răspuns vocal</div>
+                        <audio controls style="height: 36px; max-width: 220px; outline: none;">
+                            <source src="${audioSrc}" type="audio/wav">
+                        </audio>
+                    `;
+                    
+                    box.appendChild(msgDiv);
+                    box.scrollTop = box.scrollHeight;
                 } else {
+
                     // Выводим текст
                     const aiText = data.output || data.response || data.text || "Eroare de răspuns.";
                     appendMsg(containerId, aiText, 'ai-message');
