@@ -2440,17 +2440,34 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                 source.connect(activeProcessor);
                 activeProcessor.connect(activeAudioContext.destination);
 
-                activeProcessor.onaudioprocess = function(e) {
+                                activeProcessor.onaudioprocess = function(e) {
                     if (activeSocket && activeSocket.readyState === WebSocket.OPEN) {
                         const float32Array = e.inputBuffer.getChannelData(0);
+                        
+                        // --- 🟢 NOISE GATE (ШУМОПОДАВИТЕЛЬ ПО ГРОМКОСТИ) ---
+                        // Вычисляем максимальную громкость в текущем куске звука
+                        let maxAmplitude = 0;
+                        for (let i = 0; i < float32Array.length; i++) {
+                            let absVal = Math.abs(float32Array[i]);
+                            if (absVal > maxAmplitude) maxAmplitude = absVal;
+                        }
+                        
+                        // ПОРОГ ЧУВСТВИТЕЛЬНОСТИ (от 0.01 до 0.15). 
+                        // Если звук тише этого порога - это фон, мы его срезаем.
+                        const threshold = 0.04; 
+                        const isSpeaking = maxAmplitude > threshold;
+                        // --------------------------------------------------
+
                         const int16Array = new Int16Array(float32Array.length);
                         for (let i = 0; i < float32Array.length; i++) {
-                            let s = Math.max(-1, Math.min(1, float32Array[i]));
+                            // Если человек говорит - берем реальный звук. Если это фоновый шум - ставим 0 (полная тишина)
+                            let s = isSpeaking ? Math.max(-1, Math.min(1, float32Array[i])) : 0;
                             int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
                         }
                         activeSocket.send(int16Array.buffer);
                     }
                 };
+
 
                 nextPlayTime = activeAudioContext.currentTime;
             };
