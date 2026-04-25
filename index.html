@@ -2393,7 +2393,14 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 
         try {
             // 2. ЗАПРАШИВАЕМ МИКРОФОН СРАЗУ ПО КЛИКУ (Обход блокировки браузера)
-            activeMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            activeMediaStream = await navigator.mediaDevices.getUserMedia({ 
+    audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+    } 
+});
+
 
             // 3. Создаем AudioContext
             activeAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
