@@ -2342,81 +2342,113 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
 </button>
 
 <script>
-    let socket;
-    let audioContext;
-    let mediaStream;
-    let processor;
-    let nextPlayTime = 0; 
+    // Глобальное состояние звонка
+    let activeSocket = null;
+    let activeAudioContext = null;
+    let activeMediaStream = null;
+    let activeProcessor = null;
+    let nextPlayTime = 0;
 
-    document.getElementById('ai-call-btn').addEventListener('click', async function(e) {
-        e.preventDefault(); 
-        const btn = this;
-        const iconPhone = document.getElementById('ai-icon-phone');
-        const iconClose = document.getElementById('ai-icon-close');
-        
-        // Если уже звоним - отключаем всё и возвращаем зеленую кнопку
-        if (btn.classList.contains('recording') || btn.classList.contains('connecting')) {
-            if (processor) { processor.disconnect(); processor = null; }
-            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
-            if (audioContext) { audioContext.close(); audioContext = null; }
-            if (socket) { socket.close(); socket = null; }
-            btn.classList.remove('recording', 'connecting');
-            iconPhone.style.display = 'block';
-            iconClose.style.display = 'none';
-            return;
+    // Находим наши кнопки
+    const floatBtn = document.getElementById('ai-call-btn'); // Зеленая трубка
+    const iconPhone = document.getElementById('ai-icon-phone');
+    const iconClose = document.getElementById('ai-icon-close');
+    const testBtn = document.querySelector('#demo-live .demo-action-btn'); // Бирюзовая кнопка
+
+    // Универсальная функция остановки звонка (сбрасывает всё)
+    function stopCall() {
+        if (activeProcessor) { activeProcessor.disconnect(); activeProcessor = null; }
+        if (activeMediaStream) { activeMediaStream.getTracks().forEach(t => t.stop()); activeMediaStream = null; }
+        if (activeAudioContext) { activeAudioContext.close(); activeAudioContext = null; }
+        if (activeSocket) { activeSocket.close(); activeSocket = null; }
+
+        // Возвращаем зеленую трубку в исходное состояние
+        if (floatBtn) {
+            floatBtn.classList.remove('connecting', 'recording');
+            if (iconPhone) iconPhone.style.display = 'block';
+            if (iconClose) iconClose.style.display = 'none';
         }
 
-        btn.classList.add('connecting');
-        
+        // Возвращаем бирюзовую кнопку в исходное состояние
+        if (testBtn) {
+            testBtn.classList.remove('connecting', 'recording');
+            testBtn.textContent = 'Apelează Acum';
+            testBtn.style.background = '';
+            testBtn.style.color = '';
+        }
+    }
+
+    // Универсальная функция старта звонка
+    async function startCall(clientId, buttonType) {
+        if (activeSocket) return; // Защита от двойного клика
+
+        // 1. Анимация подключения ТОЛЬКО для нажатой кнопки
+        if (buttonType === 'floating') {
+            floatBtn.classList.add('connecting');
+        } else if (buttonType === 'test') {
+            testBtn.classList.add('connecting');
+            testBtn.textContent = 'Conectare...';
+        }
+
         try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-            if (audioContext.state === 'suspended') { await audioContext.resume(); }
-            
-            // Жестко прописанная ссылка с client_id
-            socket = new WebSocket('wss://voice.labupgrade.in/ws?client_id=681ff2cc-afc4-435b-bcb5-e5699bc78159');
-            socket.binaryType = "arraybuffer"; 
+            activeAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            if (activeAudioContext.state === 'suspended') { await activeAudioContext.resume(); }
+
+            // Подключаемся с переданным UUID
+            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?client_id=${clientId}`);
+            activeSocket.binaryType = "arraybuffer";
         } catch (err) {
             alert('Ошибка создания WebSocket.');
-            btn.classList.remove('connecting');
+            stopCall();
             return;
         }
 
-        socket.onopen = async () => {
-            btn.classList.remove('connecting');
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const source = audioContext.createMediaStreamSource(mediaStream);
-                processor = audioContext.createScriptProcessor(4096, 1, 1);
-                source.connect(processor);
-                processor.connect(audioContext.destination);
+        activeSocket.onopen = async () => {
+            // Убираем статус "подключение"
+            if (buttonType === 'floating') floatBtn.classList.remove('connecting');
+            if (buttonType === 'test') testBtn.classList.remove('connecting');
 
-                processor.onaudioprocess = function(e) {
-                    if (socket.readyState === WebSocket.OPEN) {
+            try {
+                activeMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = activeAudioContext.createMediaStreamSource(activeMediaStream);
+                activeProcessor = activeAudioContext.createScriptProcessor(4096, 1, 1);
+                source.connect(activeProcessor);
+                activeProcessor.connect(activeAudioContext.destination);
+
+                activeProcessor.onaudioprocess = function(e) {
+                    if (activeSocket && activeSocket.readyState === WebSocket.OPEN) {
                         const float32Array = e.inputBuffer.getChannelData(0);
                         const int16Array = new Int16Array(float32Array.length);
                         for (let i = 0; i < float32Array.length; i++) {
                             let s = Math.max(-1, Math.min(1, float32Array[i]));
                             int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
                         }
-                        socket.send(int16Array.buffer);
+                        activeSocket.send(int16Array.buffer);
                     }
                 };
-                
-                // Включаем активное состояние (красная кнопка)
-                btn.classList.add('recording');
-                iconPhone.style.display = 'none';
-                iconClose.style.display = 'block';
-                
-                nextPlayTime = audioContext.currentTime;
+
+                // 2. Включаем статус "Разговор" ТОЛЬКО для нажатой кнопки
+                if (buttonType === 'floating') {
+                    floatBtn.classList.add('recording');
+                    iconPhone.style.display = 'none';
+                    iconClose.style.display = 'block';
+                } else if (buttonType === 'test') {
+                    testBtn.classList.add('recording');
+                    testBtn.textContent = 'Încheie apelul';
+                    testBtn.style.background = '#ff3d00';
+                    testBtn.style.color = '#fff';
+                }
+
+                nextPlayTime = activeAudioContext.currentTime;
             } catch (err) {
                 alert('Нет доступа к микрофону!');
-                socket.close();
+                stopCall();
             }
         };
 
-        socket.onmessage = async (event) => {
+        activeSocket.onmessage = async (event) => {
             try {
-                if (typeof event.data === "string") return;
+                if (typeof event.data === "string" || !activeAudioContext) return;
 
                 const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
                 const int16Array = new Int16Array(arrayBuffer);
@@ -2426,15 +2458,15 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     float32Array[i] = int16Array[i] / 32768;
                 }
 
-                const buffer = audioContext.createBuffer(1, float32Array.length, 24000);
+                const buffer = activeAudioContext.createBuffer(1, float32Array.length, 24000);
                 buffer.getChannelData(0).set(float32Array);
 
-                const source = audioContext.createBufferSource();
+                const source = activeAudioContext.createBufferSource();
                 source.buffer = buffer;
-                source.connect(audioContext.destination);
+                source.connect(activeAudioContext.destination);
 
-                if (nextPlayTime < audioContext.currentTime) {
-                    nextPlayTime = audioContext.currentTime + 0.1; 
+                if (nextPlayTime < activeAudioContext.currentTime) {
+                    nextPlayTime = activeAudioContext.currentTime + 0.1;
                 }
                 source.start(nextPlayTime);
                 nextPlayTime += buffer.duration;
@@ -2443,16 +2475,31 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
             }
         };
 
-        const resetBtn = () => {
-            btn.classList.remove('connecting', 'recording');
-            iconPhone.style.display = 'block';
-            iconClose.style.display = 'none';
-        };
+        activeSocket.onerror = () => { alert('Ошибка сети!'); stopCall(); };
+        activeSocket.onclose = () => { stopCall(); };
+    }
 
-        socket.onerror = () => { alert('Ошибка сети!'); resetBtn(); };
-        socket.onclose = () => { resetBtn(); };
-    });
+    // --- ПРИВЯЗКА КЛИКОВ ---
+
+    // КЛИК: Зеленая плавающая кнопка (Боевой UUID)
+    if (floatBtn) {
+        floatBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (activeSocket) { stopCall(); } 
+            else { startCall("681ff2cc-afc4-435b-bcb5-e5699bc78159", 'floating'); }
+        });
+    }
+
+    // КЛИК: Бирюзовая тестовая кнопка (Тестовый UUID)
+    if (testBtn) {
+        testBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (activeSocket) { stopCall(); } 
+            else { startCall("07e1d002-20a3-47f8-b8cb-8736a60dc1f4", 'test'); }
+        });
+    }
 </script>
+
             
                 
 
