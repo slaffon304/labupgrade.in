@@ -2379,6 +2379,7 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
     }
 
     // Универсальная функция старта звонка
+        // Универсальная функция старта звонка
     async function startCall(clientId, buttonType) {
         if (activeSocket) return; // Защита от двойного клика
 
@@ -2391,25 +2392,35 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         }
 
         try {
+            // 2. ЗАПРАШИВАЕМ МИКРОФОН СРАЗУ ПО КЛИКУ (Обход блокировки браузера)
+            activeMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // 3. Создаем AudioContext
             activeAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             if (activeAudioContext.state === 'suspended') { await activeAudioContext.resume(); }
 
-            // Подключаемся с переданным UUID
+            // 4. Подключаем WebSocket
             activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?client_id=${clientId}`);
             activeSocket.binaryType = "arraybuffer";
-        } catch (err) {
-            alert('Ошибка создания WebSocket.');
-            stopCall();
-            return;
-        }
 
-        activeSocket.onopen = async () => {
-            // Убираем статус "подключение"
-            if (buttonType === 'floating') floatBtn.classList.remove('connecting');
-            if (buttonType === 'test') testBtn.classList.remove('connecting');
+            activeSocket.onopen = async () => {
+                // Убираем статус "подключение"
+                if (buttonType === 'floating') floatBtn.classList.remove('connecting');
+                if (buttonType === 'test') testBtn.classList.remove('connecting');
 
-            try {
-                activeMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // 5. Включаем статус "Разговор" ТОЛЬКО для нажатой кнопки
+                if (buttonType === 'floating') {
+                    floatBtn.classList.add('recording');
+                    iconPhone.style.display = 'none';
+                    iconClose.style.display = 'block';
+                } else if (buttonType === 'test') {
+                    testBtn.classList.add('recording');
+                    testBtn.textContent = 'Încheie apelul';
+                    testBtn.style.background = '#ff3d00';
+                    testBtn.style.color = '#fff';
+                }
+
+                // 6. Связываем уже полученный микрофон с сокетом
                 const source = activeAudioContext.createMediaStreamSource(activeMediaStream);
                 activeProcessor = activeAudioContext.createScriptProcessor(4096, 1, 1);
                 source.connect(activeProcessor);
@@ -2427,57 +2438,48 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
                     }
                 };
 
-                // 2. Включаем статус "Разговор" ТОЛЬКО для нажатой кнопки
-                if (buttonType === 'floating') {
-                    floatBtn.classList.add('recording');
-                    iconPhone.style.display = 'none';
-                    iconClose.style.display = 'block';
-                } else if (buttonType === 'test') {
-                    testBtn.classList.add('recording');
-                    testBtn.textContent = 'Încheie apelul';
-                    testBtn.style.background = '#ff3d00';
-                    testBtn.style.color = '#fff';
-                }
-
                 nextPlayTime = activeAudioContext.currentTime;
-            } catch (err) {
-                alert('Нет доступа к микрофону!');
-                stopCall();
-            }
-        };
+            };
 
-        activeSocket.onmessage = async (event) => {
-            try {
-                if (typeof event.data === "string" || !activeAudioContext) return;
+            activeSocket.onmessage = async (event) => {
+                try {
+                    if (typeof event.data === "string" || !activeAudioContext) return;
 
-                const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
-                const int16Array = new Int16Array(arrayBuffer);
-                const float32Array = new Float32Array(int16Array.length);
+                    const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
+                    const int16Array = new Int16Array(arrayBuffer);
+                    const float32Array = new Float32Array(int16Array.length);
 
-                for (let i = 0; i < int16Array.length; i++) {
-                    float32Array[i] = int16Array[i] / 32768;
+                    for (let i = 0; i < int16Array.length; i++) {
+                        float32Array[i] = int16Array[i] / 32768;
+                    }
+
+                    const buffer = activeAudioContext.createBuffer(1, float32Array.length, 24000);
+                    buffer.getChannelData(0).set(float32Array);
+
+                    const source = activeAudioContext.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(activeAudioContext.destination);
+
+                    if (nextPlayTime < activeAudioContext.currentTime) {
+                        nextPlayTime = activeAudioContext.currentTime + 0.1;
+                    }
+                    source.start(nextPlayTime);
+                    nextPlayTime += buffer.duration;
+                } catch (e) {
+                    console.error("Ошибка декодирования:", e);
                 }
+            };
 
-                const buffer = activeAudioContext.createBuffer(1, float32Array.length, 24000);
-                buffer.getChannelData(0).set(float32Array);
+            activeSocket.onerror = () => { alert('Ошибка сети!'); stopCall(); };
+            activeSocket.onclose = () => { stopCall(); };
 
-                const source = activeAudioContext.createBufferSource();
-                source.buffer = buffer;
-                source.connect(activeAudioContext.destination);
-
-                if (nextPlayTime < activeAudioContext.currentTime) {
-                    nextPlayTime = activeAudioContext.currentTime + 0.1;
-                }
-                source.start(nextPlayTime);
-                nextPlayTime += buffer.duration;
-            } catch (e) {
-                console.error("Ошибка декодирования:", e);
-            }
-        };
-
-        activeSocket.onerror = () => { alert('Ошибка сети!'); stopCall(); };
-        activeSocket.onclose = () => { stopCall(); };
+        } catch (err) {
+            console.error("Ошибка инициализации звонка:", err);
+            alert('Нет доступа к микрофону! Разрешите использование микрофона в настройках сайта.');
+            stopCall();
+        }
     }
+
 
     // --- ПРИВЯЗКА КЛИКОВ ---
 
