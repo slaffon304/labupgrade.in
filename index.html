@@ -494,35 +494,23 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         <button class="demo-tab-btn" onclick="switchDemo('voice', event)">Voice</button>
     </div>
 
-    <div class="demo-grid">
-                <div class="demo-card" id="demo-text">
+        <div class="demo-grid">
+        
+        <div class="demo-card" id="demo-text">
             <h3 style="margin-bottom: 10px;">Text AI</h3>
             <p style="margin-bottom: 15px;">Discută cu asistentul nostru și află cum te putem ajuta să-ți scalezi afacerea.</p>
-            
             <div class="inline-chat-container">
-                <div class="chat-messages" id="chat-messages">
+                <div class="chat-messages" id="chat-messages-text">
                     <div class="message ai-message">Salut! Sunt asistentul digital Lab Upgrade. Cu ce te pot ajuta astăzi?</div>
                 </div>
-                <div class="chat-input-area">
-                        <button id="record-btn" class="record-btn" title="Apasă pentru a înregistra" style="background: none; border: none; cursor: pointer; padding: 8px 12px; color: #8e8e93; display: flex; align-items: center; justify-content: center;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-    </svg>
-</button>
-
-
-                    <textarea id="chat-input" translate="no" placeholder="Scrie un mesaj..." rows="1"></textarea>
-                    <button id="send-chat-btn" class="send-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
+                <div class="chat-input-area" style="display: flex; align-items: flex-end; padding: 10px; background: #111; border-top: 1px solid #222; gap: 8px;">
+                    <textarea id="chat-input-text" translate="no" placeholder="Scrie un mesaj..." rows="1" style="flex-grow: 1; background: transparent; border: none; color: #fff; resize: none; outline: none; padding: 8px 5px; font-family: inherit; font-size: 15px; max-height: 120px;"></textarea>
+                    <button id="send-btn-text" class="send-btn" style="background: none; border: none; cursor: pointer; padding: 8px; color: #3390ec; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
             </div>
         </div>
-
 
         <div class="demo-card active highlight-card" id="demo-live">
             <h3>Live Assistant</h3>
@@ -531,12 +519,28 @@ Eliminăm haosul operațional, implementăm CRM, AI și sisteme digitale care tr
         </div>
 
         <div class="demo-card" id="demo-voice">
-            <h3>Voice Messages</h3>
-            <p>Comunicați natural prin mesaje vocale. AI-ul nostru înțelege contextul și generează răspunsuri audio clare.</p>
-            <button class="demo-action-btn dark">Înregistrează Mesaj</button>
+            <h3 style="margin-bottom: 10px;">Voice Messages</h3>
+            <p style="margin-bottom: 15px;">Comunicați natural prin mesaje vocale.</p>
+            <div class="inline-chat-container">
+                <div class="chat-messages" id="chat-messages-voice">
+                    <div class="message ai-message">Salut! Apasă pe microfon pentru a trimite un mesaj vocal.</div>
+                </div>
+                <div class="chat-input-area" style="display: flex; align-items: flex-end; padding: 10px; background: #111; border-top: 1px solid #222; gap: 8px;">
+                    <textarea id="chat-input-voice" translate="no" placeholder="Scrie un mesaj..." rows="1" style="flex-grow: 1; background: transparent; border: none; color: #fff; resize: none; outline: none; padding: 8px 5px; font-family: inherit; font-size: 15px; max-height: 120px;"></textarea>
+                    
+                    <button id="send-btn-voice" class="send-btn" style="display: none; background: none; border: none; cursor: pointer; padding: 8px; color: #3390ec;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                    
+                    <button id="record-btn-voice" class="record-btn" style="display: flex; background: none; border: none; cursor: pointer; padding: 8px; color: #8e8e93; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path></svg>
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+
+        </div>
+        
 
 <script>
     function switchDemo(targetId, event) {
