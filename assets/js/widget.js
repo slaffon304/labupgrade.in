@@ -55,7 +55,7 @@
     let nextPlayTime = 0;
 
     // 🟢 ИНИЦИАЛИЗАЦИЯ ГУДКА
-    const ringtone = new Audio('/assets/images/video/gudok.mp3');
+    const ringtone = new Audio('https://labupgrade.ai/assets/images/video/gudok.mp3');
     ringtone.loop = true; // Зацикливаем звук
 
     const btn = document.getElementById('lu-ai-call-btn');
