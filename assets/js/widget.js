@@ -47,18 +47,28 @@
         </button>
     `;
 
-    // 5. ЛОГИКА ЗВОНКА (Полная копия твоего кода)
+    // 5. ЛОГИКА ЗВОНКА (Полная копия твоего кода + логика гудка)
     let activeSocket = null;
     let activeAudioContext = null;
     let activeMediaStream = null;
     let activeProcessor = null;
     let nextPlayTime = 0;
 
+    // 🟢 ИНИЦИАЛИЗАЦИЯ ГУДКА
+    const ringtone = new Audio('/assets/images/video/gudok.mp3');
+    ringtone.loop = true; // Зацикливаем звук
+
     const btn = document.getElementById('lu-ai-call-btn');
     const iconPhone = document.getElementById('lu-ai-icon-phone');
     const iconClose = document.getElementById('lu-ai-icon-close');
 
     function stopCall() {
+        // Выключаем гудок при завершении вызова (или сбросе)
+        if (!ringtone.paused) {
+            ringtone.pause();
+            ringtone.currentTime = 0;
+        }
+
         if (activeProcessor) { activeProcessor.disconnect(); activeProcessor = null; }
         if (activeMediaStream) { activeMediaStream.getTracks().forEach(t => t.stop()); activeMediaStream = null; }
         if (activeAudioContext) { activeAudioContext.close(); activeAudioContext = null; }
@@ -75,6 +85,9 @@
         if (activeSocket) { stopCall(); return; }
 
         btn.classList.add('lu-connecting');
+
+        // 🟢 ЗАПУСКАЕМ ГУДОК ПРИ НАЖАТИИ
+        ringtone.play().catch(err => console.log("Браузер заблокировал автовоспроизведение звука:", err));
 
         try {
             // Твои настройки микрофона
@@ -125,6 +138,12 @@
             };
 
             activeSocket.onmessage = async (event) => {
+                // 🟢 ОТКЛЮЧАЕМ ГУДОК ПРИ ПЕРВОМ ОТВЕТЕ ОТ ИИ
+                if (!ringtone.paused) {
+                    ringtone.pause();
+                    ringtone.currentTime = 0;
+                }
+
                 try {
                     if (typeof event.data === "string" || !activeAudioContext) return;
                     const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
