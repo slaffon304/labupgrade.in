@@ -1,16 +1,13 @@
 (function() {
-    // 1. ИЩЕМ КОНТЕЙНЕР НА САЙТЕ КЛИЕНТА
     const container = document.getElementById('labupgrade-voice-widget');
-    if (!container) return; // Если контейнера нет, скрипт просто отдыхает
+    if (!container) return;
 
-    // 2. ДОСТАЕМ UUID КЛИЕНТА ИЗ HTML
     const clientId = container.getAttribute('data-client-id');
     if (!clientId) {
         console.error('LabUpgrade Voice Widget: lipsește atributul data-client-id');
         return;
     }
 
-    // 3. ВНЕДРЯЕМ ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ (Изолированно)
     const style = document.createElement('style');
     style.textContent = `
         .lu-floating-ai-btn {
@@ -35,7 +32,6 @@
     `;
     document.head.appendChild(style);
 
-    // 4. ВНЕДРЯЕМ КНОПКУ И ТВОИ SVG ИКОНКИ
     container.innerHTML = `
         <button class="lu-floating-ai-btn" id="lu-ai-call-btn" title="Apelează asistentul">
             <svg id="lu-ai-icon-phone" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -47,23 +43,23 @@
         </button>
     `;
 
-    // 5. ЛОГИКА ЗВОНКА (Полная копия твоего кода + логика гудка)
     let activeSocket = null;
     let activeAudioContext = null;
     let activeMediaStream = null;
     let activeProcessor = null;
     let nextPlayTime = 0;
 
-    // 🟢 ИНИЦИАЛИЗАЦИЯ ГУДКА
+    // 🟢 Предзагружаем гудок в фоне, чтобы он был готов мгновенно
     const ringtone = new Audio('https://labupgrade.ai/assets/images/video/gudok.mp3');
-    ringtone.loop = true; // Зацикливаем звук
+    ringtone.loop = true;
+    ringtone.preload = 'auto';
+    ringtone.load();
 
     const btn = document.getElementById('lu-ai-call-btn');
     const iconPhone = document.getElementById('lu-ai-icon-phone');
     const iconClose = document.getElementById('lu-ai-icon-close');
 
     function stopCall() {
-        // Выключаем гудок при завершении вызова (или сбросе)
         if (!ringtone.paused) {
             ringtone.pause();
             ringtone.currentTime = 0;
@@ -86,11 +82,7 @@
 
         btn.classList.add('lu-connecting');
 
-        // 🟢 ЗАПУСКАЕМ ГУДОК ПРИ НАЖАТИИ
-        ringtone.play().catch(err => console.log("Браузер заблокировал автовоспроизведение звука:", err));
-
         try {
-            // Твои настройки микрофона
             activeMediaStream = await navigator.mediaDevices.getUserMedia({ 
                 audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } 
             });
@@ -98,7 +90,6 @@
             activeAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             if (activeAudioContext.state === 'suspended') { await activeAudioContext.resume(); }
 
-            // Подключение с UUID клиента
             activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?client_id=${clientId}`);
             activeSocket.binaryType = "arraybuffer";
 
@@ -107,6 +98,9 @@
                 btn.classList.add('lu-recording');
                 iconPhone.style.display = 'none';
                 iconClose.style.display = 'block';
+
+                // 🟢 Гудок стартует только ЗДЕСЬ, когда микрофон уже активен и сокет открыт
+                ringtone.play().catch(err => console.log("Браузер заблокировал звук:", err));
 
                 const source = activeAudioContext.createMediaStreamSource(activeMediaStream);
                 activeProcessor = activeAudioContext.createScriptProcessor(4096, 1, 1);
@@ -117,7 +111,6 @@
                     if (activeSocket && activeSocket.readyState === WebSocket.OPEN) {
                         const float32Array = e.inputBuffer.getChannelData(0);
                         
-                        // Твой Noise Gate (порог 0.03)
                         let maxAmplitude = 0;
                         for (let i = 0; i < float32Array.length; i++) {
                             let absVal = Math.abs(float32Array[i]);
@@ -138,14 +131,19 @@
             };
 
             activeSocket.onmessage = async (event) => {
-                // 🟢 ОТКЛЮЧАЕМ ГУДОК ПРИ ПЕРВОМ ОТВЕТЕ ОТ ИИ
-                if (!ringtone.paused) {
-                    ringtone.pause();
-                    ringtone.currentTime = 0;
+                // 🟢 Отключаем гудок ТОЛЬКО если прилетело бинарное аудио (голос ИИ)
+                if (event.data instanceof Blob || event.data instanceof ArrayBuffer) {
+                    if (!ringtone.paused) {
+                        ringtone.pause();
+                        ringtone.currentTime = 0;
+                    }
+                } else {
+                    // Если пришел текст (например, пинг), игнорируем
+                    return;
                 }
 
                 try {
-                    if (typeof event.data === "string" || !activeAudioContext) return;
+                    if (!activeAudioContext) return;
                     const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
                     const int16Array = new Int16Array(arrayBuffer);
                     const float32Array = new Float32Array(int16Array.length);
