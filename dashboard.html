@@ -702,16 +702,20 @@ if (error) {
                         let fbRes;
                         
                         if (clientType === 'wa') {
+                            // Отрезаем номер телефона от ID сессии (берем всё до нижнего подчеркивания)
+                            const cleanPhone = this.currentSession.includes('_') ? this.currentSession.split('_')[0] : this.currentSession;
+                            
                             fbRes = await fetch(`https://graph.facebook.com/v24.0/${pageId}/messages?access_token=${token}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
                                     messaging_product: "whatsapp",
-                                    to: this.currentSession,
+                                    to: cleanPhone, // <-- ТЕПЕРЬ ПЕРЕДАЕМ ЧИСТЫЙ НОМЕР
                                     type: "text",
                                     text: { body: this.replyText }
                                 })
                             });
+
                         } else if (this.replyContext) {
                             fbRes = await fetch(`https://graph.facebook.com/v24.0/${pageId}/messages?access_token=${token}`, {
                                 method: 'POST',
