@@ -316,14 +316,20 @@
                         
                         if (pageId) {
                             if (type === 'wa') {
-                                const channel = this.botChannels.find(b => String(b.identifier) === String(pageId));
-                                if (channel) {
-                                    const project = this.saasProjects.find(p => p.id === channel.client_id);
-                                    if (project) {
-                                        const st = String(project.wa_subscription_status || '').trim().toLowerCase();
-                                        isPageActive = (st === 'active' || st === 'trial');
-                                    }
-                                }
+    const channel = this.botChannels.find(b => String(b.identifier).trim() === String(pageId).trim());
+    if (channel) {
+        const projId = channel.client_id;
+        // Заменили на твой надежный поиск по двум колонкам с защитой (String)
+        const project = this.saasProjects.find(p => String(p.id) === String(projId) || String(p.client_id) === String(projId));
+        
+        if (project) {
+            const st = String(project.wa_subscription_status || '').trim().toLowerCase();
+            isPageActive = (st === 'active' || st === 'trial');
+        }
+    }
+}
+
+
                             } else {
                                 const saas = this.saasPages.find(s => 
                                     String(s.fb_page_id).trim() === String(pageId).trim() || 
@@ -411,7 +417,8 @@
                         const currentStatus = String(project.wa_subscription_status || '').toLowerCase();
                         const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
                         
-                        project.wa_subscription_status = newStatus; 
+                        project.wa_subscription_status = newStatus;
+                        this.saasProjects = [...this.saasProjects]; 
                         
                         // Определяем правильное имя колонки первичного ключа для обновления
                         const pkColumn = project.id ? 'id' : 'client_id';
