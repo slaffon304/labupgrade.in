@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,6 +33,7 @@
         /* СТИЛИ ИКОНОК (БРЕНДОВ) */
         .bg-fb-gradient { background: linear-gradient(45deg, #1877F2, #0054c3); }
         .bg-ig-gradient { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .bg-wa-gradient { background: linear-gradient(45deg, #128C7E, #25D366); }
         .brand-icon { display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px; }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -40,8 +41,7 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-    
+    <script>eruda.init();</script>
 </head>
 <body>
     <div id="app" class="h-screen flex flex-col">
@@ -71,6 +71,7 @@
             <aside class="w-80 glass border-r border-gray-700 flex flex-col z-10">
                 <div class="tabs-wrapper">
                     <div @click="filter = 'all'" class="tab-item" :class="{'active': filter === 'all'}">ALL</div>
+                    <div @click="filter = 'wa'" class="tab-item" :class="{'active': filter === 'wa'}"><i class="fab fa-whatsapp mr-1.5 text-lg"></i> WHATSAPP</div>
                     <div @click="filter = 'ig'" class="tab-item" :class="{'active': filter === 'ig'}"><i class="fab fa-instagram mr-1.5 text-lg"></i> INSTAGRAM</div>
                     <div @click="filter = 'fb'" class="tab-item" :class="{'active': filter === 'fb'}"><i class="fab fa-facebook mr-1.5 text-lg"></i> FACEBOOK</div>
                 </div>
@@ -83,7 +84,7 @@
                         <div class="flex justify-between items-center mb-2">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-inner"
-                                     :class="session.type === 'ig' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : 'bg-blue-600'">
+                                     :class="session.type === 'ig' ? 'bg-gradient-to-tr from-yellow-500 to-pink-600' : (session.type === 'wa' ? 'bg-wa-gradient' : 'bg-blue-600')">
                                     {{ getInitials(session.clientName) }}
                                 </div>
                                 <span class="font-bold text-sm text-gray-100 truncate w-32">{{ session.clientName }}</span>
@@ -93,14 +94,14 @@
                         <div class="flex items-center justify-between bg-black/20 p-2 rounded-lg border border-white/5">
                             <div class="flex flex-col">
                                 <div class="flex items-center gap-2 mb-0.5">
-                                    <div class="brand-icon w-5 h-5 text-[10px]" :class="session.type === 'ig' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
-                                        <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : 'fa-facebook'"></i>
+                                    <div class="brand-icon w-5 h-5 text-[10px]" :class="session.type === 'ig' ? 'bg-ig-gradient' : (session.type === 'wa' ? 'bg-wa-gradient' : 'bg-fb-gradient')">
+                                        <i class="fab" :class="session.type === 'ig' ? 'fa-instagram' : (session.type === 'wa' ? 'fa-whatsapp' : 'fa-facebook')"></i>
                                     </div>
                                     <span class="text-[10px] font-bold text-gray-300 truncate w-24">
                                         {{ session.pageName }}
                                     </span>
                                 </div>
-                                <span class="text-[9px] text-gray-500 ml-7">{{ session.type === 'ig' ? 'Direct' : 'Messenger' }}</span>
+                                <span class="text-[9px] text-gray-500 ml-7">{{ session.type === 'ig' ? 'Direct' : (session.type === 'wa' ? 'WhatsApp' : 'Messenger') }}</span>
                             </div>
 
                             <div @click.stop="togglePageStatus(session.pageId)" class="flex items-center gap-2">
@@ -127,13 +128,13 @@
                         <div>
                             <h2 class="font-bold text-white text-lg">{{ getClientName(currentSession) }}</h2>
                              <div v-if="replyContext" class="ml-4 inline-flex items-center gap-2 bg-blue-600/30 px-3 py-1 rounded-full border border-blue-500/50">
-    <span class="text-[10px] font-bold text-blue-400 uppercase">Replying to Comment</span>
-    <button @click="replyContext = null; replyText = ''" class="text-blue-400 hover:text-white"><i class="fas fa-times-circle"></i></button>
+                                <span class="text-[10px] font-bold text-blue-400 uppercase">Replying to Comment</span>
+                                <button @click="replyContext = null; replyText = ''" class="text-blue-400 hover:text-white"><i class="fas fa-times-circle"></i></button>
                              </div>
                             
                             <div class="mt-1">
-                                <div class="brand-icon w-6 h-6 text-xs" :class="getClientType(currentSession) === 'ig' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
-                                    <i class="fab" :class="getClientType(currentSession) === 'ig' ? 'fa-instagram' : 'fa-facebook'"></i>
+                                <div class="brand-icon w-6 h-6 text-xs" :class="getClientType(currentSession) === 'ig' ? 'bg-ig-gradient' : (getClientType(currentSession) === 'wa' ? 'bg-wa-gradient' : 'bg-fb-gradient')">
+                                    <i class="fab" :class="getClientType(currentSession) === 'ig' ? 'fa-instagram' : (getClientType(currentSession) === 'wa' ? 'fa-whatsapp' : 'fa-facebook')"></i>
                                 </div>
                             </div>
                         </div>
@@ -141,76 +142,76 @@
                     <div class="flex-1 p-6 overflow-y-auto space-y-6" ref="chatBox">
                         
                         <div v-for="msg in sessionMessages" :key="msg.id" class="flex flex-col w-full mb-4 px-2">
-    <div class="flex gap-3" :class="(msg.role === 'ai' || msg.role === 'admin' || msg.is_admin) ? 'justify-end' : 'justify-start'">
-        
-        <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
-            <i class="fas fa-user"></i>
-        </div>
-        
-        <div class="msg-bubble transition-all duration-300" 
-             :class="[
-                (msg.role === 'ai' || msg.role === 'admin' || msg.is_admin) ? 'msg-ai' : 'msg-human', 
-                editingMsgId === msg.id ? 'w-full' : '',
-                msg.is_hidden ? 'opacity-60 grayscale bg-gray-800 border border-gray-600' : ''
-             ]" 
-             style="min-width: 100px; max-width: 90%;">
-            
-            <div v-if="!msg.is_deleted">
-                <div class="flex items-center gap-2 mb-1">
-                    <div v-if="msg.instagram_comment_id">
-                        <span class="bg-blue-600 text-[9px] px-1.5 py-0.5 rounded font-bold text-white uppercase tracking-wider">
-                            <i class="fas fa-hashtag"></i> Comment
-                        </span>
-                    </div>
-                    <div v-if="msg.is_hidden">
-                        <span class="bg-gray-600 border border-gray-400 text-[9px] px-1.5 py-0.5 rounded font-bold text-white uppercase tracking-wider">
-                            <i class="fas fa-eye-slash mr-1"></i> HIDDEN
-                        </span>
-                    </div>
-                </div>
+                            <div class="flex gap-3" :class="(msg.role === 'ai' || msg.role === 'admin' || msg.is_admin) ? 'justify-end' : 'justify-start'">
+                                
+                                <div v-if="msg.role === 'human'" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 mt-auto text-gray-400 text-xs">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                
+                                <div class="msg-bubble transition-all duration-300" 
+                                     :class="[
+                                        (msg.role === 'ai' || msg.role === 'admin' || msg.is_admin) ? 'msg-ai' : 'msg-human', 
+                                        editingMsgId === msg.id ? 'w-full' : '',
+                                        msg.is_hidden ? 'opacity-60 grayscale bg-gray-800 border border-gray-600' : ''
+                                     ]" 
+                                     style="min-width: 100px; max-width: 90%;">
+                                    
+                                    <div v-if="!msg.is_deleted">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <div v-if="msg.instagram_comment_id">
+                                                <span class="bg-blue-600 text-[9px] px-1.5 py-0.5 rounded font-bold text-white uppercase tracking-wider">
+                                                    <i class="fas fa-hashtag"></i> Comment
+                                                </span>
+                                            </div>
+                                            <div v-if="msg.is_hidden">
+                                                <span class="bg-gray-600 border border-gray-400 text-[9px] px-1.5 py-0.5 rounded font-bold text-white uppercase tracking-wider">
+                                                    <i class="fas fa-eye-slash mr-1"></i> HIDDEN
+                                                </span>
+                                            </div>
+                                        </div>
 
-                <div v-if="editingMsgId === msg.id" style="width: 100%; min-width: 280px;">
-                    <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="5"></textarea>
-                    <div class="flex justify-end gap-2 mt-2">
-                        <button @click="editingMsgId = null" class="text-[10px] text-gray-400 px-2 uppercase tracking-tighter">Cancel</button>
-                        <button @click="saveEdit(msg)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded font-bold uppercase">Save</button>
-                    </div>
-                </div>
-                
-                <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">
-                    <div v-if="parseMessage(msg.message).reply_to_text" class="mb-2 px-3 py-2 bg-black/20 rounded border-l-4 border-gray-500 text-xs text-gray-300 italic min-w-[200px] whitespace-normal">
-                        <div class="font-bold not-italic text-gray-400 mb-0.5">
-                            <i class="fa-solid fa-share mr-1"></i>Replying to:
+                                        <div v-if="editingMsgId === msg.id" style="width: 100%; min-width: 280px;">
+                                            <textarea v-model="editingText" class="w-full bg-black/40 border border-blue-500 rounded p-2 text-sm text-white focus:outline-none" rows="5"></textarea>
+                                            <div class="flex justify-end gap-2 mt-2">
+                                                <button @click="editingMsgId = null" class="text-[10px] text-gray-400 px-2 uppercase tracking-tighter">Cancel</button>
+                                                <button @click="saveEdit(msg)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded font-bold uppercase">Save</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div v-else class="text-sm whitespace-pre-wrap leading-relaxed">
+                                            <div v-if="parseMessage(msg.message).reply_to_text" class="mb-2 px-3 py-2 bg-black/20 rounded border-l-4 border-gray-500 text-xs text-gray-300 italic min-w-[200px] whitespace-normal">
+                                                <div class="font-bold not-italic text-gray-400 mb-0.5">
+                                                    <i class="fa-solid fa-share mr-1"></i>Replying to:
+                                                </div>
+                                                "{{ parseMessage(msg.message).reply_to_text.substring(0, 60) }}..."
+                                            </div>
+                                            {{ parseMessage(msg.message).content }}
+                                        </div>
+
+                                        <div v-if="editingMsgId !== msg.id" class="mt-2 pt-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-white/50">
+                                            <button v-if="getClientType(currentSession) !== 'wa'" @click="handleReplyClick(msg)"><i class="fas fa-reply"></i> Reply</button>
+                                            <button v-if="msg.role === 'ai' || msg.role === 'admin'" @click="startEdit(msg)"><i class="fas fa-edit"></i> Edit</button>
+                                            
+                                            <button v-if="msg.instagram_comment_id" @click="toggleHide(msg)" :class="{'text-yellow-400 font-bold': msg.is_hidden}">
+                                                <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
+                                                {{ msg.is_hidden ? 'Unhide' : 'Hide' }}
+                                            </button>
+                                            
+                                            <button @click="deleteMsg(msg)" class="hover:text-red-400"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-xs italic text-gray-400 py-1">Deleted</div>
+
+                                    <div v-if="activeInlineReplyId === msg.id && editingMsgId !== msg.id" class="mt-3 p-2 bg-black/30 rounded-lg border border-white/10">
+                                        <textarea v-model="inlineReplyText" placeholder="Write a reply..." class="w-full bg-transparent border-none text-xs text-white focus:outline-none" rows="2"></textarea>
+                                        <div class="flex justify-end gap-2 mt-1">
+                                            <button @click="activeInlineReplyId = null" class="text-[10px] text-gray-500">Cancel</button>
+                                            <button @click="sendInlineReply(msg)" class="text-blue-400 text-[10px] font-bold uppercase">Send</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        "{{ parseMessage(msg.message).reply_to_text.substring(0, 60) }}..."
-                    </div>
-                    {{ parseMessage(msg.message).content }}
-                </div>
-
-                <div v-if="editingMsgId !== msg.id" class="mt-2 pt-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-white/50">
-                    <button @click="handleReplyClick(msg)"><i class="fas fa-reply"></i> Reply</button>
-                    <button v-if="msg.role === 'ai' || msg.role === 'admin'" @click="startEdit(msg)"><i class="fas fa-edit"></i> Edit</button>
-                    
-                    <button v-if="msg.instagram_comment_id" @click="toggleHide(msg)" :class="{'text-yellow-400 font-bold': msg.is_hidden}">
-                        <i class="fas" :class="msg.is_hidden ? 'fa-eye' : 'fa-eye-slash'"></i> 
-                        {{ msg.is_hidden ? 'Unhide' : 'Hide' }}
-                    </button>
-                    
-                    <button @click="deleteMsg(msg)" class="hover:text-red-400"><i class="fas fa-trash"></i> Delete</button>
-                </div>
-            </div>
-            <div v-else class="text-xs italic text-gray-400 py-1">Deleted</div>
-
-            <div v-if="activeInlineReplyId === msg.id && editingMsgId !== msg.id" class="mt-3 p-2 bg-black/30 rounded-lg border border-white/10">
-                <textarea v-model="inlineReplyText" placeholder="Write a reply..." class="w-full bg-transparent border-none text-xs text-white focus:outline-none" rows="2"></textarea>
-                <div class="flex justify-end gap-2 mt-1">
-                    <button @click="activeInlineReplyId = null" class="text-[10px] text-gray-500">Cancel</button>
-                    <button @click="sendInlineReply(msg)" class="text-blue-400 text-[10px] font-bold uppercase">Send</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
                     </div>
 
@@ -239,8 +240,8 @@
                     <div v-if="flatAssets.length > 0" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                         <div v-for="asset in flatAssets" :key="asset.uniqueId" class="bg-gray-800 p-4 rounded-lg flex items-center justify-between border border-gray-700">
                             <div class="flex items-center gap-4">
-                                <div class="brand-icon w-10 h-10 text-xl shrink-0" :class="asset.platform === 'instagram' ? 'bg-ig-gradient' : 'bg-fb-gradient'">
-                                    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : 'fa-facebook'"></i>
+                                <div class="brand-icon w-10 h-10 text-xl shrink-0" :class="asset.platform === 'instagram' ? 'bg-ig-gradient' : (asset.platform === 'whatsapp' ? 'bg-wa-gradient' : 'bg-fb-gradient')">
+                                    <i class="fab" :class="asset.platform === 'instagram' ? 'fa-instagram' : (asset.platform === 'whatsapp' ? 'fa-whatsapp' : 'fa-facebook')"></i>
                                 </div>
                                 <div>
                                     <h3 class="font-bold text-sm text-white">{{ asset.name }}</h3>
@@ -281,12 +282,12 @@
                     showChannels: false, flatAssets: [], isLoadingChannels: false,
                     filter: 'all',
                     replyContext: null,
-                    activeInlineReplyId: null, // ID сообщения для вложенного ответа
-                    inlineReplyText: '',       // Текст во вложенном поле
-                    editingMsgId: null,        // ID сообщения, которое правим
-                    editingText: '',           // Текст в режиме редактирования
+                    activeInlineReplyId: null,
+                    inlineReplyText: '',      
+                    editingMsgId: null,        
+                    editingText: '',           
                     
-                    adminInfo: { fbName: '', fbId: '', igName: '', igId: '', token: '' }
+                    adminInfo: { fbName: '', fbId: '', igName: '', igId: '', waName: '', waId: '', token: '' }
                 }
             },
             computed: {
@@ -300,25 +301,26 @@
                         let pageName = 'Unknown';
                         let pageId = null;
                         
-                        // ДЛЯ ОТОБРАЖЕНИЯ (ЧТЕНИЯ) используем ID платформ из URL
                         if (type === 'ig') {
                             pageName = this.adminInfo.igName || 'Instagram';
                             pageId = this.adminInfo.igId; 
+                        } else if (type === 'wa') {
+                            pageName = this.adminInfo.waName || 'WhatsApp';
+                            pageId = this.adminInfo.waId; 
                         } else {
                             pageName = this.adminInfo.fbName || 'Facebook Page';
                             pageId = this.adminInfo.fbId; 
                         }
 
-                        // ПРОВЕРКА СТАТУСА: Ищем запись по любому из ID (FB или IG)
                         let isPageActive = false;
                         if (pageId) {
                             const saas = this.saasPages.find(s => 
                                 String(s.fb_page_id).trim() === String(pageId).trim() || 
-                                String(s.ig_id).trim() === String(pageId).trim()
+                                String(s.ig_id).trim() === String(pageId).trim() ||
+                                String(s.wa_id).trim() === String(pageId).trim()
                             );
                             if (saas) {
-                                // ИСПРАВЛЕНО: Читаем из РАЗНЫХ колонок в зависимости от типа чата
-                                let col = (type === 'ig') ? 'subscription_status_ig' : 'subscription_status_fb';
+                                let col = (type === 'wa') ? 'subscription_status_wa' : ((type === 'ig') ? 'subscription_status_ig' : 'subscription_status_fb');
                                 const st = String(saas[col] || '').trim().toLowerCase();
                                 isPageActive = (st === 'active' || st === 'trial');
                             }
@@ -340,6 +342,8 @@
                 this.adminInfo.fbId = params.get('fbI');
                 this.adminInfo.igName = params.get('igN');
                 this.adminInfo.igId = params.get('igI');
+                this.adminInfo.waName = params.get('waN');
+                this.adminInfo.waId = params.get('waI');
                 this.adminInfo.token = params.get('token');
 
                 window.fbAsyncInit = function() {
@@ -351,15 +355,14 @@
                     });
                 };
 
-                const pageId = params.get('fbI') || params.get('igI');
-                if (pageId) this.pageLogoUrl = `https://graph.facebook.com/${pageId}/picture?type=large`;
-                else this.logoError = true;
+                const pageId = params.get('fbI') || params.get('igI') || params.get('waI');
+                if (pageId && !params.get('waI')) this.pageLogoUrl = `https://graph.facebook.com/${pageId}/picture?type=large`;
+                else this.logoError = true; // Use generic logo for WA as picture endpoint differs
 
                 await Promise.all([this.fetchMessages(), this.fetchClients(), this.fetchSaasClients()]);
                 sb.channel('public:chat_memory').on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => this.fetchMessages()).subscribe();
             },
             methods: {
-                                // --- ВСТАВИТЬ ЭТО В НАЧАЛО METHODS ---
                 parseMessage(data) {
                     if (!data) return {};
                     if (typeof data === 'string') {
@@ -367,7 +370,6 @@
                     }
                     return data;
                 },
-                // -------------------------------------
                 
                 connectNewPage() {
                     FB.login((response) => {
@@ -381,42 +383,38 @@
                     });
                 },
 
-                // ГЛАВНАЯ ФУНКЦИЯ (Теперь работает с двумя колонками)
                 async togglePageStatus(pageId) {
                     if (!pageId) return;
 
-                    // 1. Находим страницу в памяти
-                    const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId);
+                    const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId || s.wa_id == pageId);
                     
                     if (!page) {
                         console.error('Page not found');
                         return;
                     }
 
-                    // 2. Определяем, какую колонку обновлять и проверяем ID
                     let targetColumn = '';
                     
-                    if (String(page.ig_id) === String(pageId)) {
-                        targetColumn = 'subscription_status_ig'; // Нажали на Инсту
+                    if (String(page.wa_id) === String(pageId)) {
+                        targetColumn = 'subscription_status_wa'; 
+                    } else if (String(page.ig_id) === String(pageId)) {
+                        targetColumn = 'subscription_status_ig'; 
                     } else {
-                        targetColumn = 'subscription_status_fb'; // Нажали на Фейсбук
+                        targetColumn = 'subscription_status_fb'; 
                     }
 
-                    // 3. Вычисляем новый статус
                     const currentStatus = String(page[targetColumn] || '').toLowerCase();
                     const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    // 4. МГНОВЕННО обновляем интерфейс
                     page[targetColumn] = newStatus;
 
-                    // 5. Отправляем в базу (строго по UUID)
                     const { error } = await sb.from('saas_clients')
                         .update({ [targetColumn]: newStatus }) 
                         .eq('id', page.id);
 
                     if (error) {
-                        console.error('Ошибка сохранения:', error);
-                        page[targetColumn] = currentStatus; // Откат
+                        console.error('Save error:', error);
+                        page[targetColumn] = currentStatus; 
                     }
                 },
 
@@ -432,26 +430,21 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
-                                // Ищем совпадение в локальной базе
                                 const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
-                                // --- ЛОГИКА ДЛЯ ФЕЙСБУКА ---
                                 let stFb = 'false';
                                 if (dbFb) stFb = String(dbFb.subscription_status_fb || '').trim().toLowerCase();
                                 const isFbOn = (stFb === 'active' || stFb === 'trial');
                                 let fbDisplay = isFbOn ? (stFb === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF';
                                 
-                                // Добавляем FB актив
                                 this.flatAssets.push({
                                     uniqueId: 'fb_' + page.id, id: page.id, name: page.name, platform: 'facebook',
                                     isOn: isFbOn, statusDisplay: fbDisplay
                                 });
 
-                                // --- ЛОГИКА ДЛЯ ИНСТАГРАМА ---
                                 if (page.instagram_business_account) {
                                     const igId = page.instagram_business_account.id;
                                     
-                                    // Читаем из новой колонки _ig
                                     let stIg = 'false';
                                     if (dbFb) stIg = String(dbFb.subscription_status_ig || '').trim().toLowerCase();
                                     const isIgOn = (stIg === 'active' || stIg === 'trial');
@@ -464,34 +457,40 @@
                                 }
                             });
                         }
+
+                        if (this.adminInfo.waId) {
+                            const waDb = this.saasPages.find(s => String(s.wa_id).trim() === String(this.adminInfo.waId).trim());
+                            let stWa = 'false';
+                            if (waDb) stWa = String(waDb.subscription_status_wa || '').trim().toLowerCase();
+                            const isWaOn = (stWa === 'active' || stWa === 'trial');
+                            this.flatAssets.push({
+                                uniqueId: 'wa_' + this.adminInfo.waId, id: this.adminInfo.waId, name: this.adminInfo.waName || 'WhatsApp Business', platform: 'whatsapp',
+                                isOn: isWaOn, statusDisplay: isWaOn ? (stWa === 'trial' ? 'TRIAL' : 'ACTIVE') : 'OFF'
+                            });
+                        }
+
                     } catch(e) { console.error(e); } finally { this.isLoadingChannels = false; }
                 },
 
                 async toggleAssetStatus(asset) {
-                    // 1. Меняем вид в модалке
                     asset.isOn = !asset.isOn;
                     asset.statusDisplay = asset.isOn ? 'ACTIVE' : 'OFF';
-
-                    // 2. Вызываем главную функцию, передавая ID платформы
                     await this.togglePageStatus(asset.id);
                 },
 
-                                     async fetchMessages() {
+                async fetchMessages() {
                     const { data } = await sb.from('chat_memory').select('*').order('created_at', { ascending: true });
                     if (data) {
                         this.messages = data.map(row => {
-                            // 1. Нормализация JSON
                             let cObj = row.message;
                             if (typeof cObj === 'string') { 
                                 try { cObj = JSON.parse(cObj); } catch(e) { cObj = { content: row.message, type: 'human' }; } 
                             }
                             
-                            // 2. Извлекаем контент
                             let rawContent = cObj.content || "";
                             let finalContent = rawContent;
                             let commentId = null;
 
-                            // 3. Обработка public_text/private_text (от n8n)
                             if (typeof rawContent === 'string' && (rawContent.startsWith('{') || rawContent.includes('"public_text"'))) {
                                 try {
                                     const innerJson = JSON.parse(rawContent);
@@ -504,20 +503,14 @@
                                 } catch (e) { }
                             }
 
-                            // 4. Вырезаем HIDDEN_ID
                             const hiddenMatch = finalContent.match(/HIDDEN_ID:(.*?)\|\|\|/);
                             if (hiddenMatch) {
                                 commentId = hiddenMatch[1].trim();
                                 finalContent = finalContent.replace(hiddenMatch[0], '').trim();
                             }
                             
-                            // --- ВОТ ГЛАВНОЕ ИСПРАВЛЕНИЕ ---
-                            
-                            // Определяем type (если был role, превращаем его в type)
                             const safeType = cObj.type || cObj.role || 'human';
 
-                            // Создаем АБСОЛЮТНО ЧИСТЫЙ объект для message
-                            // В нем НЕТ поля 'role', только 'type'
                             const cleanMessageObj = {
                                 type: safeType,
                                 content: finalContent,
@@ -530,13 +523,8 @@
                                 id: row.id, 
                                 session_id: row.session_id, 
                                 content: finalContent, 
-                                
-                                // Сюда кладем наш чистый объект (теперь n8n не подавится)
                                 message: cleanMessageObj, 
-                                
-                                // А это для Vue (отображение), тут role допустим, но он не попадет в базу
                                 role: safeType, 
-                                
                                 is_admin: cObj.is_admin || false, 
                                 is_hidden: row.is_hidden, 
                                 is_deleted: row.is_deleted, 
@@ -549,16 +537,14 @@
                     this.scrollToBottom();
                 },
 
-
-
                 prepareReply(msg) {
-    this.replyContext = msg.instagram_comment_id;
-    this.replyText = `@User `; 
-},
-                                                async toggleHide(msg) {
+                    this.replyContext = msg.instagram_comment_id;
+                    this.replyText = `@User `; 
+                },
+
+                async toggleHide(msg) {
                     const token = this.getPageToken(this.currentSession);
                     
-                    // ИЗМЕНЕНИЕ: Если нет токена — выводим ошибку, а не пишем молча в базу
                     if (!token) {
                         alert("Error: Access Token not found!");
                         return;
@@ -568,7 +554,6 @@
                         return;
                     }
 
-                    // Дальше твой код без изменений (только Alert перевел на английский)
                     const type = this.getClientType(this.currentSession);
                     const nextStatus = !msg.is_hidden;
                     
@@ -590,33 +575,27 @@
                     }
                 },
 
-
                 async deleteMsg(msg) {
-    if (!confirm('Are you sure you want to DELETE this comment permanently?')) return;
+                    if (!confirm('Are you sure you want to DELETE this comment permanently?')) return;
                     const token = this.getPageToken(this.currentSession);
-                    console.log("DEBUG DELETE -> MsgID:", msg.id, "MetaID:", msg.instagram_comment_id, "Token:", token ? "EST" : "NET");
                     try {
                         if (msg.instagram_comment_id && token) {
                             const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?access_token=${token}`;
-                            console.log("DEBUG: Sending request to:", url);
                             const res = await fetch(url, { method: 'DELETE' });
                             const d = await res.json();
-                            console.log("DEBUG: Meta Response:", d);
                             if (!d.success && !d.id) throw new Error(d.error?.message);
                         }
                         await sb.from('chat_memory').update({ is_deleted: true }).eq('id', msg.id);
                         msg.is_deleted = true;
-                    } catch(e) { alert("Ошибка удаления: " + e.message); }
+                    } catch(e) { alert("Delete error: " + e.message); }
                 },
 
+                getPageToken(sid) {
+                    const sess = this.enrichedSessions.find(s => s.session_id === sid);
+                    const page = this.saasPages.find(p => String(p.fb_page_id) === String(sess?.pageId) || String(p.ig_id) === String(sess?.pageId) || String(p.wa_id) === String(sess?.pageId));
+                    return page ? (page.fb_api_token || page.page_access_token) : null;
+                },
 
-getPageToken(sid) {
-    const sess = this.enrichedSessions.find(s => s.session_id === sid);
-    const page = this.saasPages.find(p => String(p.fb_page_id) === String(sess?.pageId) || String(p.ig_id) === String(sess?.pageId));
-    return page ? (page.fb_api_token || page.page_access_token) : null;
-},
-
-                        
                 async fetchClients() {
                     const { data } = await sb.from('end_clients').select('*');
                     if (data) {
@@ -625,11 +604,11 @@ getPageToken(sid) {
                             const n = c.name || c.username || 'Client';
                             if (c.instagram_id) this.clientMap[c.instagram_id] = { name: n, type: 'ig' };
                             if (c.psid) this.clientMap[c.psid] = { name: n, type: 'fb' };
+                            if (c.whatsapp_id || c.phone) this.clientMap[c.whatsapp_id || c.phone] = { name: n, type: 'wa' };
                         });
                     }
                 },
                 async fetchSaasClients() {
-                    // Звездочка (*) подтянет все новые колонки автоматически
                     const { data } = await sb.from('saas_clients').select('*');
                     if (data) this.saasPages = data;
                 },
@@ -637,7 +616,6 @@ getPageToken(sid) {
                 getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
                 
-                    
                 async sendReply() {
                     if (!this.replyText.trim() || this.isSending) return;
                     this.isSending = true;
@@ -645,12 +623,24 @@ getPageToken(sid) {
                     try {
                         const token = this.getPageToken(this.currentSession);
                         const pageId = this.getPageId(this.currentSession);
+                        const clientType = this.getClientType(this.currentSession);
                         
-                        if (!token || !pageId) throw new Error("ID страницы или Токен не найдены. Проверьте подключение.");
+                        if (!token || !pageId) throw new Error("Page ID or Token missing.");
 
                         let fbRes;
-                        if (this.replyContext) {
-                            // МЕТОД PRIVATE REPLY (как в твоем n8n)
+                        
+                        if (clientType === 'wa') {
+                            fbRes = await fetch(`https://graph.facebook.com/v24.0/${pageId}/messages?access_token=${token}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    messaging_product: "whatsapp",
+                                    to: this.currentSession,
+                                    type: "text",
+                                    text: { body: this.replyText }
+                                })
+                            });
+                        } else if (this.replyContext) {
                             fbRes = await fetch(`https://graph.facebook.com/v24.0/${pageId}/messages?access_token=${token}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -660,7 +650,6 @@ getPageToken(sid) {
                                 })
                             });
                         } else {
-                            // ОБЫЧНОЕ ЛИЧНОЕ СООБЩЕНИЕ (Direct/Messenger)
                             fbRes = await fetch(`https://graph.facebook.com/v24.0/me/messages?access_token=${token}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -674,31 +663,21 @@ getPageToken(sid) {
                         const fbData = await fbRes.json();
                         if (fbData.error) throw new Error("Meta API Error: " + fbData.error.message);
 
-                        // Сохранение в твою базу Supabase для истории
                         await sb.from('chat_memory').insert({ 
                             session_id: this.currentSession, 
                             message: { type: "ai", is_admin: true, content: this.replyText } 
                         });
 
                         this.replyText = ''; 
-                        this.replyContext = null; // Сбрасываем режим ответа на коммент
+                        this.replyContext = null; 
 
                     } catch (e) {
                         console.error(e);
-                        alert("ОШИБКА: " + e.message); 
+                        alert("ERROR: " + e.message); 
                     } finally {
                         this.isSending = false; 
                         this.scrollToBottom();
                     }
-                },
-
-                getPageToken(sid) {
-                    const sess = this.enrichedSessions.find(s => s.session_id === sid);
-                    const page = this.saasPages.find(p => 
-                        String(p.fb_page_id).trim() === String(sess?.pageId).trim() || 
-                        String(p.ig_id).trim() === String(sess?.pageId).trim()
-                    );
-                    return page ? (page.fb_api_token || page.page_access_token) : null;
                 },
 
                 getPageId(sid) {
@@ -712,81 +691,51 @@ getPageToken(sid) {
                     }, 100);
                 },
 
-                                // --- ФУНКЦИИ УПРАВЛЕНИЯ И ИНТЕРФЕЙСА ---
-
-                // Включает режим редактирования
                 startEdit(msg) {
                     this.editingMsgId = msg.id;
                     this.editingText = msg.content;
                 },
 
-                // Умная кнопка Reply
-                        // 1. Обработка нажатия на Reply (чтобы окно открывалось везде)
                 handleReplyClick(msg) {
-    // 1. Проверяем, есть ли реальный ID КОММЕНТАРИЯ (ветки)
-    // Мы смотрим и в корень msg, и внутрь msg.message (на всякий случай)
-    const commentId = msg.instagram_comment_id || (msg.message && msg.message.instagram_comment_id);
-    
-    // Проверка: ID должен существовать и не быть строкой "null"
-    const isRealComment = commentId && commentId !== 'null';
+                    const commentId = msg.instagram_comment_id || (msg.message && msg.message.instagram_comment_id);
+                    const isRealComment = commentId && commentId !== 'null';
 
-    if (isRealComment) {
-        // ЭТО КОММЕНТАРИЙ -> Открываем всплывающее окно под сообщением
-        this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
-        this.inlineReplyText = '';
-    } else {
-        // ЭТО ЛИЧКА (Direct) -> Идем в нижнее поле ввода
-        this.activeInlineReplyId = null; // Закрываем любые окна
-        this.replyContext = null;        // Убираем контекст ответа
-        
-        // Фокусируемся на главном поле ввода внизу
-        const bottomInput = document.querySelector('textarea[placeholder="Type a reply..."]');
-        if (bottomInput) {
-            bottomInput.focus();
-            // Можно добавить упоминание, если хочешь, или оставить пустым
-            // this.replyText = ''; 
-        }
-    }
-},
+                    if (isRealComment) {
+                        this.activeInlineReplyId = this.activeInlineReplyId === msg.id ? null : msg.id;
+                        this.inlineReplyText = '';
+                    } else {
+                        this.activeInlineReplyId = null; 
+                        this.replyContext = null;        
+                        
+                        const bottomInput = document.querySelector('textarea[placeholder="Type a reply..."]');
+                        if (bottomInput) bottomInput.focus();
+                    }
+                },
 
-
-
-
-        // 2. Редактирование и СИНХРОНИЗАЦИЯ с Meta
-                        async saveEdit(msg) {
+                async saveEdit(msg) {
                     const token = this.getPageToken(this.currentSession);
                     if (!token) return alert("No token found for this page");
 
                     try {
-                        // СИНХРОН С META (v24.0)
                         if (msg.instagram_comment_id) {
-                            // (Оставляем твой код как есть, хотя Meta часто не дает править, но пусть будет)
                             const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
                             const metaRes = await fetch(url, { method: 'POST' });
                             const metaData = await metaRes.json();
                             if (metaData.error) console.error("Meta API Error:", metaData.error.message);
                         }
 
-                        // ОБНОВЛЕНИЕ В SUPABASE
-                        // 1. Копируем старый объект
                         const newMsgObj = { ...msg.message };
                         
-                        // 2. Обновляем контент и флаг админа
                         newMsgObj.content = this.editingText;
                         newMsgObj.is_admin = true;
-                        
-                        // 3. !!! ИСПРАВЛЕНИЕ !!!
-                        // Вместо role ставим type
                         newMsgObj.type = 'ai'; 
                         
-                        // 4. УБИВАЕМ role, чтобы он не попал в базу
                         delete newMsgObj.role;
 
                         const { error } = await sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id);
                         
                         if (!error) {
                             msg.content = this.editingText;
-                            // Обновляем локальный объект, чтобы интерфейс сразу подхватил изменения
                             msg.message = newMsgObj; 
                             this.editingMsgId = null;
                         }
@@ -795,12 +744,9 @@ getPageToken(sid) {
                     }
                 },
 
-
-        // 3. Отправка ответа в комментарии (Разные ссылки для FB и IG)
-                                        async sendInlineReply(msg) {
+                async sendInlineReply(msg) {
                     if (!this.inlineReplyText.trim()) return;
 
-                    // 1. Meta API (Оставляем как есть)
                     const token = this.getPageToken(this.currentSession);
                     const type = this.getClientType(this.currentSession); 
                     const endpoint = (type === 'ig' || type === 'instagram') ? 'replies' : 'comments';
@@ -811,22 +757,17 @@ getPageToken(sid) {
                         const data = await res.json();
                         if (data.error) throw new Error(data.error.message);
 
-                        // 2. ПОИСК ТЕКСТА (БРОНЕБОЙНЫЙ ВАРИАНТ)
-                        // Ищем текст во всех возможных местах объекта
                         let rawText = msg.content; 
                         if (!rawText && msg.message && msg.message.content) rawText = msg.message.content;
                         if (!rawText && typeof msg.message === 'string') rawText = msg.message;
                         
-                        // Если нашли текст, но он с мусором HIDDEN_ID — чистим
                         if (rawText && typeof rawText === 'string' && rawText.includes('HIDDEN_ID')) {
                             const parts = rawText.split('|||');
-                            if (parts.length > 1) rawText = parts[1]; // Берем чистый текст
+                            if (parts.length > 1) rawText = parts[1]; 
                         }
 
-                        // Если вообще ничего не нашли — ставим 'Comment'
                         const finalQuote = rawText || 'Comment';
 
-                        // 3. Сохранение в базу
                         await sb.from('chat_memory').insert({
                             session_id: this.currentSession,
                             message: { 
@@ -834,11 +775,10 @@ getPageToken(sid) {
                                 is_admin: true, 
                                 content: this.inlineReplyText,
                                 instagram_comment_id: data.id,
-                                reply_to_text: finalQuote // <--- Записываем найденный текст
+                                reply_to_text: finalQuote 
                             }
                         });
 
-                        // 4. Очистка
                         this.activeInlineReplyId = null;
                         this.inlineReplyText = '';
                         this.fetchMessages(); 
@@ -848,12 +788,10 @@ getPageToken(sid) {
                     }
                 },
 
-
-
                 getClientType(sid) { 
                     return this.clientMap[sid]?.type || 'fb'; 
                 }
-            } // Конец methods
+            } 
         }).mount('#app');
     </script>
 </body>
