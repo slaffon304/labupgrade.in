@@ -316,20 +316,16 @@
                         
                         if (pageId) {
                             if (type === 'wa') {
-    const channel = this.botChannels.find(b => String(b.identifier).trim() === String(pageId).trim());
-    if (channel) {
-        const projId = channel.client_id;
-        // Заменили на твой надежный поиск по двум колонкам с защитой (String)
-        const project = this.saasProjects.find(p => String(p.id) === String(projId) || String(p.client_id) === String(projId));
-        
-        if (project) {
-            const st = String(project.wa_subscription_status || '').trim().toLowerCase();
-            isPageActive = (st === 'active' || st === 'trial');
-        }
-    }
-}
-
-
+                                const channel = this.botChannels.find(b => String(b.identifier).trim() === String(pageId).trim());
+                                if (channel) {
+                                    const projId = channel.client_id;
+                                    const project = this.saasProjects.find(p => String(p.id) === String(projId) || String(p.client_id) === String(projId));
+                                    
+                                    if (project) {
+                                        const st = String(project.wa_subscription_status || '').trim().toLowerCase();
+                                        isPageActive = (st === 'active' || st === 'trial');
+                                    }
+                                }
                             } else {
                                 const saas = this.saasPages.find(s => 
                                     String(s.fb_page_id).trim() === String(pageId).trim() || 
@@ -401,58 +397,52 @@
                     });
                 },
 
-            async togglePageStatus(pageId) {
+                async togglePageStatus(pageId) {
                     if (!pageId) return alert("Ошибка: Не передан ID страницы");
 
-                    // --- 1. ЛОГИКА ДЛЯ WHATSAPP ---
-                    const waChannel = this.botChannels.find(b => String(b.identifier) === String(pageId));
+                    // 1. ЛОГИКА ДЛЯ WHATSAPP
+                    const waChannel = this.botChannels.find(b => String(b.identifier).trim() === String(pageId).trim());
                     if (waChannel) {
                         const projectId = waChannel.client_id;
-                        if (!projectId) return alert("Ошибка: У этого номера в таблице bot_channels пустое поле client_id!");
-
-                        // Ищем проект. Учитываем, что колонка может называться id или client_id
-                        const project = this.saasProjects.find(p => p.id === projectId || p.client_id === projectId);
-                        if (!project) return alert("Ошибка: В таблице saas_projects не найден проект с ID: " + projectId);
-
-                        const currentStatus = String(project.wa_subscription_status || '').toLowerCase();
-                        const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
+                        const projectIndex = this.saasProjects.findIndex(p => String(p.id) === String(projectId) || String(p.client_id) === String(projectId));
                         
-                        project.wa_subscription_status = newStatus;
-                        this.saasProjects = [...this.saasProjects]; 
-                        
-                        // Определяем правильное имя колонки первичного ключа для обновления
-                        const pkColumn = project.id ? 'id' : 'client_id';
-
-                        const { error } = await sb.from('saas_projects').update({ wa_subscription_status: newStatus }).eq(pkColumn, projectId);
-                        if (error) alert("Ошибка базы данных: " + error.message);
+                        if (projectIndex !== -1) {
+                            const project = this.saasProjects[projectIndex];
+                            const currentStatus = String(project.wa_subscription_status || '').toLowerCase();
+                            const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
+                            
+                            project.wa_subscription_status = newStatus;
+                            
+                            // Принудительно заставляем Vue увидеть изменения в массиве
+                            this.saasProjects[projectIndex] = project;
+                            this.saasProjects = [...this.saasProjects]; 
+                            
+                            const pkColumn = project.id ? 'id' : 'client_id';
+                            await sb.from('saas_projects').update({ wa_subscription_status: newStatus }).eq(pkColumn, projectId);
+                        } else {
+                            alert("Ошибка: Проект не найден в saas_projects");
+                        }
                         return; 
                     }
 
-                    // --- 2. ЛОГИКА ДЛЯ FB И IG ---
-                    const page = this.saasPages.find(s => String(s.fb_page_id) === String(pageId) || String(s.ig_id) === String(pageId));
-                    if (!page) {
-                        return alert("Ошибка: ID " + pageId + " не найден ни в bot_channels, ни в saas_clients. Проверь данные в таблицах!");
-                    }
+                    // 2. ЛОГИКА ДЛЯ FB И IG
+                    const pageIndex = this.saasPages.findIndex(s => String(s.fb_page_id).trim() === String(pageId).trim() || String(s.ig_id).trim() === String(pageId).trim());
+                    if (pageIndex !== -1) {
+                        const page = this.saasPages[pageIndex];
+                        const targetColumn = String(page.ig_id).trim() === String(pageId).trim() ? 'subscription_status_ig' : 'subscription_status_fb';
+                        const currentStatus = String(page[targetColumn] || '').toLowerCase();
+                        const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
 
-                    let targetColumn = '';
-                    if (String(page.ig_id) === String(pageId)) {
-                        targetColumn = 'subscription_status_ig'; 
+                        page[targetColumn] = newStatus;
+                        
+                        this.saasPages[pageIndex] = page;
+                        this.saasPages = [...this.saasPages];
+
+                        await sb.from('saas_clients').update({ [targetColumn]: newStatus }).eq('id', page.id);
                     } else {
-                        targetColumn = 'subscription_status_fb'; 
-                    }
-
-                    const currentStatus = String(page[targetColumn] || '').toLowerCase();
-                    const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
-
-                    page[targetColumn] = newStatus;
-
-                    const { error } = await sb.from('saas_clients').update({ [targetColumn]: newStatus }).eq('id', page.id);
-                    if (error) {
-                        page[targetColumn] = currentStatus;
-                        alert("Ошибка базы данных: " + error.message);
+                        alert("Ошибка: Канал не найден ни в одной таблице!");
                     }
                 },
-
 
                 async openChannelsModal() {
                     this.showChannels = true;
@@ -495,12 +485,12 @@
                         }
 
                         if (this.adminInfo.waId) {
-                            const channel = this.botChannels.find(b => String(b.identifier) === String(this.adminInfo.waId).trim());
+                            const channel = this.botChannels.find(b => String(b.identifier).trim() === String(this.adminInfo.waId).trim());
                             let isWaOn = false;
                             let stWaDisplay = 'OFF';
                             
                             if (channel) {
-                                const project = this.saasProjects.find(p => p.id === channel.client_id);
+                                const project = this.saasProjects.find(p => String(p.id) === String(channel.client_id) || String(p.client_id) === String(channel.client_id));
                                 if (project) {
                                     const st = String(project.wa_subscription_status || '').trim().toLowerCase();
                                     isWaOn = (st === 'active' || st === 'trial');
@@ -518,7 +508,11 @@
                             });
                         }
 
-                    } catch(e) { console.error(e); } finally { this.isLoadingChannels = false; }
+                    } catch(e) { 
+                        console.error("Ошибка синхронизации:", e); 
+                    } finally { 
+                        this.isLoadingChannels = false; 
+                    }
                 },
 
                 async toggleAssetStatus(asset) {
@@ -644,11 +638,11 @@
                     if (!sess) return null;
 
                     if (sess.type === 'wa') {
-                        const channel = this.botChannels.find(b => String(b.identifier) === String(sess.pageId));
+                        const channel = this.botChannels.find(b => String(b.identifier).trim() === String(sess.pageId).trim());
                         return channel ? channel.api_key : null;
                     } 
                     
-                    const page = this.saasPages.find(p => String(p.fb_page_id) === String(sess.pageId) || String(p.ig_id) === String(sess.pageId));
+                    const page = this.saasPages.find(p => String(p.fb_page_id).trim() === String(sess.pageId).trim() || String(p.ig_id).trim() === String(sess.pageId).trim());
                     return page ? (page.fb_api_token || page.page_access_token) : null;
                 },
 
@@ -664,10 +658,12 @@
                         });
                     }
                 },
+                
                 async fetchSaasClients() {
                     const { data } = await sb.from('saas_clients').select('*');
                     if (data) this.saasPages = data;
                 },
+                
                 getClientName(sid) { return this.clientMap[sid]?.name || `User ${sid.substring(0,4)}...`; },
                 getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
@@ -676,6 +672,7 @@
                     const { data } = await sb.from('bot_channels').select('*');
                     if (data) this.botChannels = data;
                 },
+                
                 async fetchSaasProjects() {
                     const { data } = await sb.from('saas_projects').select('*');
                     if (data) this.saasProjects = data;
