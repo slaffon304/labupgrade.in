@@ -630,13 +630,11 @@
                     const sess = this.enrichedSessions.find(s => s.session_id === sid);
                     if (!sess) return null;
 
-                    // Если это WhatsApp - берем api_key из bot_channels
                     if (sess.type === 'wa') {
                         const channel = this.botChannels.find(b => String(b.identifier) === String(sess.pageId));
                         return channel ? channel.api_key : null;
                     } 
                     
-                    // Иначе старая логика для FB/IG
                     const page = this.saasPages.find(p => String(p.fb_page_id) === String(sess.pageId) || String(p.ig_id) === String(sess.pageId));
                     return page ? (page.fb_api_token || page.page_access_token) : null;
                 },
@@ -767,11 +765,11 @@
                 },
 
                 async saveEdit(msg) {
-                    const token = this.getPageToken(this.currentSession);
-                    if (!token) return alert("No token found for this page");
-
                     try {
                         if (msg.instagram_comment_id) {
+                            const token = this.getPageToken(this.currentSession);
+                            if (!token) return alert("Токен не найден. Редактирование в Meta невозможно.");
+                            
                             const url = `https://graph.facebook.com/v24.0/${msg.instagram_comment_id}?message=${encodeURIComponent(this.editingText)}&access_token=${token}`;
                             const metaRes = await fetch(url, { method: 'POST' });
                             const metaData = await metaRes.json();
@@ -779,11 +777,9 @@
                         }
 
                         const newMsgObj = { ...msg.message };
-                        
                         newMsgObj.content = this.editingText;
                         newMsgObj.is_admin = true;
                         newMsgObj.type = 'ai'; 
-                        
                         delete newMsgObj.role;
 
                         const { error } = await sb.from('chat_memory').update({ message: newMsgObj }).eq('id', msg.id);
@@ -792,9 +788,11 @@
                             msg.content = this.editingText;
                             msg.message = newMsgObj; 
                             this.editingMsgId = null;
+                        } else {
+                            throw new Error(error.message);
                         }
                     } catch (e) {
-                        alert("Save failed: " + e.message);
+                        alert("Ошибка сохранения: " + e.message);
                     }
                 },
 
