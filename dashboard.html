@@ -417,8 +417,18 @@
                             this.saasProjects[projectIndex] = project;
                             this.saasProjects = [...this.saasProjects]; 
                             
-                            const pkColumn = project.id ? 'id' : 'client_id';
-                            await sb.from('saas_projects').update({ wa_subscription_status: newStatus }).eq(pkColumn, projectId);
+                            // Используем точный первичный ключ найденного проекта (project.id), а не пытаемся угадать колонку
+const { data, error } = await sb.from('saas_projects')
+    .update({ wa_subscription_status: newStatus })
+    .eq('id', project.id)
+    .select();
+
+if (error) {
+    alert("Ошибка базы данных: " + error.message);
+} else if (!data || data.length === 0) {
+    alert("База не выдала ошибку, но строка не обновилась. Проверь, есть ли права на UPDATE (RLS).");
+}
+
                         } else {
                             alert("Ошибка: Проект не найден в saas_projects");
                         }
