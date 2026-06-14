@@ -276,7 +276,7 @@
         createApp({
             data() {
                 return {
-                    messages: [], clients: [], clientMap: {}, saasPages: [], 
+                    messages: [], clients: [], clientMap: {}, saasPages: [], botChannels: [], saasProjects: [], 
                     currentSession: null, replyText: '', isSending: false,
                     pageLogoUrl: '', logoError: false,
                     showChannels: false, flatAssets: [], isLoadingChannels: false,
@@ -359,7 +359,8 @@
                 if (pageId && !params.get('waI')) this.pageLogoUrl = `https://graph.facebook.com/${pageId}/picture?type=large`;
                 else this.logoError = true; // Use generic logo for WA as picture endpoint differs
 
-                await Promise.all([this.fetchMessages(), this.fetchClients(), this.fetchSaasClients()]);
+                await Promise.all([this.fetchMessages(), this.fetchClients(), this.fetchSaasClients(), this.fetchBotChannels(), this.fetchSaasProjects()]);
+
                 sb.channel('public:chat_memory').on('postgres_changes', { event: '*', schema: 'public', table: 'chat_memory' }, () => this.fetchMessages()).subscribe();
             },
             methods: {
@@ -383,40 +384,8 @@
                     });
                 },
 
-                async togglePageStatus(pageId) {
-                    if (!pageId) return;
+                
 
-                    const page = this.saasPages.find(s => s.fb_page_id == pageId || s.ig_id == pageId || s.wa_id == pageId);
-                    
-                    if (!page) {
-                        console.error('Page not found');
-                        return;
-                    }
-
-                    let targetColumn = '';
-                    
-                    if (String(page.wa_id) === String(pageId)) {
-                        targetColumn = 'subscription_status_wa'; 
-                    } else if (String(page.ig_id) === String(pageId)) {
-                        targetColumn = 'subscription_status_ig'; 
-                    } else {
-                        targetColumn = 'subscription_status_fb'; 
-                    }
-
-                    const currentStatus = String(page[targetColumn] || '').toLowerCase();
-                    const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
-
-                    page[targetColumn] = newStatus;
-
-                    const { error } = await sb.from('saas_clients')
-                        .update({ [targetColumn]: newStatus }) 
-                        .eq('id', page.id);
-
-                    if (error) {
-                        console.error('Save error:', error);
-                        page[targetColumn] = currentStatus; 
-                    }
-                },
 
                 async openChannelsModal() {
                     this.showChannels = true;
@@ -430,7 +399,53 @@
                         
                         if (d.data) {
                             d.data.forEach(page => {
-                                const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
+      
+                async togglePageStatus(pageId) {
+    if (!pageId) return;
+
+    // --- 1. ЛОГИКА ДЛЯ WHATSAPP ---
+    const waChannel = this.botChannels.find(b => String(b.identifier) === String(pageId));
+    if (waChannel) {
+        const projectId = waChannel.client_id;
+        const project = this.saasProjects.find(p => p.id === projectId);
+        if (!project) return;
+
+        const currentStatus = String(project.wa_subscription_status || '').toLowerCase();
+        const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
+        
+        // Меняем визуально на сайте
+        project.wa_subscription_status = newStatus; 
+        
+        // Отправляем в нужную таблицу
+        await sb.from('saas_projects').update({ wa_subscription_status: newStatus }).eq('id', projectId);
+        return; // Выходим, чтобы код ниже не выполнялся
+    }
+
+    // --- 2. СТАРАЯ ЛОГИКА ДЛЯ FB И IG ---
+    const page = this.saasPages.find(s => String(s.fb_page_id) === String(pageId) || String(s.ig_id) === String(pageId));
+    if (!page) {
+        console.error('Page not found');
+        return;
+    }
+
+    let targetColumn = '';
+    if (String(page.ig_id) === String(pageId)) {
+        targetColumn = 'subscription_status_ig'; 
+    } else {
+        targetColumn = 'subscription_status_fb'; 
+    }
+
+    const currentStatus = String(page[targetColumn] || '').toLowerCase();
+    const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
+
+    page[targetColumn] = newStatus;
+
+    const { error } = await sb.from('saas_clients').update({ [targetColumn]: newStatus }).eq('id', page.id);
+    if (error) {
+        page[targetColumn] = currentStatus; // Откат при ошибке
+    }
+},
+                     const dbFb = this.saasPages.find(s => String(s.fb_page_id).trim() === String(page.id).trim());
                                 
                                 let stFb = 'false';
                                 if (dbFb) stFb = String(dbFb.subscription_status_fb || '').trim().toLowerCase();
@@ -591,10 +606,20 @@
                 },
 
                 getPageToken(sid) {
-                    const sess = this.enrichedSessions.find(s => s.session_id === sid);
-                    const page = this.saasPages.find(p => String(p.fb_page_id) === String(sess?.pageId) || String(p.ig_id) === String(sess?.pageId) || String(p.wa_id) === String(sess?.pageId));
-                    return page ? (page.fb_api_token || page.page_access_token) : null;
-                },
+    const sess = this.enrichedSessions.find(s => s.session_id === sid);
+    if (!sess) return null;
+
+    // Если это WhatsApp - берем api_key из bot_channels
+    if (sess.type === 'wa') {
+        const channel = this.botChannels.find(b => String(b.identifier) === String(sess.pageId));
+        return channel ? channel.api_key : null;
+    } 
+    
+    // Иначе старая логика для FB/IG
+    const page = this.saasPages.find(p => String(p.fb_page_id) === String(sess.pageId) || String(p.ig_id) === String(sess.pageId));
+    return page ? (page.fb_api_token || page.page_access_token) : null;
+},
+
 
                 async fetchClients() {
                     const { data } = await sb.from('end_clients').select('*');
@@ -604,7 +629,8 @@
                             const n = c.name || c.username || 'Client';
                             if (c.instagram_id) this.clientMap[c.instagram_id] = { name: n, type: 'ig' };
                             if (c.psid) this.clientMap[c.psid] = { name: n, type: 'fb' };
-                            if (c.whatsapp_id || c.phone) this.clientMap[c.whatsapp_id || c.phone] = { name: n, type: 'wa' };
+                            if (c.wa_id) this.clientMap[c.wa_id] = { name: n, type: 'wa' };
+
                         });
                     }
                 },
@@ -615,6 +641,16 @@
                 getClientName(sid) { return this.clientMap[sid]?.name || `User ${sid.substring(0,4)}...`; },
                 getInitials(n) { return (n && !n.startsWith('User')) ? n.substring(0,2).toUpperCase() : '#'; },
                 selectSession(id) { this.currentSession = id; setTimeout(() => { if(this.$refs.chatBox) this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; }, 100); },
+
+                async fetchBotChannels() {
+    const { data } = await sb.from('bot_channels').select('*');
+    if (data) this.botChannels = data;
+},
+                async fetchSaasProjects() {
+    const { data } = await sb.from('saas_projects').select('*');
+    if (data) this.saasProjects = data;
+},
+
                 
                 async sendReply() {
                     if (!this.replyText.trim() || this.isSending) return;
