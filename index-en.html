@@ -1868,40 +1868,25 @@ We eliminate operational chaos, implement CRM, AI and digital systems that turn 
         });
     }
 
-        function handleWALogin() {
+              function handleWALogin() {
         const btn = document.getElementById('wa-auth-btn');
+        if(btn) btn.innerHTML = '<span>Redirecting...</span>';
+
+        // Берем ID клиента, который генерируется на сайте
+        const myClientId = getOrCreateClientId(); 
         
-        FB.login(function(response) {
-            if (response.authResponse) {
-                if(btn) btn.innerHTML = '<span>Connecting WA...</span>';
-
-                // Здесь получаем код для обмена на токен WhatsApp
-                const authCode = response.authResponse.code;
-                const myClientId = getOrCreateClientId();
-
-                // TODO: В будущем этот код полетит POST-запросом в новую WhatsApp Edge Function
-                console.log("WhatsApp Embedded Signup SUCCESS!");
-                console.log("Auth Code for Backend:", authCode);
-                
-                if(btn) {
-                    btn.innerHTML = '<span>WA CONNECTED ✅</span>';
-                    btn.style.borderColor = '#25D366';
-                    btn.style.color = '#25D366';
-                }
-            } else {
-                console.log('Пользователь отменил привязку WhatsApp.');
-                if(btn) btn.innerHTML = '<span>TRY AGAIN</span>';
-            }
-        }, {
-            config_id: '4529294380637977', 
-            response_type: 'code',
-            override_default_response_type: true,
-            extras: {
-                feature: 'whatsapp_embedded_signup',
-                version: 2
-            }
-        });
+        // Твоя рабочая ссылка
+        const appId = '1194771652741657';
+        const configId = '4529294380637977';
+        const redirectUri = 'https://n8n.labupgrade.in/webhook/onboarding_w_a';
+        
+        // Формируем итоговый URL с подставленным state (client_id)
+        const oauthUrl = `https://www.facebook.com/v24.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&response_type=code&config_id=${configId}&scope=whatsapp_business_management,whatsapp_business_messaging,business_management&state=2e54f6ac-0956-4653-8dd3-32c8584425bd`;
+        
+        // Перенаправляем клиента на страницу Meta
+        window.location.href = oauthUrl;
     }
+
 
 </script>
 
