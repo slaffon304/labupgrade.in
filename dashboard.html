@@ -395,32 +395,36 @@
                     });
                 },
 
-                async togglePageStatus(pageId) {
-                    if (!pageId) return;
+            async togglePageStatus(pageId) {
+                    if (!pageId) return alert("Ошибка: Не передан ID страницы");
 
                     // --- 1. ЛОГИКА ДЛЯ WHATSAPP ---
                     const waChannel = this.botChannels.find(b => String(b.identifier) === String(pageId));
                     if (waChannel) {
                         const projectId = waChannel.client_id;
-                        const project = this.saasProjects.find(p => p.id === projectId);
-                        if (!project) return;
+                        if (!projectId) return alert("Ошибка: У этого номера в таблице bot_channels пустое поле client_id!");
+
+                        // Ищем проект. Учитываем, что колонка может называться id или client_id
+                        const project = this.saasProjects.find(p => p.id === projectId || p.client_id === projectId);
+                        if (!project) return alert("Ошибка: В таблице saas_projects не найден проект с ID: " + projectId);
 
                         const currentStatus = String(project.wa_subscription_status || '').toLowerCase();
                         const newStatus = (currentStatus === 'active' || currentStatus === 'trial') ? 'false' : 'active';
                         
-                        // Меняем визуально на сайте
                         project.wa_subscription_status = newStatus; 
                         
-                        // Отправляем в нужную таблицу
-                        await sb.from('saas_projects').update({ wa_subscription_status: newStatus }).eq('id', projectId);
-                        return; // Выходим, чтобы код ниже не выполнялся
+                        // Определяем правильное имя колонки первичного ключа для обновления
+                        const pkColumn = project.id ? 'id' : 'client_id';
+
+                        const { error } = await sb.from('saas_projects').update({ wa_subscription_status: newStatus }).eq(pkColumn, projectId);
+                        if (error) alert("Ошибка базы данных: " + error.message);
+                        return; 
                     }
 
-                    // --- 2. СТАРАЯ ЛОГИКА ДЛЯ FB И IG ---
+                    // --- 2. ЛОГИКА ДЛЯ FB И IG ---
                     const page = this.saasPages.find(s => String(s.fb_page_id) === String(pageId) || String(s.ig_id) === String(pageId));
                     if (!page) {
-                        console.error('Page not found');
-                        return;
+                        return alert("Ошибка: ID " + pageId + " не найден ни в bot_channels, ни в saas_clients. Проверь данные в таблицах!");
                     }
 
                     let targetColumn = '';
@@ -437,9 +441,11 @@
 
                     const { error } = await sb.from('saas_clients').update({ [targetColumn]: newStatus }).eq('id', page.id);
                     if (error) {
-                        page[targetColumn] = currentStatus; // Откат при ошибке
+                        page[targetColumn] = currentStatus;
+                        alert("Ошибка базы данных: " + error.message);
                     }
                 },
+
 
                 async openChannelsModal() {
                     this.showChannels = true;
