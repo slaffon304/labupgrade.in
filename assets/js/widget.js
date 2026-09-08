@@ -5,6 +5,16 @@
 
     // 2. ДОСТАЕМ UUID КЛИЕНТА ИЗ HTML
     const clientId = container.getAttribute('data-client-id');
+    const projectId = container.getAttribute('data-project-id') || '';
+    let visitorId = '';
+    try {
+        visitorId = localStorage.getItem('lu_visitor_id') || '';
+        if (!visitorId) {
+            visitorId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+                : 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+            localStorage.setItem('lu_visitor_id', visitorId);
+        }
+    } catch (e) { visitorId = ''; }
     if (!clientId) {
         console.error('LabUpgrade Voice Widget: lipsește atributul data-client-id');
         return;
@@ -86,7 +96,7 @@
             if (activeAudioContext.state === 'suspended') { await activeAudioContext.resume(); }
 
             // Подключение с UUID клиента
-            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?client_id=${clientId}`);
+            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?client_id=${clientId}&project_id=${encodeURIComponent(projectId)}&visitor_id=${encodeURIComponent(visitorId)}`);
             activeSocket.binaryType = "arraybuffer";
 
             activeSocket.onopen = async () => {
