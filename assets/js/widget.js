@@ -4,8 +4,13 @@
     if (!container) return; // Если контейнера нет, скрипт просто отдыхает
 
     // 2. ДОСТАЕМ UUID КЛИЕНТА ИЗ HTML
-    const clientId = container.getAttribute('data-client-id');
-    const projectId = container.getAttribute('data-project-id') || '';
+    const widgetKey = container.getAttribute('data-key');
+    if (!widgetKey) {
+        console.error('LabUpgrade Voice Widget: lipsește atributul data-key');
+        return;
+    }
+
+    // 2a. ПОСТОЯННЫЙ ИДЕНТИФИКАТОР ПОСЕТИТЕЛЯ — чтобы бот помнил вернувшегося человека
     let visitorId = '';
     try {
         visitorId = localStorage.getItem('lu_visitor_id') || '';
@@ -15,10 +20,6 @@
             localStorage.setItem('lu_visitor_id', visitorId);
         }
     } catch (e) { visitorId = ''; }
-    if (!clientId) {
-        console.error('LabUpgrade Voice Widget: lipsește atributul data-client-id');
-        return;
-    }
 
     // 3. ВНЕДРЯЕМ ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ (Изолированно)
     const style = document.createElement('style');
@@ -96,7 +97,7 @@
             if (activeAudioContext.state === 'suspended') { await activeAudioContext.resume(); }
 
             // Подключение с UUID клиента
-            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?client_id=${clientId}&project_id=${encodeURIComponent(projectId)}&visitor_id=${encodeURIComponent(visitorId)}`);
+            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?key=${encodeURIComponent(widgetKey)}&visitor_id=${encodeURIComponent(visitorId)}`);
             activeSocket.binaryType = "arraybuffer";
 
             activeSocket.onopen = async () => {
