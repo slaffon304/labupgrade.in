@@ -21,6 +21,38 @@
         }
     } catch (e) { visitorId = ''; }
 
+    // 2b. ЯЗЫК НАДПИСЕЙ: берём из data-lang, иначе из языка страницы, иначе румынский
+    const langAttr = (container.getAttribute('data-lang') || document.documentElement.lang || 'ro')
+        .slice(0, 2).toLowerCase();
+    const lang = ['ro', 'ru', 'en'].includes(langAttr) ? langAttr : 'ro';
+
+    const T = {
+        ro: {
+            network: 'Eroare de rețea. Încearcă din nou.',
+            mic: 'Te rugăm să acorzi acces la microfon pentru a vorbi cu asistentul.',
+            daily_limit: 'Ai atins limita de apeluri pentru astăzi. Revino mâine sau scrie-ne la info@labupgrade.ai.',
+            channel_off: 'Asistentul vocal este oprit momentan. Scrie-ne la info@labupgrade.ai.',
+            busy: 'Toate liniile sunt ocupate. Încearcă peste câteva minute.',
+        },
+        ru: {
+            network: 'Ошибка сети. Попробуйте ещё раз.',
+            mic: 'Разрешите доступ к микрофону, чтобы говорить с ассистентом.',
+            daily_limit: 'Вы исчерпали лимит звонков на сегодня. Возвращайтесь завтра или напишите нам на info@labupgrade.ai.',
+            channel_off: 'Голосовой ассистент сейчас отключён. Напишите нам на info@labupgrade.ai.',
+            busy: 'Все линии заняты. Попробуйте через несколько минут.',
+        },
+        en: {
+            network: 'Network error. Please try again.',
+            mic: 'Please allow microphone access to talk to the assistant.',
+            daily_limit: 'You have reached today\'s call limit. Come back tomorrow or write to info@labupgrade.ai.',
+            channel_off: 'The voice assistant is currently off. Write to us at info@labupgrade.ai.',
+            busy: 'All lines are busy. Please try again in a few minutes.',
+        },
+    }[lang];
+
+    // Отказ уже объяснён — не показывать поверх него «ошибку сети»
+    let refused = false;
+
     // 3. ВНЕДРЯЕМ ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ (Изолированно)
     const style = document.createElement('style');
     style.textContent = `
@@ -137,7 +169,20 @@
 
             activeSocket.onmessage = async (event) => {
                 try {
-                    if (typeof event.data === "string" || !activeAudioContext) return;
+                    // Отказ приходит текстом: бот объясняет причину словами.
+                    if (typeof event.data === "string") {
+                        let msg = null;
+                        try { msg = JSON.parse(event.data); } catch (e) { return; }
+
+                        if (msg && msg.type === 'refused') {
+                            refused = true;
+                            alert(T[msg.reason] || T.network);
+                            stopCall();
+                        }
+                        return;
+                    }
+
+                    if (!activeAudioContext) return;
                     const arrayBuffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data;
                     const int16Array = new Int16Array(arrayBuffer);
                     const float32Array = new Float32Array(int16Array.length);
@@ -155,12 +200,15 @@
                 } catch (err) { console.error("Audio Decode Error:", err); }
             };
 
-            activeSocket.onerror = () => { alert('Eroare de rețea!'); stopCall(); };
+            activeSocket.onerror = () => {
+                if (!refused) alert(T.network);
+                stopCall();
+            };
             activeSocket.onclose = () => { stopCall(); };
 
         } catch (err) {
             console.error("Microphone Error:", err);
-            alert('Te rugăm să acorzi acces la microfon pentru a vorbi cu asistentul.');
+            alert(T.mic);
             stopCall();
         }
     });
