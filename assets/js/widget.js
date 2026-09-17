@@ -53,6 +53,53 @@
     // Отказ уже объяснён — не показывать поверх него «ошибку сети»
     let refused = false;
 
+    // 2c. ПРОПУСК ОТ CLOUDFLARE — отсекает скрипты, которые подключаются
+    // напрямую, минуя браузер. Для живого посетителя он невидим.
+    const TURNSTILE_SITE_KEY = '0x4AAAAAAE6UKEXLu3wCg6vs';
+
+    let turnstileGata = null;
+
+    function incarcaTurnstile() {
+        if (turnstileGata) return turnstileGata;
+
+        turnstileGata = new Promise((resolve, reject) => {
+            if (window.turnstile) { resolve(); return; }
+
+            const s = document.createElement('script');
+            s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+            s.async = true;
+            s.onload = () => resolve();
+            s.onerror = () => reject(new Error('turnstile'));
+            document.head.appendChild(s);
+        });
+
+        return turnstileGata;
+    }
+
+    // Невидимая площадка: сюда Cloudflare рисует проверку, если она нужна.
+    const cutieTurnstile = document.createElement('div');
+    cutieTurnstile.style.cssText = 'position:fixed;bottom:0;right:0;z-index:9999998;';
+    document.body.appendChild(cutieTurnstile);
+
+    async function iaPropusk() {
+        await incarcaTurnstile();
+
+        return new Promise((resolve, reject) => {
+            const id = window.turnstile.render(cutieTurnstile, {
+                sitekey: TURNSTILE_SITE_KEY,
+                size: 'flexible',
+                callback: (token) => {
+                    window.turnstile.remove(id);
+                    resolve(token);
+                },
+                'error-callback': () => {
+                    window.turnstile.remove(id);
+                    reject(new Error('turnstile'));
+                },
+            });
+        });
+    }
+
     // 3. ВНЕДРЯЕМ ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ (Изолированно)
     const style = document.createElement('style');
     style.textContent = `
@@ -128,8 +175,18 @@
             activeAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             if (activeAudioContext.state === 'suspended') { await activeAudioContext.resume(); }
 
+            let propusk = '';
+
+            try {
+                propusk = await iaPropusk();
+            } catch (e) {
+                alert(T.network);
+                stopCall();
+                return;
+            }
+
             // Подключение с UUID клиента
-            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?key=${encodeURIComponent(widgetKey)}&visitor_id=${encodeURIComponent(visitorId)}`);
+            activeSocket = new WebSocket(`wss://voice.labupgrade.in/ws?key=${encodeURIComponent(widgetKey)}&visitor_id=${encodeURIComponent(visitorId)}&t=${encodeURIComponent(propusk)}`);
             activeSocket.binaryType = "arraybuffer";
 
             activeSocket.onopen = async () => {
