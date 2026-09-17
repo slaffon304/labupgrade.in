@@ -55,7 +55,23 @@
 
     // 2c. ПРОПУСК ОТ CLOUDFLARE — отсекает скрипты, которые подключаются
     // напрямую, минуя браузер. Для живого посетителя он невидим.
-    const TURNSTILE_SITE_KEY = '0x4AAAAAAE6UKEXLu3wCg6vs';
+    // Ключ Cloudflare у каждого клиента свой — спрашиваем его у бота по
+    // ключу виджета. В коде его не держим: виджет один на всех клиентов.
+    let turnstileSiteKey = '';
+
+    async function iaCheiaTurnstile() {
+        if (turnstileSiteKey) return turnstileSiteKey;
+
+        const r = await fetch(
+            `https://voice.labupgrade.in/widget-config?key=${encodeURIComponent(widgetKey)}`,
+            { cache: 'no-store' },
+        );
+        const d = await r.json();
+
+        turnstileSiteKey = d.turnstile_site_key || '';
+
+        return turnstileSiteKey;
+    }
 
     let turnstileGata = null;
 
@@ -82,11 +98,16 @@
     document.body.appendChild(cutieTurnstile);
 
     async function iaPropusk() {
+        const sitekey = await iaCheiaTurnstile();
+
+        // Без ключа проверки нет: клиент её ещё не подключил.
+        if (!sitekey) return '';
+
         await incarcaTurnstile();
 
         return new Promise((resolve, reject) => {
             const id = window.turnstile.render(cutieTurnstile, {
-                sitekey: TURNSTILE_SITE_KEY,
+                sitekey: sitekey,
                 size: 'flexible',
                 callback: (token) => {
                     window.turnstile.remove(id);
